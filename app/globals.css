@@ -13,6 +13,20 @@
   --font-mono: var(--font-mono);
 }
 
+@theme {
+  --color-cream: #f5eee9;
+  --color-cream-dark: #EBE3DB;
+  --color-ink: #191714;
+  --color-charcoal: #000000;
+  --color-sage: #6B8E7F;
+  --color-sage-dark: #4A6B5F;
+  --color-sage-light: #8BA898;
+  --color-gold: #D4AF37;
+  --color-gain: #6B8E7F;
+  --color-loss: #C0443A;
+  --color-loss-light: #E8A09A;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
