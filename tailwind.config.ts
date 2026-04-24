@@ -9,12 +9,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        cream: '#F5F1E8',
-        'cream-dark': '#EDE8DC',
+        cream: '#f5eee9',
+        'cream-dark': '#EBE3DB',
         sage: '#6B8E7F',
         'sage-dark': '#4A6B5F',
         'sage-light': '#8BA898',
-        charcoal: '#2A2A2A',
+        charcoal: '#000000',
+        gold: '#D4AF37',
         gain: '#6B8E7F',
         loss: '#C0443A',
         'loss-light': '#E8A09A',
