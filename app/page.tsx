@@ -4,6 +4,7 @@ import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
+import BriefStatsCard from '@/components/BriefStatsCard'
 
 export const revalidate = 1800
 
@@ -14,7 +15,7 @@ export default async function Page() {
     <div className="min-h-screen bg-cream">
       <div className="max-w-6xl mx-auto px-6 py-10 md:px-10 md:py-12">
 
-        {/* Header */}
+        {/* Page header */}
         <header className="mb-10">
           <div className="flex items-baseline justify-between flex-wrap gap-4">
             <div>
@@ -37,27 +38,49 @@ export default async function Page() {
           <hr className="border-charcoal/12 mt-6" />
         </header>
 
-        {/* Claude Morning Brief */}
-        <MorningBrief />
+        {/* Market Snapshot section */}
+        <div className="mb-10">
 
-        {/* Main grid */}
+          {/* Section heading */}
+          <div className="flex items-baseline justify-between mb-0">
+            <h2
+              className="font-serif italic font-normal tracking-tight"
+              style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', color: '#191714' }}
+            >
+              Market Snapshot
+            </h2>
+            <span className="font-mono text-[0.52rem] tracking-[0.18em] uppercase text-charcoal/35">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </span>
+          </div>
+          <div className="mt-3 mb-0 h-px" style={{ background: 'linear-gradient(to right, #6B8E7F 0%, rgba(107,142,127,0.15) 40%, transparent 100%)' }} />
+
+          {/* Dark section: 2-col grid */}
+          <div
+            className="grid grid-cols-1 lg:grid-cols-[70%_30%] overflow-hidden"
+            style={{ background: '#191714', marginTop: '0' }}
+          >
+            {/* Left: Claude brief */}
+            <MorningBrief />
+
+            {/* Right: Quick signal card */}
+            <BriefStatsCard meta={meta} />
+          </div>
+        </div>
+
+        {/* Main data grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
 
-          {/* Left column: Market Status */}
           <div className="md:col-span-1">
             <MarketStatus meta={meta} />
-
             <hr className="border-charcoal/10 my-8" />
-
             <SectorLeaders meta={meta} />
           </div>
 
-          {/* Middle column: AI & Infra */}
           <div className="md:col-span-1">
             <AIInfraCard snapshot={snapshot} />
           </div>
 
-          {/* Right column: Momentum Leaderboard */}
           <div className="md:col-span-1">
             <MomentumLeaderboard meta={meta} />
           </div>
@@ -78,6 +101,7 @@ export default async function Page() {
             </a>
           </div>
         </footer>
+
       </div>
     </div>
   )
