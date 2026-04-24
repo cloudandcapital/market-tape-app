@@ -2,6 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
+function parseInline(text: string): React.ReactNode[] {
+  const parts = text.split(/\*\*(.*?)\*\*/g)
+  return parts.map((part, i) =>
+    i % 2 === 1 ? <strong key={i} className="font-semibold text-white">{part}</strong> : part
+  )
+}
+
 export default function MorningBrief() {
   const [brief, setBrief] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -19,8 +26,8 @@ export default function MorningBrief() {
   }, [])
 
   return (
-    <section className="bg-ink rounded-none px-8 py-8 mb-10">
-      <div className="flex items-center gap-3 mb-5">
+    <section className="bg-ink px-8 py-9 mb-10">
+      <div className="flex items-center gap-3 mb-6">
         <span className="text-[10px] font-mono tracking-[0.2em] uppercase text-sage">
           Claude&apos;s Morning Brief
         </span>
@@ -47,22 +54,22 @@ export default function MorningBrief() {
 
       {error && !loading && (
         <p className="text-white/40 text-sm font-mono">
-          Brief unavailable — check your ANTHROPIC_API_KEY.
+          Brief unavailable — market data may still be loading.
         </p>
       )}
 
       {brief && !loading && (
-        <div className="space-y-4">
+        <div className="space-y-5 max-w-2xl">
           {brief.split('\n\n').filter(Boolean).map((para, i) => (
             <p
               key={i}
-              className={`leading-relaxed ${
+              className={`leading-[1.75] ${
                 i === 0
-                  ? 'text-white font-serif text-lg'
-                  : 'text-white/70 text-sm font-sans'
+                  ? 'font-serif text-[1.15rem] text-white/95'
+                  : 'font-serif text-[1rem] text-white/70'
               }`}
             >
-              {para}
+              {parseInline(para)}
             </p>
           ))}
         </div>
