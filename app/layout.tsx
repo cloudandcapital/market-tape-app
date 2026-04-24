@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Playfair_Display, Inter, DM_Mono } from 'next/font/google'
 import './globals.css'
+import SiteNav from '@/components/SiteNav'
 
 const playfair = Playfair_Display({
   variable: '--font-playfair',
@@ -30,7 +31,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${playfair.variable} ${inter.variable} ${dmMono.variable}`}>
-      <body className="min-h-screen bg-cream text-charcoal antialiased">{children}</body>
+      <body className="min-h-screen bg-cream text-charcoal antialiased">
+        <SiteNav />
+        <div className="pt-14">{children}</div>
+      </body>
     </html>
   )
 }

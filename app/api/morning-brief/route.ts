@@ -34,7 +34,8 @@ Write a 3-paragraph brief (~150 words):
 2. What this means for tech infrastructure and cloud spend decisions
 3. One specific thing to watch today
 
-Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.`,
+Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.
+Format: Plain prose only. No markdown. No headers. No bullet points. No asterisks. Just three paragraphs of clean text separated by blank lines.`,
         },
       ],
     })
