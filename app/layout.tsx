@@ -23,18 +23,18 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Market Tape — Cloud & Capital',
+  title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
   description:
     'Morning market dashboard for FinOps, cloud finance, and tech infrastructure teams.',
   openGraph: {
-    title: 'Market Tape — Cloud & Capital',
+    title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
     description: 'Morning market intelligence for FinOps and cloud infrastructure teams.',
     url: 'https://market-tape.cloudandcapital.com',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Market Tape — Cloud & Capital',
+    title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
     images: ['/og-image.png'],
   },
   icons: {

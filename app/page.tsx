@@ -107,9 +107,14 @@ export default async function Page() {
           </div>
 
           <footer className="mt-12 pt-5 border-t border-charcoal/10">
-            <div className="flex flex-wrap justify-between items-center gap-4">
-              <p className="text-[9px] font-mono text-charcoal/30">Data via yfinance · Refreshes every 30 min · Intelligence via Lumen</p>
-              <a href="https://cloudandcapital.com" className="text-[9px] font-mono text-charcoal/35 hover:text-charcoal transition-colors">cloudandcapital.com →</a>
+            <div className="flex flex-wrap justify-between items-center gap-3">
+              <p className="text-[9px] font-mono text-charcoal/30">
+                Data via yFinance · Refreshes every 30 min · Intelligence via Lumen
+              </p>
+              <p className="text-[9px] font-mono text-charcoal/25">
+                © 2026 Cloud &amp; Capital ·{' '}
+                <a href="https://cloudandcapital.com" className="hover:text-charcoal/60 transition-colors">cloudandcapital.com</a>
+              </p>
             </div>
           </footer>
 
