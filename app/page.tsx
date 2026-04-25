@@ -4,7 +4,7 @@ import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
-import BriefStatsCard from '@/components/BriefStatsCard'
+import SectorRotation from '@/components/SectorRotation'
 
 export const revalidate = 1800
 
@@ -41,15 +41,11 @@ export default async function Page() {
           <hr className="border-charcoal/10 mt-4" />
         </header>
 
-        {/* Signal + Brief: 2-col compact section */}
+        {/* Morning Brief — full width */}
         <div
-          className="grid grid-cols-1 lg:grid-cols-[28%_1fr] mb-8 overflow-hidden"
+          className="mb-8 overflow-hidden"
           style={{ border: '1px solid rgba(0,0,0,0.09)', borderRadius: '2px' }}
         >
-          {/* Left: Signal card */}
-          <BriefStatsCard meta={meta} />
-
-          {/* Right: Morning Brief */}
           <MorningBrief />
         </div>
 
@@ -64,6 +60,8 @@ export default async function Page() {
 
           <div className="md:col-span-1">
             <AIInfraCard snapshot={snapshot} />
+            <hr className="border-charcoal/10 my-6" />
+            <SectorRotation meta={meta} />
           </div>
 
           <div className="md:col-span-1">
