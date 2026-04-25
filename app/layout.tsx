@@ -26,12 +26,23 @@ export const metadata: Metadata = {
   title: 'Market Tape — Cloud & Capital',
   description:
     'Morning market dashboard for FinOps, cloud finance, and tech infrastructure teams.',
+  openGraph: {
+    title: 'Market Tape — Cloud & Capital',
+    description: 'Morning market intelligence for FinOps and cloud infrastructure teams.',
+    url: 'https://market-tape.cloudandcapital.com',
+    images: [{ url: '/og-image.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Market Tape — Cloud & Capital',
+    images: ['/og-image.png'],
+  },
   icons: {
     icon: [
-      { url: '/favicon.svg?v=3', type: 'image/svg+xml' },
-      { url: '/favicon.ico?v=3', sizes: 'any' },
+      { url: '/favicon.svg?v=4', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=4', sizes: 'any' },
     ],
-    shortcut: '/favicon.ico?v=3',
+    shortcut: '/favicon.ico?v=4',
   },
 }
 

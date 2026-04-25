@@ -79,20 +79,20 @@ export default async function Page() {
           {/* 3-column data grid — rendered after the brief */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
 
-            {/* Left: Status · Internals · Macro · Sectors · Laggards */}
+            {/* Left: Status · Internals · Macro · Sectors */}
             <div className="md:col-span-1">
               <MarketStatus meta={meta} snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <MacroContext snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <SectorLeaders meta={meta} snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLaggards meta={meta} />
             </div>
 
-            {/* Middle: FinOps Signals · Commitment Windows · Cloud Valuations · Hyperscaler CapEx */}
+            {/* Middle: FinOps · Commitment · Cloud Val · CapEx · Laggards */}
             <div className="md:col-span-1">
               <IntelligentMiddle />
+              <hr className="border-charcoal/10 my-6" />
+              <MomentumLaggards meta={meta} />
             </div>
 
             {/* Right: Tech Concentration · Risk Alerts · Sector Insights · Momentum Leaders */}

@@ -23,9 +23,10 @@ function Row({ label, value, color, sub }: { label: string; value: string; color
 }
 
 function statusColor(s: string): string {
-  if (s === 'FAVORABLE' || s === 'SAFE') return '#6B8E7F'
-  if (s === 'HOLD' || s === 'RISKY') return '#C0443A'
-  return '#C9A961'
+  if (s === 'FAVORABLE' || s === 'SAFE') return '#16a34a'
+  if (s === 'RISKY')   return '#dc2626'
+  if (s === 'HOLD')    return '#ca8a04'
+  return '#ca8a04' // CAUTION
 }
 
 function Skeleton({ count = 3 }: { count?: number }) {

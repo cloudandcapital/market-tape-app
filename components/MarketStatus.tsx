@@ -2,17 +2,23 @@ import type { Meta, Snapshot } from '@/lib/types'
 import { guidanceColor, getRow, pctLabel } from '@/lib/data'
 
 function InternalRow({
-  label, value, change, invertColor = false,
-}: { label: string; value: string; change: number; invertColor?: boolean }) {
+  label, value, change, invertColor = false, arrow,
+}: { label: string; value: string; change: number; invertColor?: boolean; arrow?: string }) {
   const positive = invertColor ? change < 0 : change > 0
-  const color = Math.abs(change) < 0.05 ? '#888' : positive ? '#6B8E7F' : '#C0443A'
+  const changeColor = Math.abs(change) < 0.05 ? '#888' : positive ? '#6B8E7F' : '#C0443A'
+  const arrowColor = invertColor
+    ? (change < -0.5 ? '#6B8E7F' : change > 0.5 ? '#C0443A' : '#888')
+    : (change > 0.5 ? '#6B8E7F' : change < -0.5 ? '#C0443A' : '#888')
   const sign = change > 0 ? '+' : ''
   return (
     <div className="flex items-baseline justify-between py-[0.28rem]">
-      <span className="text-[10px] font-mono text-charcoal/40">{label}</span>
+      <div className="flex items-baseline gap-1">
+        <span className="text-[10px] font-mono text-charcoal/40">{label}</span>
+        {arrow && <span className="text-[10px] font-mono font-medium" style={{ color: arrowColor }}>{arrow}</span>}
+      </div>
       <div className="flex items-baseline gap-1.5">
         <span className="text-xs font-mono font-medium text-charcoal">{value}</span>
-        <span className="text-[10px] font-mono" style={{ color }}>
+        <span className="text-[10px] font-mono" style={{ color: changeColor }}>
           {sign}{change.toFixed(1)}%
         </span>
       </div>
@@ -140,10 +146,11 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
         <div className="divide-y divide-charcoal/8">
           {vix && (
             <InternalRow
-              label={`VIX ${vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'}${vix.last > 30 ? ' ⚠' : vix.last > 20 ? '' : ''}`}
+              label={vix.last > 30 ? 'VIX ⚠' : 'VIX'}
               value={vix.last.toFixed(1)}
               change={vix.d1_pct}
               invertColor
+              arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'}
             />
           )}
           {tnx && (
