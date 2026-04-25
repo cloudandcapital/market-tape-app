@@ -39,10 +39,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.svg?v=4', type: 'image/svg+xml' },
-      { url: '/favicon.ico?v=4', sizes: 'any' },
+      { url: '/icon.png?v=5', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon.svg?v=5', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=5', sizes: 'any' },
     ],
-    shortcut: '/favicon.ico?v=4',
+    shortcut: '/icon.png?v=5',
+    apple: '/icon.png?v=5',
   },
 }
 
