@@ -28,45 +28,38 @@ function statusColor(s: string): string {
   return '#C9A961'
 }
 
-function Skeleton() {
+function Skeleton({ count = 3 }: { count?: number }) {
   return (
     <div className="space-y-2 animate-pulse">
-      {[1,2,3].map(i => (
-        <div key={i} className="h-3 bg-charcoal/8 rounded" style={{ width: `${60 + i * 12}%` }} />
+      {Array.from({ length: count }).map((_, i) => (
+        <div key={i} className="h-3 bg-charcoal/8 rounded" style={{ width: `${55 + i * 14}%` }} />
       ))}
     </div>
   )
 }
 
-export default function IntelligentSignals() {
+/** Middle column: FinOps Signals + Commitment Windows + Cloud Valuations + Hyperscaler CapEx */
+export function IntelligentMiddle() {
   const { data, loading } = useIntelligent()
 
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        {['FinOps Signals', 'Commitment Windows', 'Cloud Valuations', 'Hyperscaler CapEx', 'Risk Alerts'].map(label => (
-          <div key={label}>
-            <SectionLabel>{label}</SectionLabel>
-            <Skeleton />
-          </div>
-        ))}
-      </div>
-    )
-  }
+  if (loading) return (
+    <div className="space-y-8">
+      {['FinOps Signals', 'Commitment Windows', 'Cloud Valuations', 'Hyperscaler CapEx'].map(l => (
+        <div key={l}><SectionLabel>{l}</SectionLabel><Skeleton /></div>
+      ))}
+    </div>
+  )
 
   if (!data) return null
-
-  const { finopsSignals, commitmentWindows, riskAlerts, cloudValuations, hyperscalerCapex, sectorInsights } = data
+  const { finopsSignals, commitmentWindows, cloudValuations, hyperscalerCapex } = data
 
   return (
     <div>
-
-      {/* FinOps Signals */}
       <SectionLabel>FinOps Signals</SectionLabel>
-      <div className="divide-y divide-charcoal/8 mb-0">
+      <div className="divide-y divide-charcoal/8">
         {[
-          { emoji: '☁️', label: 'Cloud Spend',   text: finopsSignals.cloudSpend },
-          { emoji: '💰', label: 'SaaS Renewals', text: finopsSignals.saasRenewals },
+          { emoji: '☁️', label: 'Cloud Spend',    text: finopsSignals.cloudSpend },
+          { emoji: '💰', label: 'SaaS Renewals',  text: finopsSignals.saasRenewals },
           { emoji: '🔧', label: 'Infrastructure', text: finopsSignals.infrastructure },
         ].map(({ emoji, label, text }) => (
           <div key={label} className="py-2.5 flex items-start gap-2">
@@ -81,7 +74,6 @@ export default function IntelligentSignals() {
 
       <hr className="border-charcoal/10 my-6" />
 
-      {/* Commitment Windows */}
       <SectionLabel>Commitment Windows</SectionLabel>
       <div className="divide-y divide-charcoal/8">
         {[
@@ -98,45 +90,58 @@ export default function IntelligentSignals() {
               </div>
             </div>
             <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
-              style={{ color: statusColor(win.status) }}>
-              {win.status}
-            </span>
+              style={{ color: statusColor(win.status) }}>{win.status}</span>
           </div>
         ))}
       </div>
 
       <hr className="border-charcoal/10 my-6" />
 
-      {/* Cloud Valuations */}
       <SectionLabel>Cloud Valuations</SectionLabel>
       <div className="divide-y divide-charcoal/8">
-        <Row label="Public Cloud" value={cloudValuations.publicCloud} />
-        <Row label="SaaS Average" value={cloudValuations.saasAverage} />
+        <Row label="Public Cloud"      value={cloudValuations.publicCloud} />
+        <Row label="SaaS Average"      value={cloudValuations.saasAverage} />
         <Row label="AI Infrastructure" value={cloudValuations.aiInfrastructure} />
       </div>
 
       <hr className="border-charcoal/10 my-6" />
 
-      {/* Hyperscaler CapEx */}
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div className="divide-y divide-charcoal/8">
-        <Row label="AWS/Azure/GCP"
-          value={hyperscalerCapex.trend}
+        <Row label="AWS/Azure/GCP" value={hyperscalerCapex.trend}
           color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'} />
-        <Row label="GPU Lead Times" value={hyperscalerCapex.gpuLeadTimes} color="#C9A961" />
-        <Row label="Data Center" value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F" />
+        <Row label="GPU Lead Times"  value={hyperscalerCapex.gpuLeadTimes}  color="#C9A961" />
+        <Row label="Data Center"     value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F" />
       </div>
       {hyperscalerCapex.detail && (
         <p className="font-mono text-[0.48rem] tracking-[0.06em] text-charcoal/30 mt-2 leading-relaxed">
           {hyperscalerCapex.detail}
         </p>
       )}
+    </div>
+  )
+}
 
+/** Right column: Risk Alerts + Sector Insights */
+export function IntelligentRight() {
+  const { data, loading } = useIntelligent()
+
+  if (loading) return (
+    <div className="space-y-6">
+      <div><SectionLabel>Risk Alerts</SectionLabel><Skeleton count={2} /></div>
+      <div><SectionLabel>Sector Insights</SectionLabel><Skeleton count={4} /></div>
+    </div>
+  )
+
+  if (!data) return null
+  const { riskAlerts, sectorInsights } = data
+
+  return (
+    <div>
       {riskAlerts && riskAlerts.length > 0 && (
         <>
-          <hr className="border-charcoal/10 my-6" />
           <SectionLabel>Risk Alerts</SectionLabel>
-          <div className="space-y-3">
+          <div className="space-y-3 mb-0">
             {riskAlerts.map((alert, i) => (
               <div key={i} className="flex items-start gap-2">
                 <span className="text-[13px] flex-shrink-0 mt-0.5">
@@ -159,7 +164,11 @@ export default function IntelligentSignals() {
           <p className="font-mono text-[0.72rem] text-charcoal/60 leading-relaxed">{sectorInsights}</p>
         </>
       )}
-
     </div>
   )
+}
+
+/** Default: everything (legacy, unused in current layout) */
+export default function IntelligentSignals() {
+  return <><IntelligentMiddle /><hr className="border-charcoal/10 my-6" /><IntelligentRight /></>
 }

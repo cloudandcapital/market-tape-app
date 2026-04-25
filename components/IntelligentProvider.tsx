@@ -120,15 +120,15 @@ function BriefSection() {
   const { data, loading, error, cachedAt, refresh } = useIntelligent()
 
   return (
-    <div className="bg-[#191714]">
+    <div style={{ background: '#faf7f2' }}>
       {/* Header bar */}
-      <div className="flex items-center justify-between px-7 py-[0.8rem]" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="flex items-center justify-between px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase text-[#6B8E7F]">Intelligence Brief</span>
+          <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.48rem] text-white/20">·</span>
-              <span className="font-mono text-[0.48rem] tracking-[0.1em] text-white/25">
+              <span className="font-mono text-[0.48rem]" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
+              <span className="font-mono text-[0.48rem] tracking-[0.1em]" style={{ color: 'rgba(0,0,0,0.25)' }}>
                 {error ? 'cached' : 'generated'} {cachedAt}
               </span>
             </>
@@ -137,47 +137,52 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="font-mono text-[0.48rem] tracking-[0.14em] uppercase text-white/25 hover:text-white/60 transition-colors disabled:opacity-30 bg-transparent border-none cursor-pointer p-0"
+          className="font-mono text-[0.48rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-30 bg-transparent border-none cursor-pointer p-0"
+          style={{ color: 'rgba(0,0,0,0.3)' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.3)')}
         >
           {loading ? 'generating…' : '↺ refresh'}
         </button>
       </div>
 
       {/* Content */}
-      <div className="px-7 py-6">
+      <div className="px-7 py-5">
         {loading && (
-          <div className="flex items-center gap-3 py-4">
+          <div className="flex items-center gap-3 py-3">
             <div className="flex gap-1">
               {[0,1,2].map(i => (
-                <span key={i} className="block w-1.5 h-1.5 rounded-full bg-[#6B8E7F] animate-pulse"
-                  style={{ animationDelay: `${i * 0.2}s` }} />
+                <span key={i} className="block w-1.5 h-1.5 rounded-full animate-pulse"
+                  style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />
               ))}
             </div>
-            <p className="font-mono text-[0.75rem] text-white/30">Analyzing market conditions with Claude…</p>
+            <p className="font-mono text-[0.73rem]" style={{ color: 'rgba(0,0,0,0.35)' }}>
+              Lumen is analyzing market conditions…
+            </p>
           </div>
         )}
 
         {!loading && !data && (
-          <p className="font-mono text-[0.75rem] text-white/30 py-4">
-            Brief unavailable. Check ANTHROPIC_API_KEY environment variable.
+          <p className="font-mono text-[0.73rem] py-3" style={{ color: 'rgba(0,0,0,0.35)' }}>
+            Analysis unavailable. Check ANTHROPIC_API_KEY environment variable.
           </p>
         )}
 
         {!loading && data && (
           <div className="pl-4" style={{ borderLeft: '2px solid #6B8E7F' }}>
             {data.morningBrief.headline && (
-              <p className="font-mono text-[0.52rem] tracking-[0.18em] uppercase text-[#6B8E7F] mb-3">
+              <p className="font-mono text-[0.5rem] tracking-[0.18em] uppercase mb-3" style={{ color: '#6B8E7F' }}>
                 {data.morningBrief.headline}
               </p>
             )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               {data.morningBrief.paragraphs.map((para, i) => (
                 <p key={i} style={{
                   fontFamily: 'var(--font-playfair), Georgia, serif',
-                  fontSize: i === 0 ? '1.0rem' : '0.9rem',
-                  lineHeight: 1.7,
-                  color: i === 0 ? 'rgba(244,239,230,0.92)' : 'rgba(244,239,230,0.62)',
-                  fontWeight: 400,
+                  fontSize: i === 0 ? '1.05rem' : '0.9rem',
+                  lineHeight: 1.6,
+                  color: i === 0 ? '#191714' : '#3a3a3a',
+                  fontWeight: i === 0 ? 500 : 400,
                   margin: 0,
                 }}>
                   {para}

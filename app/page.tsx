@@ -5,7 +5,7 @@ import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
-import IntelligentSignals from '@/components/IntelligentSignals'
+import { IntelligentMiddle, IntelligentRight } from '@/components/IntelligentSignals'
 import { IntelligentProvider } from '@/components/IntelligentProvider'
 import type { MarketContextData } from '@/lib/intelligentTypes'
 import type { Meta, Snapshot } from '@/lib/types'
@@ -79,26 +79,28 @@ export default async function Page() {
           {/* 3-column data grid — rendered after the brief */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
 
-            {/* Left */}
+            {/* Left: Status + Macro Context + All Sectors */}
             <div className="md:col-span-1">
               <MarketStatus meta={meta} snapshot={snapshot} />
+              <hr className="border-charcoal/10 my-6" />
+              <MacroContext snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <SectorLeaders meta={meta} snapshot={snapshot} />
             </div>
 
-            {/* Middle */}
+            {/* Middle: AI Infra + FinOps Signals + Commitment Windows + Cloud Val + CapEx */}
             <div className="md:col-span-1">
               <AIInfraCard snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
-              <IntelligentSignals />
-              <hr className="border-charcoal/10 my-6" />
-              <MacroContext snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <TechConcentration snapshot={snapshot} />
+              <IntelligentMiddle />
             </div>
 
-            {/* Right */}
+            {/* Right: Tech Concentration + Risk Alerts + Sector Insights + Momentum Leaders */}
             <div className="md:col-span-1">
+              <TechConcentration snapshot={snapshot} />
+              <hr className="border-charcoal/10 my-6" />
+              <IntelligentRight />
+              <hr className="border-charcoal/10 my-6" />
               <MomentumLeaderboard meta={meta} />
             </div>
 
@@ -106,7 +108,7 @@ export default async function Page() {
 
           <footer className="mt-12 pt-5 border-t border-charcoal/10">
             <div className="flex flex-wrap justify-between items-center gap-4">
-              <p className="text-[9px] font-mono text-charcoal/30">Data via yfinance · Refreshes every 30 min · Intelligence via Claude</p>
+              <p className="text-[9px] font-mono text-charcoal/30">Data via yfinance · Refreshes every 30 min · Intelligence via Lumen</p>
               <a href="https://cloudandcapital.com" className="text-[9px] font-mono text-charcoal/35 hover:text-charcoal transition-colors">cloudandcapital.com →</a>
             </div>
           </footer>
