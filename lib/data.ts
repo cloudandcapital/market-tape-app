@@ -1,4 +1,4 @@
-import type { Meta, Snapshot } from './types'
+import type { Meta, Snapshot, SnapshotRow } from './types'
 
 const BASE = 'https://raw.githubusercontent.com/cloudandcapital/market-tape/main/data'
 
@@ -40,6 +40,25 @@ export function guidanceColor(g: string): string {
   if (g === 'Risk-On') return 'text-sage'
   if (g === 'Defensive') return 'text-loss'
   return 'text-charcoal'
+}
+
+export function getRow(snapshot: Snapshot, ticker: string): SnapshotRow | null {
+  for (const group of snapshot.groups) {
+    const row = group.rows.find(r => r.ticker === ticker)
+    if (row) return row
+  }
+  return null
+}
+
+export function getSectorRows(snapshot: Snapshot): SnapshotRow[] {
+  const group = snapshot.groups.find(g => g.name === 'US Sectors')
+  return group ? [...group.rows].sort((a, b) => b.rs1m - a.rs1m) : []
+}
+
+export function trendArrow(val: string): string {
+  if (val === 'Up')   return '↑'
+  if (val === 'Down') return '↓'
+  return '↔'
 }
 
 export function formatTime(iso: string): string {

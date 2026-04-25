@@ -16,6 +16,7 @@ export interface SnapshotRow {
   mini_rs_chart: string
   tradingview_symbol: string
   leveraged: { long: string | null; short: string | null }
+  volume_ratio?: number
 }
 
 export interface SnapshotGroup {

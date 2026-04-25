@@ -5,6 +5,11 @@ import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import FinOpsSignals from '@/components/FinOpsSignals'
+import CommitmentWindow from '@/components/CommitmentWindow'
+import MacroContext from '@/components/MacroContext'
+import TechConcentration from '@/components/TechConcentration'
+import CloudValuations from '@/components/CloudValuations'
+import HyperscalerCapEx from '@/components/HyperscalerCapEx'
 
 export const revalidate = 1800
 
@@ -42,28 +47,44 @@ export default async function Page() {
         </header>
 
         {/* Morning Brief — full width */}
-        <div
-          className="mb-8 overflow-hidden"
-          style={{ border: '1px solid rgba(0,0,0,0.09)', borderRadius: '2px' }}
-        >
+        <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.09)', borderRadius: '2px' }}>
           <MorningBrief />
         </div>
 
         {/* Main data grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
 
+          {/* Left: Market Status + Internals + Sectors */}
           <div className="md:col-span-1">
-            <MarketStatus meta={meta} />
+            <MarketStatus meta={meta} snapshot={snapshot} />
             <hr className="border-charcoal/10 my-6" />
-            <SectorLeaders meta={meta} />
+            <SectorLeaders meta={meta} snapshot={snapshot} />
           </div>
 
-          <div className="md:col-span-1">
+          {/* Middle: AI, FinOps, Commitment, Macro, Tech, Valuations, CapEx */}
+          <div className="md:col-span-1 space-y-0">
             <AIInfraCard snapshot={snapshot} />
+
             <hr className="border-charcoal/10 my-6" />
             <FinOpsSignals meta={meta} />
+
+            <hr className="border-charcoal/10 my-6" />
+            <CommitmentWindow meta={meta} snapshot={snapshot} />
+
+            <hr className="border-charcoal/10 my-6" />
+            <MacroContext snapshot={snapshot} />
+
+            <hr className="border-charcoal/10 my-6" />
+            <TechConcentration snapshot={snapshot} />
+
+            <hr className="border-charcoal/10 my-6" />
+            <CloudValuations />
+
+            <hr className="border-charcoal/10 my-6" />
+            <HyperscalerCapEx />
           </div>
 
+          {/* Right: Momentum Leaderboard */}
           <div className="md:col-span-1">
             <MomentumLeaderboard meta={meta} />
           </div>
@@ -76,10 +97,7 @@ export default async function Page() {
             <p className="text-[9px] font-mono text-charcoal/30">
               Data via yfinance · Refreshes every 30 min during market hours
             </p>
-            <a
-              href="https://cloudandcapital.com"
-              className="text-[9px] font-mono text-charcoal/35 hover:text-charcoal transition-colors"
-            >
+            <a href="https://cloudandcapital.com" className="text-[9px] font-mono text-charcoal/35 hover:text-charcoal transition-colors">
               cloudandcapital.com →
             </a>
           </div>
