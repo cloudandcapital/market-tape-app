@@ -28,10 +28,10 @@ export const metadata: Metadata = {
     'Morning market dashboard for FinOps, cloud finance, and tech infrastructure teams.',
   icons: {
     icon: [
-      { url: '/favicon.svg?v=2', type: 'image/svg+xml' },
-      { url: '/favicon.ico?v=2', sizes: 'any' },
+      { url: '/favicon.svg?v=3', type: 'image/svg+xml' },
+      { url: '/favicon.ico?v=3', sizes: 'any' },
     ],
-    shortcut: '/favicon.ico?v=2',
+    shortcut: '/favicon.ico?v=3',
   },
 }
 

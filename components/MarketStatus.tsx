@@ -140,7 +140,7 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
         <div className="divide-y divide-charcoal/8">
           {vix && (
             <InternalRow
-              label={`VIX${vix.last > 30 ? ' ⚠' : vix.last > 20 ? ' ·' : ' ✓'}`}
+              label={`VIX ${vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'}${vix.last > 30 ? ' ⚠' : vix.last > 20 ? '' : ''}`}
               value={vix.last.toFixed(1)}
               change={vix.d1_pct}
               invertColor

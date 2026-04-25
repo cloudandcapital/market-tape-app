@@ -2,7 +2,7 @@ import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/l
 import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
-import MomentumLeaderboard from '@/components/MomentumLeaderboard'
+import MomentumLeaderboard, { MomentumLaggards } from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
 import { IntelligentMiddle, IntelligentRight } from '@/components/IntelligentSignals'
@@ -79,23 +79,23 @@ export default async function Page() {
           {/* 3-column data grid — rendered after the brief */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
 
-            {/* Left: Status + Macro Context + All Sectors */}
+            {/* Left: Status · Internals · Macro · Sectors · Laggards */}
             <div className="md:col-span-1">
               <MarketStatus meta={meta} snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <MacroContext snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <SectorLeaders meta={meta} snapshot={snapshot} />
+              <hr className="border-charcoal/10 my-6" />
+              <MomentumLaggards meta={meta} />
             </div>
 
-            {/* Middle: AI Infra + FinOps Signals + Commitment Windows + Cloud Val + CapEx */}
+            {/* Middle: FinOps Signals · Commitment Windows · Cloud Valuations · Hyperscaler CapEx */}
             <div className="md:col-span-1">
-              <AIInfraCard snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
               <IntelligentMiddle />
             </div>
 
-            {/* Right: Tech Concentration + Risk Alerts + Sector Insights + Momentum Leaders */}
+            {/* Right: Tech Concentration · Risk Alerts · Sector Insights · Momentum Leaders */}
             <div className="md:col-span-1">
               <TechConcentration snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />

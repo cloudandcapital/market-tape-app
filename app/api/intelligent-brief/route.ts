@@ -47,17 +47,17 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report. 
 
 {
   "morningBrief": {
-    "headline": "one sharp sentence connecting today's market signal to cloud/infrastructure implications",
+    "headline": "one sharp declarative sentence — the single market story today (10-12 words max, no jargon)",
     "paragraphs": [
-      "paragraph 1: market overview — weave VIX level, sector leaders/laggards, exposure signal, breadth into a coherent market narrative",
-      "paragraph 2: cloud and AI infrastructure implications — use the research context (P/S ratios, CapEx, GPU supply) and current sector rotation to explain what this means for tech spend",
-      "paragraph 3: specific FinOps guidance for today — concrete actions a FinOps practitioner should take given this market environment"
+      "paragraph 1 (market story): What is the market doing right now and why does it matter? Lead with the narrative, use 1-2 specific numbers to support it. Example style: 'Tech is carrying the market while everything else retreats — VIX at 19 signals controlled anxiety, not panic.' NOT: 'VIX is 19 which is below the 20 threshold indicating moderate volatility with breadth at 64%.'",
+      "paragraph 2 (infrastructure angle): What does this mean for cloud and AI infrastructure? Lead with the business implication, add data as evidence. Example style: 'Hyperscalers are still building at full speed — GPU queues at 14 weeks and data center construction up 23% tell the story. SaaS multiples have compressed to 6-8x, meaning software vendors are negotiable.' NOT: 'SaaS cohort NTM P/S of 6-8x reflects multiple compression while AI infrastructure trades at 10-15x reflecting elevated growth expectations.'",
+      "paragraph 3 (FinOps action): What should a FinOps practitioner do today? Make it specific and direct. Example style: 'With Defensive signal and elevated uncertainty, hold new 1-year commits unless business-critical. GPU capacity is the one exception — secure it now before lead times extend further.' Keep under 40 words."
     ]
   },
   "finopsSignals": {
-    "cloudSpend": "specific 1-sentence action based on market signal",
-    "saasRenewals": "specific 1-sentence action based on credit/macro conditions",
-    "infrastructure": "specific 1-sentence action referencing GPU lead times or capacity"
+    "cloudSpend": "direct 1-sentence action — no jargon, start with a verb",
+    "saasRenewals": "direct 1-sentence action based on credit/macro conditions, start with a verb",
+    "infrastructure": "direct 1-sentence action, reference specific supply constraints or timelines"
   },
   "commitmentWindows": {
     "oneYear": { "status": "FAVORABLE or HOLD or CAUTION", "reason": "concise reason citing specific data" },
@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     const message = await client.messages.create({
       model: 'claude-opus-4-7',
       max_tokens: 2500,
-      system: 'You are a senior FinOps market analyst. You write sharp, data-driven intelligence briefings for cloud finance and infrastructure teams. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble, no explanation.',
+      system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
       messages: [{ role: 'user', content: buildPrompt(context) }],
     })
 

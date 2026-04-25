@@ -107,7 +107,7 @@ export function IntelligentProvider({ contextData, children }: Props) {
   return (
     <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
-      <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.09)', borderRadius: '2px' }}>
+      <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
         <BriefSection />
       </div>
 
@@ -120,7 +120,7 @@ function BriefSection() {
   const { data, loading, error, cachedAt, refresh } = useIntelligent()
 
   return (
-    <div style={{ background: '#faf7f2' }}>
+    <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
       <div className="flex items-center justify-between px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
         <div className="flex items-center gap-3">
@@ -169,19 +169,19 @@ function BriefSection() {
         )}
 
         {!loading && data && (
-          <div className="pl-4" style={{ borderLeft: '2px solid #6B8E7F' }}>
+          <div>
             {data.morningBrief.headline && (
               <p className="font-mono text-[0.5rem] tracking-[0.18em] uppercase mb-3" style={{ color: '#6B8E7F' }}>
                 {data.morningBrief.headline}
               </p>
             )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {data.morningBrief.paragraphs.map((para, i) => (
                 <p key={i} style={{
                   fontFamily: 'var(--font-playfair), Georgia, serif',
-                  fontSize: i === 0 ? '1.05rem' : '0.9rem',
-                  lineHeight: 1.6,
-                  color: i === 0 ? '#191714' : '#3a3a3a',
+                  fontSize: i === 0 ? '0.95rem' : '0.85rem',
+                  lineHeight: i === 0 ? 1.6 : 1.5,
+                  color: i === 0 ? '#191714' : '#444',
                   fontWeight: i === 0 ? 500 : 400,
                   margin: 0,
                 }}>
