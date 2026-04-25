@@ -4,7 +4,6 @@ import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
-import SectorRotation from '@/components/SectorRotation'
 
 export const revalidate = 1800
 
@@ -60,8 +59,6 @@ export default async function Page() {
 
           <div className="md:col-span-1">
             <AIInfraCard snapshot={snapshot} />
-            <hr className="border-charcoal/10 my-6" />
-            <SectorRotation meta={meta} />
           </div>
 
           <div className="md:col-span-1">

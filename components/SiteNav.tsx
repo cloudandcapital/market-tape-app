@@ -36,9 +36,10 @@ export default function SiteNav() {
   ]
 
   const toolLinks = [
-    { label: 'Market Tape',    href: 'https://market-tape.cloudandcapital.com' },
-    { label: 'Signal Audit',   href: `${BASE}/signal-audit` },
-    { label: 'Interactive Lab', href: `${BASE}/interactive-lab` },
+    { label: 'Market Tape',       href: 'https://market-tape.cloudandcapital.com' },
+    { label: 'Signal Audit',      href: `${BASE}/signal-audit` },
+    { label: 'Interactive Lab',   href: `${BASE}/interactive-lab` },
+    { label: 'Cloud+ Cost Guard', href: 'https://guard.cloudandcapital.com' },
   ]
 
   return (

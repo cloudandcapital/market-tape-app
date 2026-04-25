@@ -26,6 +26,12 @@ export const metadata: Metadata = {
   title: 'Market Tape — Cloud & Capital',
   description:
     'Morning market dashboard for FinOps, cloud finance, and tech infrastructure teams.',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
