@@ -65,6 +65,7 @@ export default function SiteNav() {
               <button
                 onClick={(e) => { e.stopPropagation(); setToolsOpen(o => !o) }}
                 className="font-mono text-[0.57rem] tracking-[0.12em] uppercase text-black/50 hover:text-black bg-transparent border-none cursor-pointer p-0 flex items-center gap-1 transition-colors duration-150"
+                style={{ lineHeight: '1', verticalAlign: 'baseline' }}
               >
                 Tools
                 <span className={`text-[0.44rem] inline-block transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>

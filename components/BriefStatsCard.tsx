@@ -2,95 +2,124 @@ import type { Meta } from '@/lib/types'
 
 interface Props { meta: Meta }
 
-function signalColor(guidance: string): string {
-  if (guidance === 'Risk-On') return '#6B8E7F'
-  if (guidance === 'Hold')    return '#C9A961'
-  return '#C0443A'
+const SAGE   = '#6B8E7F'
+const GOLD   = '#C9A961'
+const RED    = '#C0443A'
+
+function signalColor(g: string) {
+  if (g === 'Risk-On')  return SAGE
+  if (g === 'Hold')     return GOLD
+  return RED
 }
 
-function Row({ label, value, color, sub }: { label: string; value: string; color?: string; sub?: string }) {
+function trendArrow(v: string) {
+  if (v === 'Up')   return '↑'
+  if (v === 'Down') return '↓'
+  return '↔'
+}
+
+function trendColor(v: string) {
+  if (v === 'Up')   return SAGE
+  if (v === 'Down') return RED
+  return GOLD
+}
+
+function Row({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-      <p className="font-mono text-[0.5rem] tracking-[0.18em] uppercase mb-[0.3rem]" style={{ color: '#4A4A4A' }}>
+    <div className="flex items-baseline justify-between py-[0.32rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.055)' }}>
+      <span className="font-mono text-[0.48rem] tracking-[0.16em] uppercase" style={{ color: '#888' }}>
         {label}
-      </p>
-      <p className="font-mono text-[0.82rem] font-medium leading-none" style={{ color: color ?? '#000' }}>
+      </span>
+      <span className="font-mono text-[0.75rem] font-medium" style={{ color: color ?? '#191714' }}>
         {value}
-      </p>
-      {sub && (
-        <p className="font-mono text-[0.52rem] tracking-[0.08em] mt-[0.25rem]" style={{ color: '#8B8B8B' }}>
-          {sub}
-        </p>
-      )}
+      </span>
     </div>
   )
 }
 
 export default function BriefStatsCard({ meta }: Props) {
   const { exposure, breadth, momentum_env, risk, trend } = meta.status
+  const sigColor = signalColor(exposure.guidance)
 
   return (
     <div
-      className="p-6 flex flex-col justify-between"
-      style={{ background: 'rgba(245,238,233,0.96)', minHeight: '100%' }}
+      className="p-4 flex flex-col gap-3"
+      style={{
+        background: '#f5eee9',
+        borderRight: '1px solid rgba(0,0,0,0.09)',
+      }}
     >
+      {/* Signal header */}
       <div>
-        <p className="font-mono text-[0.5rem] tracking-[0.22em] uppercase mb-4" style={{ color: '#6B8E7F' }}>
-          Quick Signal
+        <p className="font-mono text-[0.46rem] tracking-[0.22em] uppercase mb-1.5" style={{ color: '#888' }}>
+          Signal
         </p>
+        <div className="flex items-center gap-1.5">
+          <span
+            className="inline-block w-2 h-2 rounded-full flex-shrink-0"
+            style={{ background: sigColor }}
+          />
+          <span className="font-serif italic text-[1.05rem] font-normal leading-none" style={{ color: sigColor }}>
+            {exposure.guidance}
+          </span>
+        </div>
+      </div>
 
-        <Row
-          label="Signal"
-          value={exposure.guidance}
-          color={signalColor(exposure.guidance)}
-        />
+      {/* Stats */}
+      <div className="flex flex-col">
         <Row
           label="Exposure"
-          value={`${exposure.level} / 100`}
-          color={exposure.level >= 60 ? '#6B8E7F' : exposure.level >= 35 ? '#C9A961' : '#C0443A'}
+          value={`${exposure.level}/100`}
+          color={exposure.level >= 60 ? SAGE : exposure.level >= 35 ? GOLD : RED}
+        />
+        <Row
+          label="Risk"
+          value={risk.volatility}
+          color={risk.volatility === 'Normal' ? SAGE : risk.volatility === 'Elevated' ? GOLD : RED}
         />
         <Row
           label="Momentum"
           value={momentum_env.label}
-          sub={`Score: ${momentum_env.score}/100`}
         />
         <Row
-          label="Breadth"
+          label={`Breadth ${breadth.above_50d_pct.toFixed(0)}%`}
           value={breadth.breadth_label}
-          sub={`${breadth.above_50d_pct.toFixed(0)}% above 50d MA`}
-          color={breadth.above_50d_pct >= 55 ? '#6B8E7F' : breadth.above_50d_pct >= 40 ? '#C9A961' : '#C0443A'}
+          color={breadth.above_50d_pct >= 55 ? SAGE : breadth.above_50d_pct >= 40 ? GOLD : RED}
         />
         <Row
           label="Volatility"
           value={risk.volatility}
-          color={risk.volatility === 'Normal' ? '#6B8E7F' : risk.volatility === 'Elevated' ? '#C9A961' : '#C0443A'}
+          color={risk.volatility === 'Normal' ? SAGE : risk.volatility === 'Elevated' ? GOLD : RED}
         />
-        <div className="pt-[0.7rem]">
-          <p className="font-mono text-[0.5rem] tracking-[0.18em] uppercase mb-[0.3rem]" style={{ color: '#4A4A4A' }}>
-            Trend
-          </p>
-          <div className="flex flex-col gap-[0.2rem]">
-            {[
-              { label: 'LT', value: trend.long_term },
-              { label: 'IT', value: trend.intermediate_term },
-              { label: 'ST', value: trend.short_term },
-            ].map(t => (
-              <div key={t.label} className="flex items-center justify-between">
-                <span className="font-mono text-[0.5rem] tracking-[0.1em]" style={{ color: '#8B8B8B' }}>{t.label}</span>
-                <span
-                  className="font-mono text-[0.72rem] font-medium"
-                  style={{ color: t.value === 'Up' ? '#6B8E7F' : t.value === 'Down' ? '#C0443A' : '#C9A961' }}
-                >
-                  {t.value}
-                </span>
-              </div>
-            ))}
-          </div>
+      </div>
+
+      {/* Trend row */}
+      <div style={{ borderTop: '1px solid rgba(0,0,0,0.055)', paddingTop: '0.45rem' }}>
+        <p className="font-mono text-[0.46rem] tracking-[0.16em] uppercase mb-1" style={{ color: '#888' }}>
+          Trend
+        </p>
+        <div className="flex items-center gap-3">
+          {[
+            { t: 'LT', v: trend.long_term },
+            { t: 'IT', v: trend.intermediate_term },
+            { t: 'ST', v: trend.short_term },
+          ].map(({ t, v }) => (
+            <div key={t} className="flex items-baseline gap-0.5">
+              <span className="font-mono text-[0.46rem] tracking-[0.1em] uppercase" style={{ color: '#aaa' }}>{t}</span>
+              <span className="font-mono text-[0.78rem] font-medium" style={{ color: trendColor(v) }}>
+                {trendArrow(v)}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 
-      <p className="font-mono text-[0.48rem] tracking-[0.1em] mt-5" style={{ color: 'rgba(0,0,0,0.25)' }}>
-        Updated {new Date(meta.generated_at_utc).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'America/New_York', timeZoneName: 'short' })}
+      {/* Timestamp */}
+      <p className="font-mono text-[0.44rem] tracking-[0.08em] mt-auto" style={{ color: 'rgba(0,0,0,0.2)' }}>
+        {new Date(meta.generated_at_utc).toLocaleTimeString('en-US', {
+          hour: '2-digit', minute: '2-digit',
+          timeZone: 'America/New_York', timeZoneName: 'short',
+        })}
       </p>
     </div>
   )
