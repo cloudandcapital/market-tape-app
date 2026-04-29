@@ -68,7 +68,7 @@ export default async function Page() {
             </div>
             <div className="text-right">
               <p className="text-[10px] font-mono text-charcoal/40">{formatTime(meta.generated_at_utc)}</p>
-              <p className="text-[9px] font-mono text-charcoal/25 mt-0.5">{meta.instrument_count} instruments · {meta.group_count} groups</p>
+              <p className="text-[9px] font-mono text-charcoal/25 mt-0.5">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
           <hr className="border-charcoal/10 mt-4" />
