@@ -10,7 +10,7 @@ const PROMPT = `You are Lumen, an AI analyst for Market Tape. Market Tape connec
 
 Below is the current state of major announced AI compute commitments. Write ONE sentence (max 35 words) summarizing what the total picture means for finance teams making cloud/AI cost decisions in the next 6 months. Use plain English. Be specific. Don't say "in today's landscape" or use marketing language.
 
-Lead with the structural fact, end with the actionable implication for finance teams.
+Lead with the structural fact, end with the actionable implication for finance teams. Use the rounded headline figure of $750B+ if you reference a total — do not compute a different sum.
 
 Data:
 ${JSON.stringify(aiComputeData, null, 2)}

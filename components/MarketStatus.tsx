@@ -60,7 +60,10 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
             style={{ width: `${exposure.level}%` }}
           />
         </div>
-        <span className="text-xs font-mono text-charcoal/40 mt-1 block">{exposure.level}/100</span>
+        <div className="flex items-baseline justify-between mt-1">
+          <span className="text-xs font-mono text-charcoal/40">{exposure.level}/100</span>
+          <span className="text-[9px] font-mono text-charcoal/25">0 = max defensive · 100 = max risk-on</span>
+        </div>
       </div>
 
       <hr className="border-charcoal/10 mb-6" />
@@ -154,7 +157,7 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
             />
           )}
           {tnx && (
-            <InternalRow label="10Y Yield" value={`${(tnx.last / 10).toFixed(2)}%`} change={tnx.d1_pct} />
+            <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} />
           )}
           {dxy && (
             <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} />

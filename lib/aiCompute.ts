@@ -8,7 +8,7 @@ export interface AiComputeRow {
   sourceUrl: string
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260429'
+export const AI_COMPUTE_DATA_VERSION = '20260429b'
 
 export const aiComputeData: AiComputeRow[] = [
   {
