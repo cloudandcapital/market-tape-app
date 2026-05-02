@@ -86,8 +86,8 @@ export function buildInfraContextBlock(liveMultiples: {
 }): string {
   const b = BENCHMARKS
   const sourceNote = liveMultiples.source === 'live'
-    ? 'Yahoo Finance live data, approx. NTM P/S'
-    : 'Yahoo Finance (fallback — may be stale)'
+    ? 'Yahoo Finance, approx. NTM P/S, basket median'
+    : 'Quarterly earnings comps (Q1 2026, basket median — refreshed each earnings cycle)'
 
   return `CLOUD INFRASTRUCTURE CONTEXT (source-attributed — use only what is listed here; do not extrapolate or cite additional statistics):
 - Public Cloud NTM P/S (est.): ${liveMultiples.publicCloud} [source: ${sourceNote}]

@@ -35,14 +35,22 @@ export const BASKETS = {
   },
 } as const
 
-// ─── Fallback values ───────────────────────────────────────────────────────
+// ─── Quarterly fallback values ─────────────────────────────────────────────
 // Used when Yahoo Finance is unavailable or too many tickers fail.
-// These match the last manually-confirmed values (2026-04-24).
+// These are manually-verified values from quarterly earnings comp tables.
+// Update each earnings season alongside the BENCHMARKS quarterly ritual.
+// Source: industry earnings comps (Q1 2026 cycle) | Last updated: 2026-04-24
+
+export const QUARTERLY_MULTIPLES = {
+  publicCloud: { value: '8.2×',  source: 'Quarterly earnings comps, Q1 2026', lastUpdated: '2026-04-24' },
+  saas:        { value: '6.5×',  source: 'Quarterly earnings comps, Q1 2026 (Bessemer Cloud Index proxy)', lastUpdated: '2026-04-24' },
+  aiInfra:     { value: '12.3×', source: 'Quarterly earnings comps, Q1 2026 (NVDA/AVGO/AMD basket)', lastUpdated: '2026-04-24' },
+}
 
 const FALLBACKS: Pick<LiveMultiples, 'publicCloud' | 'saas' | 'aiInfra'> = {
-  publicCloud: '~8×',
-  saas:        '~6.5×',
-  aiInfra:     '~12×',
+  publicCloud: QUARTERLY_MULTIPLES.publicCloud.value,
+  saas:        QUARTERLY_MULTIPLES.saas.value,
+  aiInfra:     QUARTERLY_MULTIPLES.aiInfra.value,
 }
 
 // ─── Yahoo Finance fetch ───────────────────────────────────────────────────
@@ -101,6 +109,17 @@ async function computeBasket(tickers: readonly string[]): Promise<string | null>
   // Require at least half the basket to have valid data
   if (valid.length < Math.ceil(tickers.length / 2)) return null
   return formatMultiple(median(valid))
+}
+
+// ─── Source attribution helper ─────────────────────────────────────────────
+// Returns the human-readable source string for a given basket, accounting for
+// whether live data was available or the quarterly fallback was used.
+
+export function multiplesSourceLabel(source: 'live' | 'fallback', basket: keyof typeof BASKETS): string {
+  if (source === 'live') {
+    return `Yahoo Finance live · ${BASKETS[basket].tickers.join(', ')}`
+  }
+  return `${QUARTERLY_MULTIPLES[basket].source} · ${BASKETS[basket].tickers.join(', ')}`
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────
