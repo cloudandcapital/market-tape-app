@@ -44,7 +44,8 @@ function saveCache(data: BriefResponse, hash: string) {
 
 function formatCachedAt(data: BriefResponse): string {
   try {
-    return new Date(data.generatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    // 24-hour format: "07:04" — no AM/PM suffix, fits narrow viewports, matches terminal aesthetic
+    return new Date(data.generatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
   } catch { return '' }
 }
 
@@ -122,14 +123,14 @@ function BriefSection() {
   return (
     <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
-      <div className="flex items-center justify-between px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-        <div className="flex items-center gap-3">
-          <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
+      <div className="flex items-center justify-between px-4 sm:px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.48rem]" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-              <span className="font-mono text-[0.48rem] tracking-[0.1em]" style={{ color: 'rgba(0,0,0,0.25)' }}>
-                {error ? 'cached' : 'generated'} {cachedAt}
+              <span className="font-mono text-[0.48rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
+              <span className="font-mono text-[0.48rem] tracking-[0.1em] whitespace-nowrap flex-shrink-0" style={{ color: 'rgba(0,0,0,0.25)' }}>
+                {cachedAt}
               </span>
             </>
           )}
@@ -137,7 +138,7 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="font-mono text-[0.48rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-30 bg-transparent border-none cursor-pointer p-0"
+          className="font-mono text-[0.48rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-30 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-3"
           style={{ color: 'rgba(0,0,0,0.3)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.3)')}
