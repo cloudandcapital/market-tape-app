@@ -128,6 +128,9 @@ export default async function Page() {
                 <a href="https://cloudandcapital.com" className="hover:text-charcoal/60 transition-colors">cloudandcapital.com</a>
               </p>
             </div>
+            <p className="text-[9px] font-mono text-charcoal/20 mt-2">
+              For informational purposes only · Not investment, financial, or tax advice
+            </p>
           </footer>
 
         </IntelligentProvider>

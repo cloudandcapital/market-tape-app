@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
 
-const CACHE_KEY = 'intelligent-brief-v5'
+const CACHE_KEY = 'intelligent-brief-v6'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
 
 interface IntelligentState {
