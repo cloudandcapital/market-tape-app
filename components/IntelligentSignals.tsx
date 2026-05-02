@@ -102,16 +102,18 @@ export function IntelligentMiddle() {
           { emoji: '💰', label: '3-Year Commits',  win: commitmentWindows.threeYear },
           { emoji: '🔧', label: 'Spot/On-Demand',  win: commitmentWindows.spot },
         ].map(({ emoji, label, win }) => (
-          <div key={label} className="py-2.5 flex items-start justify-between gap-2">
-            <div className="flex items-start gap-1.5 min-w-0 flex-1">
-              <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
-              <div className="min-w-0">
-                <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35 mb-0.5">{label}</p>
-                <p className="text-[9px] font-mono text-charcoal/50 leading-snug">{win.reason}</p>
+          <div key={label} className="py-2.5">
+            {/* Row 1: label + badge — short content, no flex competition */}
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] flex-shrink-0">{emoji}</span>
+                <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35">{label}</span>
               </div>
+              <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
+                style={{ color: statusColor(win.status) }}>{win.status}</span>
             </div>
-            <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
-              style={{ color: statusColor(win.status) }}>{win.status}</span>
+            {/* Row 2: reason — block-level paragraph, full column width, no flex siblings */}
+            <p className="text-[9px] font-mono text-charcoal/50 leading-relaxed pl-5">{win.reason}</p>
           </div>
         ))}
       </div>
