@@ -42,21 +42,44 @@ Small/Large (IWM vs QQQ): ${mac.iwm && mac.qqq ? `small caps ${mac.iwm.rs1m > ma
 
 ${buildInfraContextBlock(multiples)}
 
-Based on ALL of the above, generate a comprehensive FinOps intelligence report. Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
+Based on ALL of the above, generate a comprehensive FinOps intelligence report.
+
+SIGNAL ANCHORS — apply these rules to produce deterministic verdicts on consistent data:
+
+FINOPS SIGNALS:
+• cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): freeze non-critical spend, push vendors. Neutral (40-60): hold and optimize existing. Risk-On (>60): proceed with planned expansion. Cite exposure level.
+• saasRenewals → primary: SaaS NTM multiple + HYG RS1M. SaaS below 7.5× AND HYG negative → push hard, vendors will negotiate. SaaS above 8× OR HYG positive → lock in pricing before it re-rates. Cite multiple and HYG grade.
+• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. Sold-out or lead times above 12 weeks → urgent, cite specific booking horizon. Below 12 weeks → standard procurement timeline. Cite GPU supply status.
+
+RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
+• "GPU Capacity Tightening" (warning): if GPU supply shows sold-out or lead times above 12 weeks
+• "Rates Rising" (warning): if TLT RS1M is below −2%
+• "SaaS Discount Window" (opportunity): if SaaS average NTM multiple is below 7.5×
+• "Data Center Supply Gap" (warning): if DC demand is outpacing new construction
+• "Dollar Weakening" (warning): if DXY RS1M is below −5%
+
+PROSE ANCHORS:
+• morningBrief headline: priority — (1) if Defensive AND VIX > 20 → risk-off framing; (2) if TLT RS1M below −3% AND DXY RS1M below −5% → macro dislocation framing; (3) else → lead with the dominant sector rotation (strongest sector vs weakest)
+• paragraph 2 (infrastructure): required order — GPU supply status FIRST, then SaaS multiples, then CapEx direction
+• paragraph 3 (action): lead with EXPOSURE GUIDANCE verdict; always add GPU exception if supply is tight
+• sectorInsights: lead with the highest RS1M sector from SECTOR LEADERS, acknowledge the lowest, connect to cloud budget implications
+• hyperscalerCapex.detail: lead with CapEx trend direction (Expanding/Stable/Contracting), then connect to GPU supply implication
+
+Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
 
 {
   "morningBrief": {
-    "headline": "one sharp declarative sentence — the single market story today (10-12 words max, no jargon)",
+    "headline": "the single market story today — 10-12 words max, framed per PROSE ANCHORS above",
     "paragraphs": [
-      "paragraph 1 (market story): What is the market doing right now and why does it matter? Lead with the narrative, use 1-2 specific numbers to support it. Example style: 'Tech is carrying the market while everything else retreats — VIX at 19 signals controlled anxiety, not panic.' NOT: 'VIX is 19 which is below the 20 threshold indicating moderate volatility with breadth at 64%.'",
-      "paragraph 2 (infrastructure angle): What does this mean for cloud and AI infrastructure? Lead with the business implication, add data as evidence. Example style: 'Hyperscalers are still building at full speed — GPU queues at 14 weeks and data center construction up 23% tell the story. SaaS multiples have compressed to 6-8x, meaning software vendors are negotiable.' NOT: 'SaaS cohort NTM P/S of 6-8x reflects multiple compression while AI infrastructure trades at 10-15x reflecting elevated growth expectations.'",
-      "paragraph 3 (FinOps action): What should a FinOps practitioner do today? Make it specific and direct. Example style: 'With Defensive signal and elevated uncertainty, hold new 1-year commits unless business-critical. GPU capacity is the one exception — secure it now before lead times extend further.' Keep under 40 words."
+      "paragraph 1 (market story): lead with narrative, use 1-2 visible numbers from the data. Example: 'Tech is carrying the market while everything else retreats — VIX at 19 signals controlled anxiety, not panic.'",
+      "paragraph 2 (infrastructure angle): GPU supply status FIRST, then SaaS multiples, then CapEx. Required order. Example: 'Hopper is sold out and Blackwell books into Aug-Sep — AI infrastructure is the scarcest commodity right now. SaaS multiples at 6.5× mean software vendors will negotiate if you push.'",
+      "paragraph 3 (FinOps action): EXPOSURE GUIDANCE verdict first, then GPU exception. Under 40 words. Example: 'With Defensive signal, hold new 1-year commits unless business-critical. GPU capacity is the one exception — lock it now before Blackwell allocation closes.'"
     ]
   },
   "finopsSignals": {
-    "cloudSpend": "direct 1-sentence action — no jargon, start with a verb",
-    "saasRenewals": "direct 1-sentence action based on credit/macro conditions, start with a verb",
-    "infrastructure": "direct 1-sentence action, reference specific supply constraints or timelines"
+    "cloudSpend": "apply cloudSpend anchor above. Start with a verb. Cite exposure level.",
+    "saasRenewals": "apply saasRenewals anchor above. Start with a verb. Cite SaaS multiple and HYG conditions.",
+    "infrastructure": "apply infrastructure anchor above. Start with a verb. Cite GPU supply status and booking timeline."
   },
   "commitmentWindows": {
     "oneYear": {
@@ -73,9 +96,9 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report. 
     }
   },
   "riskAlerts": [
-    { "type": "warning or opportunity", "title": "3-5 word title", "message": "1-2 sentence explanation" }
+    { "type": "warning or opportunity", "title": "3-5 word title", "message": "1-2 sentences citing the specific data value that triggered this alert" }
   ],
-  "sectorInsights": "one paragraph connecting today's sector rotation to infrastructure and cloud budget decisions",
+  "sectorInsights": "lead with the highest RS1M sector from SECTOR LEADERS above, acknowledge the lowest, connect to cloud budget implications. One paragraph.",
   "cloudValuations": {
     "publicCloud": "Use the Public Cloud NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
     "saasAverage": "Use the SaaS Average NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
@@ -85,7 +108,7 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report. 
     "trend": "Use the Hyperscaler CapEx Trend from CLOUD INFRASTRUCTURE CONTEXT above",
     "gpuLeadTimes": "Use the GPU Lead Times value from CLOUD INFRASTRUCTURE CONTEXT above",
     "dataCenterGrowth": "Use the Data Center Construction value from CLOUD INFRASTRUCTURE CONTEXT above",
-    "detail": "one sentence on current CapEx cycle and what it means based on the context provided"
+    "detail": "lead with CapEx trend direction (Expanding/Stable/Contracting), then connect to GPU supply implication. One sentence."
   },
   "generatedAt": "${new Date().toISOString()}"
 }`
