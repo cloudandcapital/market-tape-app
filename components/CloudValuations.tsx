@@ -1,7 +1,9 @@
+import { BENCHMARKS } from '@/lib/industryBenchmarks'
+
 const VALUATIONS = [
-  { label: 'Public Cloud',      value: '8.2×', sub: 'NTM Revenue' },
-  { label: 'SaaS Average',      value: '6.5×', sub: 'NTM Revenue' },
-  { label: 'AI Infrastructure', value: '12.3×', sub: 'NTM Revenue' },
+  { label: 'Public Cloud',      value: BENCHMARKS.publicCloudNTMMultiple.value,  sub: 'NTM Revenue' },
+  { label: 'SaaS Average',      value: BENCHMARKS.saasNTMMultiple.value,          sub: 'NTM Revenue' },
+  { label: 'AI Infrastructure', value: BENCHMARKS.aiInfraNTMMultiple.value,       sub: 'NTM Revenue' },
 ]
 
 export default function CloudValuations() {

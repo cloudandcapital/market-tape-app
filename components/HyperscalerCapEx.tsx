@@ -1,7 +1,9 @@
+import { BENCHMARKS } from '@/lib/industryBenchmarks'
+
 const CAPEX = [
-  { label: 'AWS / Azure / GCP', value: 'Expanding',     color: '#6B8E7F' },
-  { label: 'GPU Lead Times',    value: '12–16 weeks',   color: '#C9A961' },
-  { label: 'DC Build',          value: '+23% YoY',      color: '#6B8E7F' },
+  { label: 'AWS / Azure / GCP', value: BENCHMARKS.hyperscalerCapexTrend.value,      color: '#6B8E7F' },
+  { label: 'GPU Lead Times',    value: BENCHMARKS.gpuLeadTimesH100H200.value,        color: '#C9A961' },
+  { label: 'DC Build',          value: BENCHMARKS.dataCenterConstructionYoY.value,   color: '#6B8E7F' },
 ]
 
 export default function HyperscalerCapEx() {

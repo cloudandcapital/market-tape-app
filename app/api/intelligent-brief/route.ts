@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
+import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -36,12 +37,7 @@ Gold (GLD): ${mac.gld ? `$${mac.gld.last.toFixed(0)} (${mac.gld.d1 > 0 ? '+' : '
 Oil (USO): ${mac.uso ? `$${mac.uso.last.toFixed(1)} (${mac.uso.d1 > 0 ? '+' : ''}${mac.uso.d1.toFixed(1)}% today)` : 'N/A'}
 Small/Large (IWM vs QQQ): ${mac.iwm && mac.qqq ? `IWM RS1M ${mac.iwm.rs1m.toFixed(2)} vs QQQ RS1M ${mac.qqq.rs1m.toFixed(2)} — small caps ${mac.iwm.rs1m > mac.qqq.rs1m ? 'outperforming' : 'underperforming'}` : 'N/A'}
 
-CLOUD INFRASTRUCTURE CONTEXT (quarterly estimates):
-- Public cloud SaaS NTM P/S: ~6-8x (compressed from 2021 peaks of 20x+)
-- AI infrastructure / hyperscaler NTM P/S: ~10-15x (elevated on AI spending thesis)
-- Hyperscaler CapEx: AWS, Azure, GCP all guiding toward record spend in 2025-2026
-- GPU lead times: 12-16 weeks for H100/H200 class; B100 allocation-based
-- Data center construction: +20-25% YoY, constrained by power availability
+${buildInfraContextBlock()}
 
 Based on ALL of the above, generate a comprehensive FinOps intelligence report. Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
 
@@ -69,15 +65,15 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report. 
   ],
   "sectorInsights": "one paragraph connecting today's sector rotation to infrastructure and cloud budget decisions",
   "cloudValuations": {
-    "publicCloud": "X.Xx NTM Revenue — brief trend note",
-    "saasAverage": "X.Xx NTM Revenue — brief trend note",
-    "aiInfrastructure": "XX.Xx NTM Revenue — brief trend note"
+    "publicCloud": "Use the Public Cloud NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
+    "saasAverage": "Use the SaaS Average NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
+    "aiInfrastructure": "Use the AI Infrastructure NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note"
   },
   "hyperscalerCapex": {
-    "trend": "Expanding or Contracting or Stable",
-    "gpuLeadTimes": "XX-XX weeks",
-    "dataCenterGrowth": "+XX% YoY",
-    "detail": "one sentence on current CapEx cycle and what it means"
+    "trend": "Use the Hyperscaler CapEx Trend from CLOUD INFRASTRUCTURE CONTEXT above",
+    "gpuLeadTimes": "Use the GPU Lead Times value from CLOUD INFRASTRUCTURE CONTEXT above",
+    "dataCenterGrowth": "Use the Data Center Construction value from CLOUD INFRASTRUCTURE CONTEXT above",
+    "detail": "one sentence on current CapEx cycle and what it means based on the context provided"
   },
   "generatedAt": "${new Date().toISOString()}"
 }`

@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
+import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
@@ -29,9 +30,11 @@ Momentum env: ${meta.status.momentum_env.label} (score: ${meta.status.momentum_e
 Breadth: ${meta.status.breadth.above_50d_pct.toFixed(0)}% above 50d MA — ${meta.status.breadth.breadth_label}
 Exposure guidance: ${meta.status.exposure.guidance} (${meta.status.exposure.level}/100)
 
+${buildInfraContextBlock()}
+
 Write a 3-paragraph brief (~150 words):
 1. What the market is doing right now (status, trend, breadth in plain terms)
-2. What this means for tech infrastructure and cloud spend decisions
+2. What this means for tech infrastructure and cloud spend decisions (use the benchmark figures above — do not invent others)
 3. One specific thing to watch today
 
 Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.
