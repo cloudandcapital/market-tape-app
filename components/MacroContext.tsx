@@ -18,6 +18,7 @@ function MacroRow({
 export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
   const tlt = getRow(snapshot, 'TLT')
   const hyg = getRow(snapshot, 'HYG')
+  const dxy = getRow(snapshot, 'DXY')
   const iwm = getRow(snapshot, 'IWM')
   const qqq = getRow(snapshot, 'QQQ')
 
@@ -55,6 +56,14 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
           value={hyg.trend_grade === 'A' ? 'Tight' : hyg.trend_grade === 'C' ? 'Widening' : 'Neutral'}
           sub={`${hyg.rs1m > 0 ? '+' : ''}${hyg.rs1m.toFixed(2)} RS1M`}
           color={hyg.trend_grade === 'A' ? '#6B8E7F' : hyg.trend_grade === 'C' ? '#C0443A' : '#888'}
+        />
+      )}
+      {dxy && (
+        <MacroRow
+          label="Dollar (DXY)"
+          value={bondLabel(dxy.rs1m)}
+          sub={`${dxy.rs1m > 0 ? '+' : ''}${dxy.rs1m.toFixed(2)} RS1M`}
+          color={trendColor(dxy.rs1m)}
         />
       )}
       {smallVsLarge !== null && iwm && qqq && (
