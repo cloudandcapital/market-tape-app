@@ -35,7 +35,9 @@ Write a 3-paragraph brief (~150 words):
 3. One specific thing to watch today
 
 Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.
-Format: Plain prose only. No markdown. No headers. No bullet points. No asterisks. Just three paragraphs of clean text separated by blank lines.`,
+Format: Plain prose only. No markdown. No headers. No bullet points. No asterisks. Just three paragraphs of clean text separated by blank lines.
+
+GROUNDING RULE: Use only the data provided above. Do not cite specific valuation multiples, GPU lead times, CapEx percentages, or industry benchmarks that are not present in this data. For the infrastructure paragraph, use qualitative language only ("hyperscalers are still expanding," "software budgets face pressure") — never a specific number you have not been given.`,
         },
       ],
     })

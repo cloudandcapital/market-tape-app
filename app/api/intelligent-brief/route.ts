@@ -109,7 +109,7 @@ export async function POST(req: Request) {
     const message = await client.messages.create({
       model: 'claude-opus-4-7',
       max_tokens: 2500,
-      system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
+      system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
       messages: [{ role: 'user', content: buildPrompt(context) }],
     })
 
