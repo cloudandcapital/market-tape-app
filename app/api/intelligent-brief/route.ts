@@ -59,9 +59,18 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report. 
     "infrastructure": "direct 1-sentence action, reference specific supply constraints or timelines"
   },
   "commitmentWindows": {
-    "oneYear": { "status": "FAVORABLE or HOLD or CAUTION", "reason": "concise reason citing specific data" },
-    "threeYear": { "status": "FAVORABLE or HOLD or CAUTION", "reason": "concise reason" },
-    "spot": { "status": "SAFE or RISKY", "reason": "concise reason" }
+    "oneYear": {
+      "status": "Use EXPOSURE GUIDANCE as the primary signal — if guidance is Risk-On: FAVORABLE; if Neutral: HOLD; if Defensive: HOLD. Upgrade to CAUTION only if VIX is above 28 AND breadth is below 40%. Cite exposure guidance level and VIX.",
+      "reason": "1-2 sentences citing exposure guidance, VIX, and breadth. Example: 'Defensive signal at 21/100 with VIX at 17 — market is not in panic but conditions do not support locking new 1-year spend. Wait for Risk-On signal before committing.'"
+    },
+    "threeYear": {
+      "status": "Use TLT 1M RS direction as the primary signal — if TLT is negative (rates rising, bonds selling off): CAUTION; if TLT is modestly negative and DXY is also negative by more than 5%: CAUTION; if TLT is rising and macro stable: FAVORABLE; otherwise HOLD. Cite TLT RS1M and DXY RS1M.",
+      "reason": "1-2 sentences citing bond direction and dollar trend. Example: 'TLT down 6.23% in a month with the dollar falling 9.47% — too much macro movement to lock long duration at current pricing. Wait for rate stabilization.'"
+    },
+    "spot": {
+      "status": "Evaluate general cloud workloads ONLY (compute, storage, network, batch jobs) — NOT GPU or accelerated compute. GPU supply is covered in riskAlerts, do not let it influence this verdict. Use VIX and breadth as the sole signals: VIX below 20 AND breadth above 55% = SAFE; VIX above 28 OR breadth below 40% = RISKY; in between use judgment but lean SAFE if VIX is below 22. Cite VIX and breadth only.",
+      "reason": "1 sentence citing VIX and breadth for general cloud workloads only. Example: 'VIX at 17 and 73% of names above their 50-day MA mean general spot pricing is stable — safe for tactical workloads and batch jobs.'"
+    }
   },
   "riskAlerts": [
     { "type": "warning or opportunity", "title": "3-5 word title", "message": "1-2 sentence explanation" }
