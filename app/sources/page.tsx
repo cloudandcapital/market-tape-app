@@ -126,6 +126,11 @@ export default function SourcesPage() {
                 <p className="font-mono text-[0.6rem] text-charcoal/45">
                   {row.amount} · {row.gw} · {row.term} · announced {row.announced}
                 </p>
+                {row.notes && (
+                  <p className="font-mono text-[0.58rem] text-charcoal/35 italic mt-0.5 leading-relaxed">
+                    {row.notes}
+                  </p>
+                )}
               </div>
               <a
                 href={row.sourceUrl}
