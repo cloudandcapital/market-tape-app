@@ -2,7 +2,7 @@ import { BENCHMARKS } from '@/lib/industryBenchmarks'
 
 const CAPEX = [
   { label: 'AWS / Azure / GCP', value: BENCHMARKS.hyperscalerCapexTrend.value,      color: '#6B8E7F' },
-  { label: 'GPU Lead Times',    value: BENCHMARKS.gpuLeadTimesH100H200.value,        color: '#C9A961' },
+  { label: 'GPU Supply',        value: BENCHMARKS.gpuSupplyStatus.value,             color: '#C9A961' },
   { label: 'DC Build',          value: BENCHMARKS.dataCenterConstructionYoY.value,   color: '#6B8E7F' },
 ]
 

@@ -23,7 +23,7 @@ TASK: Below is the current state of major announced AI compute commitments. Writ
 
 Use the rounded headline figure of $750B+ if you reference a total. This figure is derived by summing the dollar amounts in the DATA section below — do not source it from elsewhere.
 
-BENCHMARK SCOPE: This analysis covers AI compute deal commitments only. Do not cite GPU lead times, market multiples, construction growth rates, or other infrastructure benchmarks — they are outside the scope of this context. Current benchmark reference (for your information only, do not include in output): GPU lead times ${BENCHMARKS.gpuLeadTimesH100H200.value}, DC construction ${BENCHMARKS.dataCenterConstructionYoY.value}.
+BENCHMARK SCOPE: This analysis covers AI compute deal commitments only. Do not cite GPU supply status, market multiples, construction growth rates, or other infrastructure benchmarks — they are outside the scope of this context. Current benchmark reference (for your information only, do not include in output): GPU supply — ${BENCHMARKS.gpuSupplyStatus.value}; DC demand/supply — ${BENCHMARKS.dataCenterConstructionYoY.value}.
 
 Lead with the structural fact. End with the actionable implication for finance teams.
 

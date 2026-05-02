@@ -6,7 +6,7 @@
 
 export interface Benchmark {
   value: string                                  // human-readable string used in UI + prompts
-  numeric?: number | { min: number; max: number } // machine-readable form for comparisons
+  numeric?: number | { min: number; max: number } | Record<string, number> // machine-readable form for comparisons
   source: string                                 // citation or "Industry consensus — needs verification"
   sourceUrl: string                              // direct link to report/post; empty if unverified
   lastUpdated: string                            // YYYY-MM-DD — date this entry was last confirmed
@@ -17,30 +17,29 @@ export interface Benchmark {
 
 export const BENCHMARKS = {
 
-  // ─── GPU Supply Chain ──────────────────────────────────────────────────────
+  // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
-  gpuLeadTimesH100H200: {
-    value: '12–16 weeks',
-    numeric: { min: 12, max: 16 },
-    source: 'Industry consensus — needs verification',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-05-08',
-    reviewCadence: 'monthly',
-    notes: 'Lead time for H100/H200-class GPU procurement from major resellers (CDW, Dell, SuperMicro). B200/GB200/GB300 are allocation-based with no standard lead time. Verify by calling a reseller or checking channel partner portal. Updates as supply tightens/loosens.',
+  gpuSupplyStatus: {
+    value: 'Hopper sold out · Blackwell ~16-20 weeks (booked into Aug-Sep 2026)',
+    source: 'SemiAnalysis (April 2026)',
+    sourceUrl: 'https://newsletter.semianalysis.com/',
+    lastUpdated: '2026-05-01',
+    nextReviewDue: '2026-08-01',
+    reviewCadence: 'quarterly',
+    notes: 'H100/H200 (Hopper) essentially sold out market-wide as of March-April 2026. B100/B200 (Blackwell) lead times extending to August-September 2026 per SemiAnalysis. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
   } satisfies Benchmark,
 
-  // ─── Data Center Construction ──────────────────────────────────────────────
+  // ─── Data Center Supply/Demand ─────────────────────────────────────────────
 
   dataCenterConstructionYoY: {
-    value: '+22% YoY',
-    numeric: 22,
-    source: 'Industry consensus — needs verification',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-05-08',
-    reviewCadence: 'quarterly',
-    notes: 'YoY growth in data center construction starts/completions. Previously inconsistent across this codebase (+22% in launch post, +23% in HyperscalerCapEx component, +20–25% range in Lumen prompt). Reconciled to +22% YoY as the single canonical value. Primary sources: Dodge Data & Analytics, JLL, CBRE data center reports, or hyperscaler earnings CapEx commentary. Update each quarter after hyperscaler earnings.',
+    value: 'Demand +38% / construction -5.6% YoY',
+    numeric: { absorption_yoy_pct: 38, construction_yoy_pct: -5.6 },
+    source: 'CBRE North America Data Center Trends H2 2025',
+    sourceUrl: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025',
+    lastUpdated: '2026-05-01',
+    nextReviewDue: '2026-11-01',
+    reviewCadence: 'semi-annual',
+    notes: 'CBRE H2 2025 reported absorption of 2,497.6 MW vs 1,809.5 MW in 2024 (+38%) and construction pipeline of 5,994.4 MW vs 6,350.1 MW in 2024 (-5.6%, first decline since 2020). Story = demand outpacing supply, not construction boom.',
   } satisfies Benchmark,
 
   // ─── Cloud Valuation Multiples (display — used in CloudValuations component) ─
@@ -116,6 +115,6 @@ export function buildInfraContextBlock(): string {
 - SaaS Average NTM Revenue Multiple: ${b.saasNTMMultiple.value} (compressed from ${b.saas2021PeakMultiple.value} in 2021) [source: ${b.saasNTMMultiple.source}]
 - AI Infrastructure NTM Revenue Multiple: ${b.aiInfraNTMMultiple.value} [source: ${b.aiInfraNTMMultiple.source}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
-- GPU Lead Times (H100/H200 class): ${b.gpuLeadTimesH100H200.value}; B200/GB200 are allocation-based [source: ${b.gpuLeadTimesH100H200.source}]
-- Data Center Construction: ${b.dataCenterConstructionYoY.value}, constrained by power availability [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]`
+- GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
+- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; demand is outpacing supply (first time since 2020) [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]`
 }
