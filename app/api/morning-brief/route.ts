@@ -29,7 +29,7 @@ ${JSON.stringify(meta.status, null, 2)}
 
 Top sector leaders (RS1M): ${meta.leaders.sectors.map((s: { ticker: string; rs1m: number }) => `${s.ticker} (${s.rs1m.toFixed(2)})`).join(', ')}
 
-Momentum env: ${meta.status.momentum_env.label} (score: ${meta.status.momentum_env.score}/100)
+Momentum env: ${meta.status.momentum_env.label} [internal score: ${meta.status.momentum_env.score}/100 — not user-visible, do not cite this number]
 Breadth: ${meta.status.breadth.above_50d_pct.toFixed(0)}% above 50d MA — ${meta.status.breadth.breadth_label}
 Exposure guidance: ${meta.status.exposure.guidance} (${meta.status.exposure.level}/100)
 
@@ -43,7 +43,7 @@ Write a 3-paragraph brief (~150 words):
 Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.
 Format: Plain prose only. No markdown. No headers. No bullet points. No asterisks. Just three paragraphs of clean text separated by blank lines.
 
-GROUNDING RULE: Use only the data provided above. Do not cite specific valuation multiples, GPU lead times, CapEx percentages, or industry benchmarks that are not present in this data. For the infrastructure paragraph, use qualitative language only ("hyperscalers are still expanding," "software budgets face pressure") — never a specific number you have not been given.`,
+GROUNDING RULE: Use only the data provided above. Do not cite specific valuation multiples, GPU lead times, CapEx percentages, or industry benchmarks that are not present in this data. For the infrastructure paragraph, use qualitative language only ("hyperscalers are still expanding," "software budgets face pressure") — never a specific number you have not been given. VERIFIABILITY RULE: Only cite numeric values that are user-visible on the dashboard (VIX, breadth %, exposure level, sector RS values, price levels). Any field annotated [internal] or [not user-visible] in the context above must not be quoted as a number in your output — use qualitative language instead ("selective momentum," "narrow conviction," "mixed signals").`,
         },
       ],
     })

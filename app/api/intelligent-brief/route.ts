@@ -23,7 +23,7 @@ SPY: $${m.spy.toFixed(0)} (${m.spyD1 > 0 ? '+' : ''}${m.spyD1.toFixed(1)}% today
 
 TRENDS: Long-term ${m.trends.long} | Intermediate ${m.trends.intermediate} | Short-term ${m.trends.short}
 BREADTH: ${m.breadth.label} — ${m.breadth.above20d.toFixed(0)}% above 20d MA, ${m.breadth.above50d.toFixed(0)}% above 50d MA
-MOMENTUM: ${m.momentum.label} (score ${m.momentum.score}/100)
+MOMENTUM: ${m.momentum.label} [internal score ${m.momentum.score}/100 — not user-visible, do not cite this number]
 RISK: Volatility ${m.risk.volatility} | Sentiment ${m.risk.sentiment} | Momentum ${m.risk.momentum}
 
 SECTOR LEADERS (1M RS vs SPY):
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
     const message = await client.messages.create({
       model: 'claude-opus-4-7',
       max_tokens: 2500,
-      system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
+      system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: When citing numeric values, only use numbers that appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, FinOps Signals, Risk Alerts, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments). Do not cite numeric scores or values that exist only in your internal data context but are not displayed to users — any field annotated [internal] or [not user-visible] in the context must not be quoted as a number in your output. For non-visible scores, use qualitative language only ("positive but selective momentum," "narrow conviction," "mixed signals") instead of citing the specific number. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
       messages: [{ role: 'user', content: buildPrompt(context, multiples) }],
     })
 
