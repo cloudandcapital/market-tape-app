@@ -1,6 +1,9 @@
 'use client'
 
 import { useIntelligent } from './IntelligentProvider'
+import { BENCHMARKS } from '@/lib/industryBenchmarks'
+import { BASKETS } from '@/lib/liveMultiples'
+import BenchmarkTooltip from './BenchmarkTooltip'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -10,12 +13,29 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
-function Row({ label, value, color, sub }: { label: string; value: string; color?: string; sub?: string }) {
+interface RowTooltip {
+  source: string
+  sourceUrl?: string
+  lastUpdated: string
+  isLive?: boolean
+}
+
+function Row({ label, value, color, sub, tooltip }: {
+  label: string; value: string; color?: string; sub?: string; tooltip?: RowTooltip
+}) {
   return (
     <div className="flex items-start justify-between py-[0.32rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.055)' }}>
       <span className="font-mono text-[0.5rem] tracking-[0.16em] uppercase text-charcoal/40 flex-shrink-0 mt-0.5">{label}</span>
-      <div className="text-right ml-2 min-w-0">
+      <div className="text-right ml-2 min-w-0 flex items-baseline justify-end gap-0.5">
         <p className="font-mono text-[0.75rem] font-medium leading-snug" style={{ color: color ?? '#191714' }}>{value}</p>
+        {tooltip && (
+          <BenchmarkTooltip
+            source={tooltip.source}
+            sourceUrl={tooltip.sourceUrl}
+            lastUpdated={tooltip.lastUpdated}
+            isLive={tooltip.isLive}
+          />
+        )}
         {sub && <p className="font-mono text-[0.48rem] text-charcoal/30 mt-0.5">{sub}</p>}
       </div>
     </div>
@@ -100,9 +120,12 @@ export function IntelligentMiddle() {
 
       <SectionLabel>Cloud Valuations</SectionLabel>
       <div className="divide-y divide-charcoal/8">
-        <Row label="Public Cloud"      value={cloudValuations.publicCloud} />
-        <Row label="SaaS Average"      value={cloudValuations.saasAverage} />
-        <Row label="AI Infrastructure" value={cloudValuations.aiInfrastructure} />
+        <Row label="Public Cloud"      value={cloudValuations.publicCloud}
+          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.publicCloud.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
+        <Row label="SaaS Average"      value={cloudValuations.saasAverage}
+          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.saas.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
+        <Row label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
+          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.aiInfra.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
       </div>
 
       <hr className="border-charcoal/10 my-6" />
@@ -110,9 +133,12 @@ export function IntelligentMiddle() {
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div className="divide-y divide-charcoal/8">
         <Row label="AWS/Azure/GCP" value={hyperscalerCapex.trend}
-          color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'} />
-        <Row label="GPU Lead Times"  value={hyperscalerCapex.gpuLeadTimes}  color="#C9A961" />
-        <Row label="Data Center"     value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F" />
+          color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'}
+          tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
+        <Row label="GPU Supply"    value={hyperscalerCapex.gpuLeadTimes}  color="#C9A961"
+          tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
+        <Row label="Data Center"   value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
+          tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
       {hyperscalerCapex.detail && (
         <p className="font-mono text-[0.48rem] tracking-[0.06em] text-charcoal/30 mt-2 leading-relaxed">

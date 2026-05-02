@@ -2,16 +2,19 @@ import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
+import { fetchLiveMultiples } from '@/lib/liveMultiples'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-function buildPrompt(ctx: MarketContextData): string {
+function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
   const { marketData: m, sectorData, macroData: mac, leaderboard } = ctx
 
   const topSectors = sectorData.slice(0, 5).map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
   const bottomSectors = sectorData.slice(-5).reverse().map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
   const topStocks = leaderboard.leaders.slice(0, 5).map(s => `${s.ticker} (${s.rs1m.toFixed(1)}% RS, ${s.intra_pct > 0 ? '+' : ''}${s.intra_pct.toFixed(1)}% today)`).join(', ')
 
+  // liveMultiples is fetched by the POST handler and threaded in here
+  // so Lumen receives genuine market-derived values, never training-data guesses
   return `MARKET DATA — ${new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
 
 EXPOSURE: ${m.guidance} (${m.exposureLevel}/100)
@@ -37,7 +40,7 @@ Gold (GLD): ${mac.gld ? `$${mac.gld.last.toFixed(0)} (${mac.gld.d1 > 0 ? '+' : '
 Oil (USO): ${mac.uso ? `$${mac.uso.last.toFixed(1)} (${mac.uso.d1 > 0 ? '+' : ''}${mac.uso.d1.toFixed(1)}% today)` : 'N/A'}
 Small/Large (IWM vs QQQ): ${mac.iwm && mac.qqq ? `IWM RS1M ${mac.iwm.rs1m.toFixed(2)} vs QQQ RS1M ${mac.qqq.rs1m.toFixed(2)} — small caps ${mac.iwm.rs1m > mac.qqq.rs1m ? 'outperforming' : 'underperforming'}` : 'N/A'}
 
-${buildInfraContextBlock()}
+${buildInfraContextBlock(multiples)}
 
 Based on ALL of the above, generate a comprehensive FinOps intelligence report. Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
 
@@ -102,11 +105,15 @@ export async function POST(req: Request) {
   try {
     const { context }: { context: MarketContextData } = await req.json()
 
+    // Fetch live multiples in parallel with no extra latency — Next.js cache
+    // serves subsequent calls within the 30-min window from memory.
+    const multiples = await fetchLiveMultiples()
+
     const message = await client.messages.create({
       model: 'claude-opus-4-7',
       max_tokens: 2500,
       system: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
-      messages: [{ role: 'user', content: buildPrompt(context) }],
+      messages: [{ role: 'user', content: buildPrompt(context, multiples) }],
     })
 
     const text = message.content[0].type === 'text' ? message.content[0].text : ''
