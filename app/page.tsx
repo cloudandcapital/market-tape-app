@@ -1,4 +1,5 @@
 import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/lib/data'
+import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import AIInfraCard from '@/components/AIInfraCard'
@@ -49,6 +50,10 @@ function buildContextData(meta: Meta, snapshot: Snapshot): MarketContextData {
 }
 
 export default async function Page() {
+  // Runs server-side on every ISR revalidation cycle (every 30 min).
+  // Logs to deployment output if any benchmark is >6 months past its review date.
+  checkServerStaleness()
+
   const [meta, snapshot] = await Promise.all([fetchMeta(), fetchSnapshot()])
   const contextData = buildContextData(meta, snapshot)
 
@@ -115,7 +120,8 @@ export default async function Page() {
           <footer className="mt-12 pt-5 border-t border-charcoal/10">
             <div className="flex flex-wrap justify-between items-center gap-3">
               <p className="text-[9px] font-mono text-charcoal/30">
-                Data via yFinance · Refreshes every 30 min · Intelligence via Lumen
+                Data via yFinance · Refreshes every 30 min · Intelligence via Lumen ·{' '}
+                <a href="/sources" className="hover:text-charcoal/60 transition-colors">Data Sources</a>
               </p>
               <p className="text-[9px] font-mono text-charcoal/25">
                 © 2026 Cloud &amp; Capital ·{' '}

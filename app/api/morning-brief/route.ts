@@ -1,15 +1,18 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
 import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
+import { fetchLiveMultiples } from '@/lib/liveMultiples'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function GET() {
   try {
-    const metaRes = await fetch(
-      'https://raw.githubusercontent.com/cloudandcapital/market-tape/main/data/meta.json',
-      { next: { revalidate: 1800 } }
-    )
+    const [metaRes, multiples] = await Promise.all([
+      fetch('https://raw.githubusercontent.com/cloudandcapital/market-tape/main/data/meta.json', {
+        next: { revalidate: 1800 },
+      }),
+      fetchLiveMultiples(),
+    ])
     if (!metaRes.ok) throw new Error('Failed to fetch meta.json')
     const meta = await metaRes.json()
 
@@ -30,7 +33,7 @@ Momentum env: ${meta.status.momentum_env.label} (score: ${meta.status.momentum_e
 Breadth: ${meta.status.breadth.above_50d_pct.toFixed(0)}% above 50d MA — ${meta.status.breadth.breadth_label}
 Exposure guidance: ${meta.status.exposure.guidance} (${meta.status.exposure.level}/100)
 
-${buildInfraContextBlock()}
+${buildInfraContextBlock(multiples)}
 
 Write a 3-paragraph brief (~150 words):
 1. What the market is doing right now (status, trend, breadth in plain terms)

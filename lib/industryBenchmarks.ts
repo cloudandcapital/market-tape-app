@@ -1,18 +1,22 @@
-// Single source of truth for all hardcoded industry benchmark values.
-// Every number here is an external industry stat — not live market data.
+// Single source of truth for slow-moving, manually-maintained industry benchmarks.
+// Every number here is an external industry stat that changes quarterly or less often.
+//
+// What does NOT belong here:
+//   - Live stock market data (prices, live P/S multiples) → lib/liveMultiples.ts
+//   - yFinance pipeline data → fetched via lib/data.ts
+//
 // Run `npm run check-benchmarks` to see freshness status.
-// Update this file quarterly (or sooner if a source publishes new data).
-// See BENCHMARKS-MAINTENANCE.md for the full update protocol.
+// See BENCHMARKS-MAINTENANCE.md for the update protocol.
 
 export interface Benchmark {
-  value: string                                  // human-readable string used in UI + prompts
-  numeric?: number | { min: number; max: number } | Record<string, number> // machine-readable form for comparisons
-  source: string                                 // citation or "Industry consensus — needs verification"
-  sourceUrl: string                              // direct link to report/post; empty if unverified
-  lastUpdated: string                            // YYYY-MM-DD — date this entry was last confirmed
-  nextReviewDue: string                          // YYYY-MM-DD — when to recheck the value
+  value: string                                                              // human-readable string used in UI + prompts
+  numeric?: number | { min: number; max: number } | Record<string, number>  // machine-readable form for comparisons
+  source: string                                                             // citation or "Industry consensus — needs verification"
+  sourceUrl: string                                                          // direct link to report/post; empty if unverified
+  lastUpdated: string                                                        // YYYY-MM-DD — date this entry was last confirmed
+  nextReviewDue: string                                                      // YYYY-MM-DD — when to recheck the value
   reviewCadence: 'monthly' | 'quarterly' | 'semi-annual'
-  notes: string                                  // what it measures, caveats, how to update it
+  notes: string                                                              // what it measures, caveats, how to update it
 }
 
 export const BENCHMARKS = {
@@ -40,41 +44,6 @@ export const BENCHMARKS = {
     nextReviewDue: '2026-11-01',
     reviewCadence: 'semi-annual',
     notes: 'CBRE H2 2025 reported absorption of 2,497.6 MW vs 1,809.5 MW in 2024 (+38%) and construction pipeline of 5,994.4 MW vs 6,350.1 MW in 2024 (-5.6%, first decline since 2020). Story = demand outpacing supply, not construction boom.',
-  } satisfies Benchmark,
-
-  // ─── Cloud Valuation Multiples (display — used in CloudValuations component) ─
-
-  publicCloudNTMMultiple: {
-    value: '8.2×',
-    numeric: 8.2,
-    source: 'Industry consensus — needs verification',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-05-08',
-    reviewCadence: 'quarterly',
-    notes: 'NTM revenue multiple for public cloud infrastructure (AWS, Azure, GCP hyperscaler cohort). Verify from quarterly earnings comps, Bessemer Cloud Index (cloudindex.bvp.com), or Bloomberg comp tables. Update after each earnings season.',
-  } satisfies Benchmark,
-
-  saasNTMMultiple: {
-    value: '6.5×',
-    numeric: 6.5,
-    source: 'Industry consensus — needs verification',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-05-08',
-    reviewCadence: 'quarterly',
-    notes: 'Median NTM revenue multiple for enterprise SaaS cohort. Compressed from 2021 peaks. Verify from Bessemer Cloud Index or public SaaS comp tables. This is the median across the cohort — individual names vary widely.',
-  } satisfies Benchmark,
-
-  aiInfraNTMMultiple: {
-    value: '12.3×',
-    numeric: 12.3,
-    source: 'Industry consensus — needs verification',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-05-08',
-    reviewCadence: 'quarterly',
-    notes: 'NTM revenue multiple for AI infrastructure and hyperscaler cohort. Elevated relative to SaaS on AI CapEx thesis. Verify from Bloomberg, FactSet, or public comp tables for NVDA/AMD/SMCI/DELL AI infrastructure basket.',
   } satisfies Benchmark,
 
   // ─── Historical reference (stable — infrequent review) ────────────────────
@@ -106,15 +75,45 @@ export const BENCHMARKS = {
 
 // ─── Prompt Context Builder ────────────────────────────────────────────────
 // Generates the infrastructure context block injected into Lumen prompts.
-// Including source citations so Lumen knows what it can and cannot attribute.
+// Live multiples (publicCloud, saas, aiInfra) are passed in from lib/liveMultiples.ts
+// so they never come from hardcoded values or Claude's training knowledge.
 
-export function buildInfraContextBlock(): string {
+export function buildInfraContextBlock(liveMultiples: {
+  publicCloud: string
+  saas: string
+  aiInfra: string
+  source?: 'live' | 'fallback'
+}): string {
   const b = BENCHMARKS
-  return `CLOUD INFRASTRUCTURE CONTEXT (source-attributed benchmarks — use only what is listed here; do not extrapolate or cite additional statistics):
-- Public Cloud NTM Revenue Multiple: ${b.publicCloudNTMMultiple.value} [source: ${b.publicCloudNTMMultiple.source}, updated ${b.publicCloudNTMMultiple.lastUpdated}]
-- SaaS Average NTM Revenue Multiple: ${b.saasNTMMultiple.value} (compressed from ${b.saas2021PeakMultiple.value} in 2021) [source: ${b.saasNTMMultiple.source}]
-- AI Infrastructure NTM Revenue Multiple: ${b.aiInfraNTMMultiple.value} [source: ${b.aiInfraNTMMultiple.source}]
+  const sourceNote = liveMultiples.source === 'live'
+    ? 'Yahoo Finance live data, approx. NTM P/S'
+    : 'Yahoo Finance (fallback — may be stale)'
+
+  return `CLOUD INFRASTRUCTURE CONTEXT (source-attributed — use only what is listed here; do not extrapolate or cite additional statistics):
+- Public Cloud NTM P/S (est.): ${liveMultiples.publicCloud} [source: ${sourceNote}]
+- SaaS Average NTM P/S (est.): ${liveMultiples.saas} (compressed from ${b.saas2021PeakMultiple.value} in 2021) [source: ${sourceNote}]
+- AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
 - GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
 - Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; demand is outpacing supply (first time since 2020) [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]`
+}
+
+// ─── Server-side staleness check ──────────────────────────────────────────
+// Call from app/page.tsx (server component, runs on ISR revalidation).
+// Only warns when a benchmark is >6 months past its nextReviewDue date.
+// Output goes to deployment logs, not to users.
+
+const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000
+
+export function checkServerStaleness(): void {
+  const now = Date.now()
+  for (const [key, bm] of Object.entries(BENCHMARKS)) {
+    const due = new Date(bm.nextReviewDue).getTime()
+    if (now - due > SIX_MONTHS_MS) {
+      console.warn(
+        `[market-tape:benchmarks] ${key} is >6 months past review due date ` +
+        `(${bm.nextReviewDue}). Value: "${bm.value}" | Source: ${bm.source}`
+      )
+    }
+  }
 }
