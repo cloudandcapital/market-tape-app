@@ -9,7 +9,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260502a'
+export const AI_COMPUTE_DATA_VERSION = '20260502b'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -56,7 +56,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: 'NVIDIA GB200/GB300 GPUs',
     term: '7 years',
     announced: 'Nov 2025',
-    sourceUrl: 'https://tech-insider.org/openai-amazon-bedrock-38-billion-azure-exclusivity-end-2026/',
+    sourceUrl: 'https://openai.com/index/aws-and-openai-partnership/',
   },
   {
     lab: 'Meta',
@@ -74,6 +74,6 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '2 GW (target larger)',
     term: 'Ongoing',
     announced: 'Jan 2026',
-    sourceUrl: 'https://introl.com/blog/xai-colossus-2-gigawatt-expansion-555k-gpus-january-2026',
+    sourceUrl: 'https://siliconangle.com/2025/12/30/elon-musk-reveals-plan-expand-xais-colossus-data-center-2-gigawatts/',
   },
 ]
