@@ -103,7 +103,7 @@ export function IntelligentMiddle() {
           { emoji: '🔧', label: 'Spot/On-Demand',  win: commitmentWindows.spot },
         ].map(({ emoji, label, win }) => (
           <div key={label} className="py-2.5 flex items-start justify-between gap-2">
-            <div className="flex items-start gap-1.5 min-w-0">
+            <div className="flex items-start gap-1.5 min-w-0 flex-1">
               <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
               <div className="min-w-0">
                 <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35 mb-0.5">{label}</p>

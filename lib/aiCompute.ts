@@ -9,7 +9,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260502b'
+export const AI_COMPUTE_DATA_VERSION = '20260502c'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -34,9 +34,9 @@ export const aiComputeData: AiComputeRow[] = [
     lab: 'OpenAI',
     provider: 'Microsoft Azure',
     amount: '~$250B',
-    gw: 'Stargate: 10+ GW (original 10 GW goal exceeded)',
+    gw: 'Stargate: 10+ GW (exceeded)',
     term: '6 yrs (2025–2030)',
-    announced: 'Stargate program · 10 GW goal exceeded Apr 2026',
+    announced: 'Stargate program (exceeded Apr 2026)',
     sourceUrl: 'https://openai.com/index/building-the-compute-infrastructure-for-the-intelligence-age/',
     notes: 'Original Stargate commitment (Jan 2025) was 10 GW over 6 years via Microsoft Azure. Per OpenAI announcement late April 2026, the 10 GW milestone was exceeded ahead of schedule, with 3+ GW added in the past 90 days alone. The ~$250B figure reflects the Microsoft Azure partnership share; total Stargate spend across all partners is reported at ~$400B+ over 3 years. Dollar figure retained as-is pending a primary source for the updated total.',
   },
