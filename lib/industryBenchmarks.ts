@@ -63,12 +63,12 @@ export const BENCHMARKS = {
 
   hyperscalerCapexTrend: {
     value: 'Expanding',
-    source: 'AWS / Azure / GCP Q1 2026 earnings guidance',
-    sourceUrl: '',
-    lastUpdated: '2026-04-24',
+    source: 'AWS / Azure / GCP / Meta Q1 2026 earnings results',
+    sourceUrl: 'https://www.cnbc.com/2026/04/29/aws-earnings-q1-2026.html',
+    lastUpdated: '2026-04-30',
     nextReviewDue: '2026-08-01',
     reviewCadence: 'quarterly',
-    notes: 'Qualitative CapEx trajectory for major hyperscalers based on most recent earnings guidance. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August). Source: earnings call transcripts and investor day slides from AWS, Azure, GCP.',
+    notes: 'Qualitative CapEx trajectory for major hyperscalers based on Q1 2026 actual earnings results (not guidance). Combined 2026 capex now tracking $700–725B across the four hyperscalers, up ~77% from the 2025 record of ~$410B. Amazon: ~$200B full-year; Google: $180–190B; Microsoft: ~$190B; Meta: $125–145B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
   } satisfies Benchmark,
 
 } satisfies { [key: string]: Benchmark }
