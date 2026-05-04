@@ -21,7 +21,7 @@ Voice rules (non-negotiable):
 
 TASK: Below is the current state of major announced AI compute commitments. Write ONE sentence (max 35 words) that summarizes what the total picture means for finance teams making cloud and AI cost decisions in the next 6 months.
 
-Use the rounded headline figure of $750B+ if you reference a total. This figure is derived by summing the dollar amounts in the DATA section below — do not source it from elsewhere.
+Use the rounded headline figure of $925B+ if you reference a total. This figure is derived by summing the dollar amounts in the DATA section below — do not source it from elsewhere.
 
 BENCHMARK SCOPE: This analysis covers AI compute deal commitments only. Do not cite GPU supply status, market multiples, construction growth rates, or other infrastructure benchmarks — they are outside the scope of this context. Current benchmark reference (for your information only, do not include in output): GPU supply — ${BENCHMARKS.gpuSupplyStatus.value}; DC demand/supply — ${BENCHMARKS.dataCenterConstructionYoY.value}.
 

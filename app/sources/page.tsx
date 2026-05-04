@@ -103,7 +103,7 @@ export default function SourcesPage() {
         <SectionTitle>AI Compute Commitments</SectionTitle>
 
         <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
-          The $750B+ commitment table is compiled manually from public announcements and press releases.
+          The $925B+ commitment table is compiled manually from public announcements and press releases.
           Each row is sourced individually. The data is static until a new deal is announced —
           source code at{' '}
           <a

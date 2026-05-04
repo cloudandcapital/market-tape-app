@@ -143,10 +143,10 @@ export default function AIComputeCommitments() {
           className="font-serif font-medium leading-tight"
           style={{ fontSize: 'clamp(1.35rem, 3vw, 1.85rem)', color: '#191714' }}
         >
-          $750B+
+          $925B+
         </p>
         <p className="font-mono text-[0.65rem] tracking-[0.06em] text-charcoal/50 mt-0.5">
-          committed across major AI compute deals in the past 18 months · ~25 GW locked capacity
+          committed across major AI compute deals in the past 18 months · ~45 GW locked capacity
         </p>
       </div>
 
