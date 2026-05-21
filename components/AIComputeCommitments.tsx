@@ -5,7 +5,7 @@ import { aiComputeData, AI_COMPUTE_DATA_VERSION, type AiComputeRow } from '@/lib
 
 const CACHE_KEY = `ai-compute-brief-${AI_COMPUTE_DATA_VERSION}`
 const CACHE_DURATION = 24 * 60 * 60 * 1000
-const FALLBACK = "AI labs have moved from optionality to commitment. Spot pricing is tightening, reservation discount windows are narrowing. For finance teams, 'wait for cheaper' is no longer a defensible posture."
+const FALLBACK = "$1.5T+ in AI compute committed across hyperscalers and AI labs in the past 18 months — with ~35 GW locked or in progress. The Anthropic-Google $200B deal and Anthropic-xAI Colossus lease both closed in May 2026. Reservation windows are tightening: the labs buying the most compute are simultaneously the most constrained on capacity."
 
 function loadCachedAnalysis(): string | null {
   try {
@@ -143,10 +143,10 @@ export default function AIComputeCommitments() {
           className="font-serif font-medium leading-tight"
           style={{ fontSize: 'clamp(1.35rem, 3vw, 1.85rem)', color: '#191714' }}
         >
-          $925B+
+          $1.5T+
         </p>
         <p className="font-mono text-[0.65rem] tracking-[0.06em] text-charcoal/50 mt-0.5">
-          committed across major AI compute deals in the past 18 months · ~45 GW locked capacity
+          committed across major AI compute deals in the past 18 months · ~35 GW locked capacity
         </p>
       </div>
 

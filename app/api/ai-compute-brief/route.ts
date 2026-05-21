@@ -5,7 +5,7 @@ import { BENCHMARKS } from '@/lib/industryBenchmarks'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-const FALLBACK = "AI labs have moved from optionality to commitment. Spot pricing is tightening, reservation discount windows are narrowing. For finance teams, 'wait for cheaper' is no longer a defensible posture."
+const FALLBACK = "$1.5T+ in AI compute committed across hyperscalers and AI labs in the past 18 months — with ~35 GW locked or in progress. The Anthropic-Google $200B deal and Anthropic-xAI Colossus lease both closed in May 2026. Reservation windows are tightening: the labs buying the most compute are simultaneously the most constrained on capacity."
 
 function buildPrompt(): string {
   return `You are Lumen, the AI analyst voice of Diana Molski's tools at Cloud & Capital. You translate complex signal into plain English a busy finance or engineering person can act on in under 30 seconds.
@@ -21,7 +21,7 @@ Voice rules (non-negotiable):
 
 TASK: Below is the current state of major announced AI compute commitments. Write ONE sentence (max 35 words) that summarizes what the total picture means for finance teams making cloud and AI cost decisions in the next 6 months.
 
-Use the rounded headline figure of $925B+ if you reference a total. This figure is derived by summing the dollar amounts in the DATA section below — do not source it from elsewhere.
+Use the rounded headline figure of $1.5T+ if you reference a total. This figure is derived by summing the dollar amounts in the DATA section below — do not source it from elsewhere.
 
 BENCHMARK SCOPE: This analysis covers AI compute deal commitments only. Do not cite GPU supply status, market multiples, construction growth rates, or other infrastructure benchmarks — they are outside the scope of this context. Current benchmark reference (for your information only, do not include in output): GPU supply — ${BENCHMARKS.gpuSupplyStatus.value}; DC demand/supply — ${BENCHMARKS.dataCenterConstructionYoY.value}.
 
