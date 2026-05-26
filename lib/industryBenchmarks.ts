@@ -65,10 +65,23 @@ export const BENCHMARKS = {
     value: 'Expanding',
     source: 'AWS / Azure / GCP / Meta Q1 2026 earnings results',
     sourceUrl: 'https://www.cnbc.com/2026/04/29/aws-earnings-q1-2026.html',
-    lastUpdated: '2026-04-30',
+    lastUpdated: '2026-05-25',
     nextReviewDue: '2026-08-01',
     reviewCadence: 'quarterly',
-    notes: 'Qualitative CapEx trajectory for major hyperscalers based on Q1 2026 actual earnings results (not guidance). Combined 2026 capex now tracking $700–725B across the four hyperscalers, up ~77% from the 2025 record of ~$410B. Amazon: ~$200B full-year; Google: $180–190B; Microsoft: ~$190B; Meta: $125–145B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
+    notes: 'Q1 2026 actuals: Amazon CapEx $44.2B; Google + Microsoft + Amazon combined Q1 $112B. Full-year 2026 guidance: Big 4 (Amazon, Google, Microsoft, Meta) tracking ~$725B (+77% vs 2025 record of ~$410B). Per-company full-year: Amazon ~$200B; Google raised to $180–190B; Microsoft ~$190B (includes DRAM/flash cost increases from tariffs); Meta $125–145B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
+  } satisfies Benchmark,
+
+  // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────
+
+  nvidiaDcRevenue: {
+    value: '$75.2B Q1 FY2027 (+92% YoY, +21% QoQ) · networking $14.8B (+199% YoY) · Q2 guidance ~$91B',
+    numeric: { q1_dc_revenue_b: 75.2, q1_total_revenue_b: 81.6, q2_guidance_b: 91 },
+    source: 'NVIDIA Q1 FY2027 earnings (reported May 2026)',
+    sourceUrl: 'https://investor.nvidia.com/financial-information/financial-results/',
+    lastUpdated: '2026-05-25',
+    nextReviewDue: '2026-08-01',
+    reviewCadence: 'quarterly',
+    notes: 'NVIDIA Q1 FY2027 (quarter ended April 2026, reported May 20–22 2026). Total revenue $81.6B (+85% YoY). Data center segment $75.2B (+92% YoY, +21% QoQ) — the primary demand signal for hyperscaler AI CapEx flowing through to silicon. Data center networking (InfiniBand + Ethernet for AI) $14.8B (+199% YoY). Q2 FY2027 guidance ~$91B total. Refresh after each NVIDIA earnings call (next: ~Aug 2026).',
   } satisfies Benchmark,
 
 } satisfies { [key: string]: Benchmark }
@@ -95,7 +108,8 @@ export function buildInfraContextBlock(liveMultiples: {
 - AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
 - GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
-- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; demand is outpacing supply (first time since 2020) [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]`
+- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; demand is outpacing supply (first time since 2020) [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]
+- NVIDIA Data Center Revenue: ${b.nvidiaDcRevenue.value} [source: ${b.nvidiaDcRevenue.source}]`
 }
 
 // ─── Server-side staleness check ──────────────────────────────────────────
