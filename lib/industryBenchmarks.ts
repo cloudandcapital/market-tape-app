@@ -24,13 +24,13 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'Hopper sold out · Blackwell ~16-20 weeks (booked into Aug-Sep 2026)',
-    source: 'SemiAnalysis (April 2026)',
-    sourceUrl: 'https://newsletter.semianalysis.com/',
-    lastUpdated: '2026-05-01',
-    nextReviewDue: '2026-08-01',
+    value: 'H100 broadly available ($0.99/hr spot · $12–18K secondhand) · H200 4–8 weeks / $31–40K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog, HBM3e bottleneck)',
+    source: 'Thunder Compute / Cyfuture GPU pricing guides (June 2026)',
+    sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h200-pricing',
+    lastUpdated: '2026-06-09',
+    nextReviewDue: '2026-09-01',
     reviewCadence: 'quarterly',
-    notes: 'H100/H200 (Hopper) essentially sold out market-wide as of March-April 2026. B100/B200 (Blackwell) lead times extending to August-September 2026 per SemiAnalysis. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
+    notes: 'As of June 2026: H100 (Hopper) has flipped to broadly available — spot rates as low as $0.99/hr on some clouds, secondhand hardware $12–18K (down from $40K peak). H200 standard lead time 4–8 weeks, $31–40K/unit hardware; could extend to 6–9 months if Chinese demand materializes, cloud provider allocations pre-secured. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog as of April 2026, HBM3e supply is the structural bottleneck. Vera Rubin (GB300) first deployments targeting Q1 2027. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────

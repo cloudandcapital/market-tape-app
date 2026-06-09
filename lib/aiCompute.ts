@@ -1,5 +1,5 @@
 export interface AiComputeRow {
-  lab: string
+  buyer: string
   provider: string
   amount: string
   gw: string
@@ -9,11 +9,11 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260521a'
+export const AI_COMPUTE_DATA_VERSION = '20260609a'
 
 export const aiComputeData: AiComputeRow[] = [
   {
-    lab: 'Anthropic',
+    buyer: 'Anthropic',
     provider: 'AWS (Trainium / Inferentia)',
     amount: '$100B+',
     gw: '5 GW',
@@ -23,7 +23,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'Anthropic blog, Apr 2026',
   },
   {
-    lab: 'Anthropic',
+    buyer: 'Anthropic',
     provider: 'Google Cloud / TPU (Broadcom)',
     amount: '$200B',
     gw: '5 GW TPU',
@@ -33,7 +33,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'The Information, May 5 2026',
   },
   {
-    lab: 'Anthropic',
+    buyer: 'Anthropic',
     provider: 'xAI / SpaceX (Colossus 1)',
     amount: '~$40B ($1.25B/mo thru May 2029)',
     gw: '300 MW / 220K+ NVIDIA GPUs',
@@ -43,7 +43,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'TechCrunch + xAI blog, May 20 2026',
   },
   {
-    lab: 'OpenAI',
+    buyer: 'OpenAI',
     provider: 'Stargate (Oracle, SoftBank, partners)',
     amount: '$500B total / $400B+ committed',
     gw: '10 GW target / 7 GW planned',
@@ -53,7 +53,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'OpenAI blog, May 2026',
   },
   {
-    lab: 'OpenAI',
+    buyer: 'OpenAI',
     provider: 'Microsoft Azure',
     amount: 'ongoing (overflow + existing traffic)',
     gw: '—',
@@ -63,7 +63,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'OpenAI / Microsoft partnership',
   },
   {
-    lab: 'OpenAI',
+    buyer: 'OpenAI',
     provider: 'NVIDIA (equity + Vera Rubin compute)',
     amount: '$30B equity + compute commitment',
     gw: '5 GW (3 inference + 2 training)',
@@ -73,7 +73,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: 'Yahoo Finance, Feb 2026',
   },
   {
-    lab: 'Meta',
+    buyer: 'Meta',
     provider: 'NVIDIA (Blackwell + Vera Rubin + Grace)',
     amount: '~$50B',
     gw: '—',
@@ -83,7 +83,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: "Tom's Hardware, Feb 2026",
   },
   {
-    lab: 'Meta',
+    buyer: 'Meta',
     provider: 'AMD (Instinct MI450+)',
     amount: '~$60B',
     gw: '6 GW',
@@ -93,7 +93,7 @@ export const aiComputeData: AiComputeRow[] = [
     notes: "TECHi / Tom's Hardware, Feb 24 2026",
   },
   {
-    lab: 'Meta',
+    buyer: 'Meta',
     provider: 'Amazon (Graviton5 chips)',
     amount: 'multi-billion',
     gw: '—',
@@ -101,5 +101,15 @@ export const aiComputeData: AiComputeRow[] = [
     announced: '2026',
     sourceUrl: 'https://techcrunch.com/2026/04/24/in-another-wild-turn-for-ai-chips-meta-signs-deal-for-millions-of-amazon-ai-cpus/',
     notes: 'The Next Web, 2026',
+  },
+  {
+    buyer: 'Jane Street',
+    provider: 'CoreWeave',
+    amount: '$6B',
+    gw: '—',
+    term: '—',
+    announced: 'Jun 2026',
+    sourceUrl: 'https://investors.coreweave.com/news/news-details/2026/Jane-Street-Signs-6-Billion-AI-Cloud-Agreement-With-CoreWeave/default.aspx',
+    notes: 'Financial trading firm as major AI cloud buyer — signals enterprise/financial sector emerging as serious compute demand category alongside AI labs. CoreWeave IR, June 2026.',
   },
 ]

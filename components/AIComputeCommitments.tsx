@@ -28,7 +28,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
     <table className="w-full border-collapse hidden md:table">
       <thead>
         <tr>
-          {['AI Lab', 'Compute Provider', '$ Committed', 'GW Locked', 'Term', 'Announced', 'Source'].map(h => (
+          {['Buyer', 'Compute Provider', '$ Committed', 'GW Locked', 'Term', 'Announced', 'Source'].map(h => (
             <th key={h} className="text-left font-mono text-[0.48rem] tracking-[0.16em] uppercase text-charcoal/35 pb-2.5 pr-3 font-normal">
               {h}
             </th>
@@ -38,7 +38,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
       <tbody className="divide-y divide-charcoal/8">
         {rows.map((row, i) => (
           <tr key={i}>
-            <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-[0.38rem] pr-3 whitespace-nowrap">{row.lab}</td>
+            <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-[0.38rem] pr-3 whitespace-nowrap">{row.buyer}</td>
             <td className="font-mono text-[0.68rem] text-charcoal/60 py-[0.38rem] pr-3">{row.provider}</td>
             <td className="font-mono text-[0.72rem] font-medium py-[0.38rem] pr-3 whitespace-nowrap" style={{ color: '#6B8E7F' }}>{row.amount}</td>
             <td className="font-mono text-[0.68rem] text-charcoal/60 py-[0.38rem] pr-3 whitespace-nowrap">{row.gw}</td>
@@ -53,7 +53,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
                 style={{ color: 'rgba(0,0,0,0.25)' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#6B8E7F')}
                 onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.25)')}
-                aria-label={`Source for ${row.lab} ${row.provider} deal`}
+                aria-label={`Source for ${row.buyer} ${row.provider} deal`}
               >
                 ↗
               </a>
@@ -71,7 +71,7 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
       {rows.map((row, i) => (
         <div key={i} className="py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
           <div className="flex items-baseline justify-between mb-1">
-            <span className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.lab}</span>
+            <span className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</span>
             <span className="font-mono text-[0.72rem] font-medium" style={{ color: '#6B8E7F' }}>{row.amount}</span>
           </div>
           <p className="font-mono text-[0.65rem] text-charcoal/55 mb-1">{row.provider}</p>
