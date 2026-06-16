@@ -9,7 +9,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260609a'
+export const AI_COMPUTE_DATA_VERSION = '20260616a'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -26,11 +26,11 @@ export const aiComputeData: AiComputeRow[] = [
     buyer: 'Anthropic',
     provider: 'Google Cloud / TPU (Broadcom)',
     amount: '$200B',
-    gw: '5 GW TPU',
+    gw: '3.5 GW TPU',
     term: '5 years (starts 2027)',
-    announced: 'May 5, 2026',
-    sourceUrl: 'https://www.engadget.com/2165585/anthropic-reportedly-agrees-to-pay-google-200-billion-for-chips-and-cloud-access/',
-    notes: 'The Information, May 5 2026',
+    announced: 'Apr 2026',
+    sourceUrl: 'https://www.anthropic.com/news/google-broadcom-partnership-compute',
+    notes: 'Financing closed June 2026: Apollo Global Management + Blackstone closed private credit package via SPV that purchases Google TPUs and leases back to Anthropic. Infrastructure online starting 2027. Anthropic run-rate revenue ~$30B as of Jun 2026.',
   },
   {
     buyer: 'Anthropic',
@@ -111,5 +111,15 @@ export const aiComputeData: AiComputeRow[] = [
     announced: 'Jun 2026',
     sourceUrl: 'https://investors.coreweave.com/news/news-details/2026/Jane-Street-Signs-6-Billion-AI-Cloud-Agreement-With-CoreWeave/default.aspx',
     notes: 'Financial trading firm as major AI cloud buyer — signals enterprise/financial sector emerging as serious compute demand category alongside AI labs. CoreWeave IR, June 2026.',
+  },
+  {
+    buyer: 'Google',
+    provider: 'SpaceX / xAI',
+    amount: '$920M/month (~$30B total)',
+    gw: '—',
+    term: 'Oct 2026 – Jun 2029 (32 months)',
+    announced: 'Jun 5, 2026',
+    sourceUrl: 'https://techcrunch.com/2026/06/05/google-will-pay-spacex-920m-per-month-for-compute/',
+    notes: '~110,000 NVIDIA GPUs hosted at xAI data centers. Bridge capacity for unexpected Gemini Enterprise demand surge while Google builds its own infrastructure. Terminable with 90 days notice after Dec 31, 2026. Notable inversion: a hyperscaler (Google) as the compute buyer, not the supplier — complicates the standard "AI lab rents from hyperscaler" framing.',
   },
 ]

@@ -63,12 +63,12 @@ export const BENCHMARKS = {
 
   hyperscalerCapexTrend: {
     value: 'Expanding',
-    source: 'AWS / Azure / GCP / Meta Q1 2026 earnings results',
-    sourceUrl: 'https://www.cnbc.com/2026/04/29/aws-earnings-q1-2026.html',
-    lastUpdated: '2026-05-25',
+    source: "AWS / Azure / GCP / Meta Q1 2026 earnings results + Jun 2026 guidance updates (Tom's Hardware)",
+    sourceUrl: 'https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion',
+    lastUpdated: '2026-06-16',
     nextReviewDue: '2026-08-01',
     reviewCadence: 'quarterly',
-    notes: 'Q1 2026 actuals: Amazon CapEx $44.2B; Google + Microsoft + Amazon combined Q1 $112B. Full-year 2026 guidance: Big 4 (Amazon, Google, Microsoft, Meta) tracking ~$725B (+77% vs 2025 record of ~$410B). Per-company full-year: Amazon ~$200B; Google raised to $180–190B; Microsoft ~$190B (includes DRAM/flash cost increases from tariffs); Meta $125–145B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
+    notes: 'Q1 2026 actuals: Amazon CapEx $44.2B; Google + Microsoft + Amazon combined Q1 $112B. Full-year 2026 guidance: Big 4 (Amazon, Google, Microsoft, Meta) tracking ~$725B (+77% vs 2025 record of ~$410B). Per-company full-year: Amazon ~$200B; Google up to $190B (raised ~$5B from prior guidance, Jun 2026); Microsoft ~$190B (includes DRAM/flash cost increases from tariffs); Meta $115–135B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────
