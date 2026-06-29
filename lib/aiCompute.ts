@@ -9,7 +9,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260616a'
+export const AI_COMPUTE_DATA_VERSION = '20260629a'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -69,8 +69,8 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '5 GW (3 inference + 2 training)',
     term: '—',
     announced: 'Feb 2026',
-    sourceUrl: 'https://nvidianews.nvidia.com/news/openai-and-nvidia-announce-strategic-partnership-to-deploy-10gw-of-nvidia-systems',
-    notes: 'Yahoo Finance, Feb 2026',
+    sourceUrl: 'https://www.cnbc.com/2026/02/19/nvidia-is-in-talks-to-invest-up-to-30-billion-in-openai-source-says.html',
+    notes: 'Restructured from the Sept 2025 $100B infrastructure LOI (10 GW target) into a direct $30B equity stake in OpenAI\'s Feb 2026 funding round. CNBC Feb 19, 2026.',
   },
   {
     buyer: 'Meta',
@@ -108,9 +108,19 @@ export const aiComputeData: AiComputeRow[] = [
     amount: '$6B',
     gw: '—',
     term: '—',
-    announced: 'Jun 2026',
+    announced: 'Apr 15, 2026',
     sourceUrl: 'https://investors.coreweave.com/news/news-details/2026/Jane-Street-Signs-6-Billion-AI-Cloud-Agreement-With-CoreWeave/default.aspx',
-    notes: 'Financial trading firm as major AI cloud buyer — signals enterprise/financial sector emerging as serious compute demand category alongside AI labs. CoreWeave IR, June 2026.',
+    notes: 'Financial trading firm as major AI cloud buyer — signals enterprise/financial sector emerging as serious compute demand category alongside AI labs. CoreWeave IR, Apr 2026.',
+  },
+  {
+    buyer: 'OpenAI',
+    provider: 'Cerebras Systems',
+    amount: '>$20B',
+    gw: '750 MW',
+    term: 'Multi-year',
+    announced: 'Jun 23, 2026',
+    sourceUrl: 'https://openai.com/index/cerebras-partnership/',
+    notes: 'First non-GPU deal at Market Tape scale — Cerebras WSE (wafer-scale engine) chips optimized for inference throughput, not GPU clusters. Inference-optimized architecture at hyperscale is a new market category. Cerebras Q1 FY2026 revenue $193M+. Sources: OpenAI blog, GlobeNewswire Q1 results, Reuters.',
   },
   {
     buyer: 'Google',

@@ -24,13 +24,13 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 broadly available ($0.99/hr spot · $12–18K secondhand) · H200 4–8 weeks / $31–40K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog, HBM3e bottleneck)',
+    value: 'H100 broadly available ($0.99/hr spot · $12–18K secondhand) · H200 4–8 weeks / $35–45K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog, HBM3e bottleneck)',
     source: 'Thunder Compute / Cyfuture GPU pricing guides (June 2026)',
     sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h200-pricing',
     lastUpdated: '2026-06-09',
     nextReviewDue: '2026-09-01',
     reviewCadence: 'quarterly',
-    notes: 'As of June 2026: H100 (Hopper) has flipped to broadly available — spot rates as low as $0.99/hr on some clouds, secondhand hardware $12–18K (down from $40K peak). H200 standard lead time 4–8 weeks, $31–40K/unit hardware; could extend to 6–9 months if Chinese demand materializes, cloud provider allocations pre-secured. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog as of April 2026, HBM3e supply is the structural bottleneck. Vera Rubin (GB300) first deployments targeting Q1 2027. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
+    notes: 'As of June 2026: H100 (Hopper) has flipped to broadly available — spot rates as low as $0.99/hr on some clouds, secondhand hardware $12–18K (down from $40K peak). H200 standard lead time 4–8 weeks, $35–45K/unit hardware; could extend to 6–9 months if Chinese demand materializes, cloud provider allocations pre-secured. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog as of April 2026, HBM3e supply is the structural bottleneck. Vera Rubin (GB300) first deployments targeting Q1 2027. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
@@ -65,10 +65,10 @@ export const BENCHMARKS = {
     value: 'Expanding',
     source: "AWS / Azure / GCP / Meta Q1 2026 earnings results + Jun 2026 guidance updates (Tom's Hardware)",
     sourceUrl: 'https://www.tomshardware.com/tech-industry/big-tech/big-techs-ai-spending-plans-reach-725-billion',
-    lastUpdated: '2026-06-16',
+    lastUpdated: '2026-06-29',
     nextReviewDue: '2026-08-01',
     reviewCadence: 'quarterly',
-    notes: 'Q1 2026 actuals: Amazon CapEx $44.2B; Google + Microsoft + Amazon combined Q1 $112B. Full-year 2026 guidance: Big 4 (Amazon, Google, Microsoft, Meta) tracking ~$725B (+77% vs 2025 record of ~$410B). Per-company full-year: Amazon ~$200B; Google up to $190B (raised ~$5B from prior guidance, Jun 2026); Microsoft ~$190B (includes DRAM/flash cost increases from tariffs); Meta $115–135B. All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
+    notes: 'Q1 2026 actuals: Amazon CapEx $44.2B; Google + Microsoft + Amazon combined Q1 $112B. Q1 2026 cloud segment growth YoY: Google Cloud +63%, Azure +40%, AWS +28%. Full-year 2026 guidance: Big 4 (Amazon, Google, Microsoft, Meta) tracking ~$725B (+77% vs 2025 record of ~$410B). Per-company full-year: Amazon ~$200B; Google up to $190B (raised ~$5B from prior guidance, Jun 2026); Microsoft ~$190B (includes DRAM/flash cost increases from tariffs); Meta $125–145B (raised from prior $115–135B guidance in Q1 2026 earnings). All four flagged AI demand exceeding current supply — Azure and GCP both noted compute constraints. Values: Expanding / Stable / Contracting. Next update due after Q2 2026 earnings (typically July–August).',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────
