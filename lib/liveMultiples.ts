@@ -29,9 +29,9 @@ export const BASKETS = {
     note: 'Eight liquid names from the BVP Nasdaq Emerging Cloud Index. Not the full index; WCLD ETF is the closest tradeable equivalent.',
   },
   aiInfra: {
-    tickers: ['NVDA', 'AVGO', 'AMD', 'MU', 'MRVL'],
+    tickers: ['NVDA', 'AVGO', 'AMD', 'MU', 'MRVL', 'CBRS'],
     label: 'AI infrastructure semiconductor basket',
-    note: 'Semiconductor and AI hardware names. Dominated by NVDA; results are sensitive to NVDA revenue forecasts.',
+    note: 'Semiconductor and AI hardware names. Dominated by NVDA; results are sensitive to NVDA revenue forecasts. CBRS (Cerebras, IPO May 2026) added Jun 2026 — wafer-scale inference chips, extreme P/S outlier; median calculation isolates it from distorting the basket.',
   },
 } as const
 
