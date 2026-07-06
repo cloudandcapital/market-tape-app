@@ -38,12 +38,12 @@ export const BENCHMARKS = {
   dataCenterConstructionYoY: {
     value: 'Demand +38% / construction -5.6% YoY',
     numeric: { absorption_yoy_pct: 38, construction_yoy_pct: -5.6 },
-    source: 'CBRE North America Data Center Trends H2 2025',
+    source: 'CBRE North America Data Center Trends H2 2025 + CBRE Global Data Center Trends 2026 (Q1 update)',
     sourceUrl: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025',
-    lastUpdated: '2026-05-01',
+    lastUpdated: '2026-07-06',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'semi-annual',
-    notes: 'CBRE H2 2025 reported absorption of 2,497.6 MW vs 1,809.5 MW in 2024 (+38%) and construction pipeline of 5,994.4 MW vs 6,350.1 MW in 2024 (-5.6%, first decline since 2020). Story = demand outpacing supply, not construction boom.',
+    notes: 'CBRE H2 2025 reported absorption of 2,497.6 MW vs 1,809.5 MW in 2024 (+38%) and construction pipeline of 5,994.4 MW vs 6,350.1 MW in 2024 (-5.6%, first decline since 2020). Story = demand outpacing supply, not construction boom. Q1 2026 supplement (CBRE Global Data Center Trends 2026): Northern Virginia absorbed 1,148.3 MW in Q1 alone — largest single quarter since CBRE began this report in 2023 — with vacancy at an all-time low of 0.3%. Dallas-Ft. Worth is now the 3rd-largest US market (+43.7% inventory growth in Q1). Power availability flagged as the #1 industry challenge for the third consecutive year. Value/numeric fields retain the H2 2025 YoY baseline; next full refresh after H1 2026 CBRE report (est. Nov 2026).',
   } satisfies Benchmark,
 
   // ─── Historical reference (stable — infrequent review) ────────────────────
