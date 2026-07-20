@@ -24,13 +24,13 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 broadly available ($0.99/hr spot · $12–18K secondhand) · H200 4–8 weeks / $35–45K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog, HBM3e bottleneck)',
-    source: 'Thunder Compute / Cyfuture GPU pricing guides (June 2026)',
-    sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h200-pricing',
-    lastUpdated: '2026-06-09',
-    nextReviewDue: '2026-09-01',
+    value: 'H100 broadly available ($0.67–$1.38/hr spot · $12–18K secondhand) · H200 4–8 weeks / $31–40K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog; 8–16 wk priority / 30+ wk standard)',
+    source: 'Thunder Compute / GPUaaS pricing guides (July 2026)',
+    sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
+    lastUpdated: '2026-07-20',
+    nextReviewDue: '2026-10-20',
     reviewCadence: 'quarterly',
-    notes: 'As of June 2026: H100 (Hopper) has flipped to broadly available — spot rates as low as $0.99/hr on some clouds, secondhand hardware $12–18K (down from $40K peak). H200 standard lead time 4–8 weeks, $35–45K/unit hardware; could extend to 6–9 months if Chinese demand materializes, cloud provider allocations pre-secured. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog as of April 2026, HBM3e supply is the structural bottleneck. Vera Rubin (GB300) first deployments targeting Q1 2027. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
+    notes: 'As of July 2026: H100 (Hopper) broadly available — spot rates $0.67–$1.38/hr across budget neoclouds, median ~$2.45/hr; secondhand hardware $12–18K. H200 standard lead time 4–8 weeks, $31–40K/unit hardware (~$308–315K for 8-GPU system); NVIDIA holds ~700K H200 units in inventory as production transitions to Blackwell. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog (April 2026 figure), TSMC CoWoS-L packaging fully allocated through at least mid-2027; lead times improving to 8–16 weeks for priority OEM buyers (down from 12–24 weeks in Q4 2025), 30+ weeks for standard enterprise. Vera Rubin (VR200/GB300): first samples shipped to 8 cloud partners (AWS, Azure, GCP, Oracle, CoreWeave, Lambda, Nebius, Nscale) as of June 2026; volume availability targeted for fall 2026 — delayed from Q1 2027 by thermal lid manufacturing issue + SK Hynix HBM4 qualification. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
