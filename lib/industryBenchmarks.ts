@@ -79,7 +79,7 @@ export const BENCHMARKS = {
     source: 'NVIDIA Q1 FY2027 earnings (reported May 2026)',
     sourceUrl: 'https://investor.nvidia.com/financial-information/financial-results/',
     lastUpdated: '2026-05-25',
-    nextReviewDue: '2026-08-01',
+    nextReviewDue: '2026-08-26',
     reviewCadence: 'quarterly',
     notes: 'NVIDIA Q1 FY2027 (quarter ended April 2026, reported May 20–22 2026). Total revenue $81.6B (+85% YoY). Data center segment $75.2B (+92% YoY, +21% QoQ) — the primary demand signal for hyperscaler AI CapEx flowing through to silicon. Data center networking (InfiniBand + Ethernet for AI) $14.8B (+199% YoY). Q2 FY2027 guidance ~$91B total. Refresh after each NVIDIA earnings call (next: ~Aug 2026).',
   } satisfies Benchmark,

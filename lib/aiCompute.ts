@@ -9,7 +9,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260629a'
+export const AI_COMPUTE_DATA_VERSION = '20260727a'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -41,6 +41,16 @@ export const aiComputeData: AiComputeRow[] = [
     announced: 'May 20, 2026',
     sourceUrl: 'https://techcrunch.com/2026/05/20/anthropic-will-pay-xai-1-25-billion-per-month-for-compute/',
     notes: 'TechCrunch + xAI blog, May 20 2026',
+  },
+  {
+    buyer: 'Anthropic',
+    provider: 'AMD (Instinct MI450 / Helios rack-scale)',
+    amount: 'Up to $5B AMD equity + tens of $B in servers',
+    gw: '2 GW (1st GW H1 2027)',
+    term: 'Starts H1 2027',
+    announced: 'Jul 22, 2026',
+    sourceUrl: 'https://ir.amd.com/news-events/press-releases/detail/1292/amd-and-anthropic-announce-strategic-partnership-to-deploy-up-to-2-gigawatts-of-amd-instinct-mi450-series-gpus',
+    notes: "AMD makes a strategic equity investment (up to $5B) in Anthropic, released as Anthropic hits deployment milestones; server purchase 'tens of billions' (WSJ). Anthropic's 4th distinct compute supplier (AWS Trainium, Google TPU, xAI/SpaceX, now AMD) — a compute-diversification story. AMD's largest counter to NVIDIA's grip on frontier-lab training/inference. Distinct from the Meta × AMD $60B/6GW row. Sources: AMD IR press release (primary), CNBC, Yahoo Finance.",
   },
   {
     buyer: 'OpenAI',
