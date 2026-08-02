@@ -30,7 +30,10 @@ export interface MarketContextData {
 export interface BriefResponse {
   morningBrief: {
     headline: string
-    paragraphs: string[]
+    marketRead: string
+    whatChanged: string[]
+    cloudFinanceImplications: string[]
+    action: string
   }
   finopsSignals: {
     cloudSpend: string
@@ -51,9 +54,8 @@ export interface BriefResponse {
   }
   hyperscalerCapex: {
     trend: string
-    gpuLeadTimes: string
+    gpuSupplyStatus: string
     dataCenterGrowth: string
-    detail: string
   }
   generatedAt: string
 }

@@ -1,92 +1,44 @@
 import Image from 'next/image'
-import type { Meta } from '@/lib/types'
-import { sparklineUrl, pctColor, pctLabel, gradeColor } from '@/lib/data'
+import type { LeaderboardEntry, Meta } from '@/lib/types'
+import { sparklineUrl, gradeColor } from '@/lib/data'
 
-export default function MomentumLeaderboard({ meta }: { meta: Meta }) {
-  const leaders = meta.leaderboard.leaders.slice(0, 10)
-
+function MomentumList({ title, rows, tone }: { title: string; rows: LeaderboardEntry[]; tone: 'gain' | 'loss' }) {
   return (
-    <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
-        Momentum · Universe Leaders
-      </h2>
-
-      <div className="space-y-0 divide-y divide-charcoal/8">
-        {leaders.map((row, i) => (
-          <div key={row.ticker} className="flex items-center gap-3 py-2.5">
-            <span className="text-[10px] font-mono text-charcoal/25 w-4 text-right flex-shrink-0">
-              {i + 1}
-            </span>
-
-            <div className="w-12 h-6 flex-shrink-0 opacity-75">
-              <Image
-                src={sparklineUrl(row.ticker)}
-                alt={`${row.ticker} RS chart`}
-                width={48}
-                height={24}
-                className="w-full h-full object-contain"
-                unoptimized
-              />
+    <section aria-labelledby={`momentum-${tone}`}>
+      <h3 id={`momentum-${tone}`} className="font-mono text-[0.62rem] tracking-[0.18em] uppercase text-charcoal/45 mb-3">{title}</h3>
+      <div className="divide-y divide-charcoal/8 border-y border-charcoal/8">
+        {rows.map((row, i) => (
+          <div key={row.ticker} className="grid grid-cols-[1.25rem_3rem_minmax(0,1fr)_auto] items-center gap-3 py-2.5 min-h-[3.4rem]">
+            <span className="font-mono text-[0.62rem] text-charcoal/35 text-right">{i + 1}</span>
+            <div className="w-12 h-6 opacity-75">
+              <Image src={sparklineUrl(row.ticker)} alt={`${row.ticker} relative-strength sparkline`} width={48} height={24} className="w-full h-full object-contain" unoptimized />
             </div>
-
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-mono font-semibold text-charcoal">{row.ticker}</span>
-                <span className={`text-[9px] font-mono ${gradeColor(row.trend_grade)}`}>
-                  {row.trend_grade}
-                </span>
+            <div className="min-w-0">
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-mono text-[0.82rem] font-semibold text-charcoal">{row.ticker}</span>
+                <span className={`font-mono text-[0.6rem] ${gradeColor(row.trend_grade)}`}>Grade {row.trend_grade}</span>
               </div>
-              <p className="text-[10px] font-mono text-charcoal/40 truncate">{row.short_name}</p>
+              <p className="font-mono text-[0.67rem] text-charcoal/50 truncate">{row.short_name}</p>
             </div>
-
-            <div className="text-right flex-shrink-0">
-              <p className="text-xs font-mono font-medium text-sage">
-                {row.rs1m > 0 ? '+' : ''}{row.rs1m.toFixed(2)}
-              </p>
-              <p className={`text-[10px] font-mono ${pctColor(row.intra_pct)}`}>
-                {pctLabel(row.intra_pct)}
-              </p>
-            </div>
+            <p className={`font-mono text-[0.75rem] font-medium ${tone === 'gain' ? 'text-sage' : 'text-loss'}`}>{row.rs1m > 0 ? '+' : ''}{row.rs1m.toFixed(2)} RS</p>
           </div>
         ))}
       </div>
-
-      <p className="text-[10px] font-mono text-charcoal/25 mt-4">
-        Universe: {meta.leaderboard.universe_count} instruments
-      </p>
-    </div>
+    </section>
   )
 }
 
-export function MomentumLaggards({ meta }: { meta: Meta }) {
-  const laggards = meta.leaderboard.laggards.slice(0, 5)
-
+export default function MomentumLeaderboard({ meta }: { meta: Meta }) {
   return (
-    <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
-        Momentum · Laggards
-      </h2>
-      <div className="space-y-0 divide-y divide-charcoal/8">
-        {laggards.map((row, i) => (
-          <div key={row.ticker} className="flex items-center gap-3 py-2">
-            <span className="text-[10px] font-mono text-charcoal/25 w-4 text-right flex-shrink-0">
-              {i + 1}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-sm font-mono font-medium text-charcoal">{row.ticker}</span>
-                <span className={`text-[9px] font-mono ${gradeColor(row.trend_grade)}`}>
-                  {row.trend_grade}
-                </span>
-              </div>
-              <p className="text-[10px] font-mono text-charcoal/40 truncate">{row.short_name}</p>
-            </div>
-            <p className="text-xs font-mono font-medium text-loss">
-              {row.rs1m.toFixed(2)}
-            </p>
-          </div>
-        ))}
+    <section aria-labelledby="momentum-heading" className="mt-10">
+      <div className="flex items-baseline justify-between gap-4 mb-4">
+        <h2 id="momentum-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/45">Momentum</h2>
+        <p className="font-mono text-[0.62rem] text-charcoal/40">Top and bottom 5 · {meta.leaderboard.universe_count} instruments</p>
       </div>
-    </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        <MomentumList title="Leaders" rows={meta.leaderboard.leaders.slice(0, 5)} tone="gain" />
+        <MomentumList title="Laggards" rows={meta.leaderboard.laggards.slice(0, 5)} tone="loss" />
+      </div>
+    </section>
   )
 }

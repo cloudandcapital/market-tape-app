@@ -24,13 +24,13 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 broadly available ($0.67–$1.38/hr spot · $12–18K secondhand) · H200 4–8 weeks / $31–40K · Blackwell B200/GB200 heavily constrained (~3.6M unit backlog; 8–16 wk priority / 30+ wk standard)',
-    source: 'Thunder Compute / GPUaaS pricing guides (July 2026)',
-    sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
+    value: 'H100 broadly available ($2.01–$14/hr cloud range) · H200 $2.50–$6/hr cloud range · Blackwell demand remains supply-constrained',
+    source: 'Thunder Compute GPU rental market survey (pricing) + NVIDIA Q1 FY2027 earnings (supply)',
+    sourceUrl: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx',
     lastUpdated: '2026-07-20',
     nextReviewDue: '2026-10-20',
     reviewCadence: 'quarterly',
-    notes: 'As of July 2026: H100 (Hopper) broadly available — spot rates $0.67–$1.38/hr across budget neoclouds, median ~$2.45/hr; secondhand hardware $12–18K. H200 standard lead time 4–8 weeks, $31–40K/unit hardware (~$308–315K for 8-GPU system); NVIDIA holds ~700K H200 units in inventory as production transitions to Blackwell. B200/GB200 (Blackwell) still heavily constrained — ~3.6M unit backlog (April 2026 figure), TSMC CoWoS-L packaging fully allocated through at least mid-2027; lead times improving to 8–16 weeks for priority OEM buyers (down from 12–24 weeks in Q4 2025), 30+ weeks for standard enterprise. Vera Rubin (VR200/GB300): first samples shipped to 8 cloud partners (AWS, Azure, GCP, Oracle, CoreWeave, Lambda, Nebius, Nscale) as of June 2026; volume availability targeted for fall 2026 — delayed from Q1 2027 by thermal lid manufacturing issue + SK Hynix HBM4 qualification. Refresh after each NVIDIA earnings call or major SemiAnalysis update.',
+    notes: 'Estimate/status as of July 2026. Thunder Compute’s July market survey reports H100 at $2.01–$14/GPU-hour and H200 at $2.50–$6/GPU-hour across sampled clouds; provider, commitment, and configuration differences make these ranges non-comparable to hardware purchase prices. NVIDIA’s Q1 FY2027 disclosure describes continued strong Blackwell demand and supply constraints. Exact backlog and procurement lead-time claims were removed because the linked sources did not directly substantiate them. Pricing reference: https://www.thundercompute.com/blog/ai-gpu-rental-market-trends. Refresh after each NVIDIA earnings call and quarterly pricing survey.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────

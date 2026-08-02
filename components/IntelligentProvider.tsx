@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
 
-const CACHE_KEY = 'intelligent-brief-v11'
+const CACHE_KEY = 'intelligent-brief-v12'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
 const REQUEST_TIMEOUT_MS = 75_000
 
@@ -190,19 +190,24 @@ function BriefSection() {
                 {data.morningBrief.headline}
               </p>
             )}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
-              {data.morningBrief.paragraphs.map((para, i) => (
-                <p key={i} style={{
-                  fontFamily: 'var(--font-playfair), Georgia, serif',
-                  fontSize: i === 0 ? '0.95rem' : '0.85rem',
-                  lineHeight: i === 0 ? 1.6 : 1.5,
-                  color: i === 0 ? '#191714' : '#444',
-                  fontWeight: i === 0 ? 500 : 400,
-                  margin: 0,
-                }}>
-                  {para}
-                </p>
-              ))}
+            <div className="grid gap-4 md:grid-cols-[1.25fr_1fr]">
+              <div>
+                <p className="font-serif text-[0.95rem] leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
+                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/45 mb-2">What changed</p>
+                <ul className="space-y-1.5">
+                  {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
+                </ul>
+              </div>
+              <div className="md:border-l md:border-charcoal/10 md:pl-5">
+                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/45 mb-2">Cloud-finance implication</p>
+                <ul className="space-y-1.5 mb-4">
+                  {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
+                </ul>
+                <div className="border-t border-charcoal/10 pt-3">
+                  <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-sage mb-1.5">Decision to monitor</p>
+                  <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}

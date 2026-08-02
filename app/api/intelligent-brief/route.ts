@@ -49,10 +49,10 @@ SIGNAL ANCHORS — apply these rules to produce deterministic verdicts on consis
 FINOPS SIGNALS:
 • cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): freeze non-critical spend, push vendors. Neutral (40-60): hold and optimize existing. Risk-On (>60): proceed with planned expansion. Cite exposure level.
 • saasRenewals → primary: SaaS NTM multiple + HYG RS1M. SaaS materially compressed from peak (well off 2021 highs) AND HYG negative → push hard, vendors will negotiate — buyers have leverage. SaaS recovering toward peak OR HYG positive → lock in pricing before it re-rates. Cite the actual visible multiple and HYG grade; do not reference any specific threshold number.
-• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. Sold-out or lead times above 12 weeks → urgent, cite specific booking horizon. Below 12 weeks → standard procurement timeline. Cite GPU supply status.
+• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. If the source says supply-constrained, protect access to scarce accelerators while treating broadly available models as standard procurement. Cite only the supplied status and price ranges; do not infer a booking horizon.
 
 RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
-• "GPU Capacity Tightening" (warning): if GPU supply shows sold-out or lead times above 12 weeks
+• "GPU Capacity Tightening" (warning): if the GPU benchmark explicitly describes any current product generation as supply-constrained
 • "Rates Rising" (warning): if TLT RS1M is below −2%
 • "SaaS Discount Window" (opportunity): if SaaS average NTM multiple is materially compressed from peak (well below 2021 highs, indicating buyer leverage on renewals)
 • "Data Center Supply Gap" (warning): if DC demand is outpacing new construction
@@ -60,26 +60,25 @@ RISK ALERTS — generate one entry per condition that is TRUE in the current dat
 
 PROSE ANCHORS:
 • morningBrief headline: priority — (1) if Defensive AND VIX > 20 → risk-off framing; (2) if TLT RS1M below −3% AND DXY RS1M below −5% → macro dislocation framing; (3) else → lead with the dominant sector rotation (strongest sector vs weakest)
-• paragraph 2 (infrastructure): required order — GPU supply status FIRST, then SaaS multiples, then CapEx direction
-• paragraph 3 (action): lead with EXPOSURE GUIDANCE verdict; always add GPU exception if supply is tight
+• morningBrief is interpretation and synthesis only, approximately 200–250 words maximum across all its fields. Do not repeat whole Market Status, FinOps Signals, Risk Alerts, Sector Insights, Commitment Windows, valuation, CapEx, or AI-deal sections.
+• distinguish measured market data from benchmark claims and interpretation; use cautious language for estimates, targets, and reported claims
+• action: lead with EXPOSURE GUIDANCE verdict; add a GPU exception only if the supplied benchmark supports it
 • sectorInsights: lead with the highest RS1M sector from SECTOR LEADERS, acknowledge the lowest, connect to cloud budget implications
-• hyperscalerCapex.detail: lead with CapEx trend direction (Expanding/Stable/Contracting), then connect to GPU supply implication
 
 Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
 
 {
   "morningBrief": {
-    "headline": "the single market story today — 10-12 words max, framed per PROSE ANCHORS above",
-    "paragraphs": [
-      "paragraph 1 (market story): 4-6 sentences. Lead with the narrative. Cite specific instruments by name — sector ETFs (XLK, XLV, XLE, etc.) from SECTOR LEADERS, individual stocks from MOMENTUM LEADERS, macro tickers (TLT, HYG, DXY). Include breadth percentages, VIX level and trend, trend alignment. Audience is senior FinOps and finance professionals — analyst depth, not summary. Example: 'Tech is carrying the market while everything else retreats — XLK leads with +2.3 RS as healthcare and staples lag by more than 3 RS points. VIX at 19 is controlled anxiety, not panic; breadth is holding at 73% above the 50-day MA despite the Defensive guidance. Bonds are selling off hard (TLT -6.2% in a month) while the dollar weakens — a split macro signal that complicates duration decisions. Small caps are underperforming QQQ by 0.9 RS spread, confirming risk-off rotation into quality large cap.'",
-      "paragraph 2 (infrastructure angle): 4-6 sentences. GPU supply status FIRST (required order), then SaaS multiples, then hyperscaler CapEx. Cite specific supply data and numbers from CLOUD INFRASTRUCTURE CONTEXT. Reference rate context (TLT RS1M) and credit (HYG) where relevant to infrastructure spend. Name the instruments. Example: 'Hopper is sold out market-wide and Blackwell books into August-September 2026 — if you do not have GPU capacity locked today, you are waiting until at least Q4. Hyperscalers are in full expansion mode (Expanding guidance across AWS, Azure, GCP) but all that capital is chasing allocation already spoken for. SaaS multiples sit at 6.5× NTM Revenue — well off 2021 highs of 20x+, meaning software vendors are negotiable. Data center demand is outpacing new construction for the first time since 2020: absorption up 38% while the construction pipeline contracted 5.6% per CBRE H2 2025.'",
-      "paragraph 3 (FinOps action): 2-3 sentences. EXPOSURE GUIDANCE determines the primary recommendation. Always surface the GPU exception if supply is tight. Name what to do and why — direct and specific. Example: 'With Defensive signal at 21/100, hold new 1-year cloud commits unless the workload is business-critical — wait for a Risk-On signal before extending duration. GPU capacity is the one exception: lock Blackwell allocation now before the Aug-Sep booking window closes.'"
-    ]
+    "headline": "single market story, 10-12 words",
+    "marketRead": "2-3 concise sentences synthesizing the dominant measured market signal without listing the dashboard",
+    "whatChanged": ["up to three short bullets; measured changes only"],
+    "cloudFinanceImplications": ["one or two short bullets; interpretation, not repeated raw panels"],
+    "action": "one clear action or decision to monitor"
   },
   "finopsSignals": {
-    "cloudSpend": "apply cloudSpend anchor above. Start with a verb. Cite exposure level.",
-    "saasRenewals": "apply saasRenewals anchor above. Start with a verb. Cite SaaS multiple and HYG conditions.",
-    "infrastructure": "apply infrastructure anchor above. Start with a verb. Cite GPU supply status and booking timeline."
+    "cloudSpend": "one operational sentence; do not repeat Lumen",
+    "saasRenewals": "one operational sentence; do not repeat Lumen",
+    "infrastructure": "one operational sentence; do not repeat Lumen"
   },
   "commitmentWindows": {
     "oneYear": {
@@ -98,7 +97,7 @@ Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
   "riskAlerts": [
     { "type": "warning or opportunity", "title": "3-5 word title", "message": "1-2 sentences citing the specific data value that triggered this alert" }
   ],
-  "sectorInsights": "lead with the highest RS1M sector from SECTOR LEADERS above, acknowledge the lowest, connect to cloud budget implications. One paragraph.",
+  "sectorInsights": "maximum two short sentences: strongest rotation, weakest rotation, and only the direct budget implication",
   "cloudValuations": {
     "publicCloud": "Use the Public Cloud NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
     "saasAverage": "Use the SaaS Average NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
@@ -106,9 +105,8 @@ Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
   },
   "hyperscalerCapex": {
     "trend": "Use the Hyperscaler CapEx Trend from CLOUD INFRASTRUCTURE CONTEXT above",
-    "gpuLeadTimes": "Use the GPU Lead Times value from CLOUD INFRASTRUCTURE CONTEXT above",
-    "dataCenterGrowth": "Use the Data Center Construction value from CLOUD INFRASTRUCTURE CONTEXT above",
-    "detail": "lead with CapEx trend direction (Expanding/Stable/Contracting), then connect to GPU supply implication. One sentence."
+    "gpuSupplyStatus": "Use the GPU Supply Status value from CLOUD INFRASTRUCTURE CONTEXT above",
+    "dataCenterGrowth": "Use the Data Center Construction value from CLOUD INFRASTRUCTURE CONTEXT above"
   },
   "generatedAt": "${new Date().toISOString()}"
 }`
@@ -148,16 +146,16 @@ export async function POST(req: Request) {
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 2600,
+      max_tokens: 1800,
       system: [
         {
           type: 'text',
-          text: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support with numbers. One clear takeaway per paragraph. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct, confident, and specific. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field — morningBrief paragraphs, finopsSignals, commitmentWindows reasons, riskAlerts, sectorInsights, and all captions. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
+          text: 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.',
           cache_control: { type: 'ephemeral' },
         },
       ],
       messages: [{ role: 'user', content: buildPrompt(context, multiples) }],
-    })
+    }, { signal: AbortSignal.timeout(65_000) })
 
     const text = message.content[0].type === 'text' ? message.content[0].text : ''
     const data = parseResponse(text)
@@ -177,7 +175,9 @@ export async function POST(req: Request) {
       `[intelligent-brief:timing] marketDataMs=${Math.round((marketDataFailed ? failedAt : marketDataCompletedAt) - requestStartedAt)} ` +
       `claudeMs=${marketDataFailed ? 0 : Math.round(failedAt - claudeStartedAt)} totalMs=${Math.round(failedAt - requestStartedAt)} failed=true`,
     )
-    console.error('Intelligent brief error:', err)
-    return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
+    const errorStatus = typeof err === 'object' && err !== null && 'status' in err ? String(err.status) : 'unknown'
+    const errorName = err instanceof Error ? err.name : 'UnknownError'
+    console.error(`[intelligent-brief:error] name=${errorName} status=${errorStatus}`)
+    return NextResponse.json({ success: false, error: 'Analysis is temporarily unavailable.' }, { status: 500 })
   }
 }

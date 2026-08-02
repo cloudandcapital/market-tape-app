@@ -23,7 +23,7 @@ function daysUntilDue(dueDateStr: string): number {
 }
 
 function formatDate(str: string): string {
-  return new Date(str).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 const entries = Object.entries(BENCHMARKS)

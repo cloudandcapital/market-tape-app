@@ -136,17 +136,12 @@ export function IntelligentMiddle() {
       <div className="divide-y divide-charcoal/8">
         <Row label="AWS/Azure/GCP" value={hyperscalerCapex.trend}
           color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'}
-          tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <Row label="GPU Supply"    value={hyperscalerCapex.gpuLeadTimes}  color="#C9A961"
+          tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
+        <Row label="GPU Supply"    value={hyperscalerCapex.gpuSupplyStatus}  color="#C9A961"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
         <Row label="Data Center"   value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
-      {hyperscalerCapex.detail && (
-        <p className="font-mono text-[0.48rem] tracking-[0.06em] text-charcoal/30 mt-2 leading-relaxed">
-          {hyperscalerCapex.detail}
-        </p>
-      )}
     </div>
   )
 }

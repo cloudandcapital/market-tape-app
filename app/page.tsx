@@ -2,7 +2,7 @@ import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/l
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
-import MomentumLeaderboard, { MomentumLaggards } from '@/components/MomentumLeaderboard'
+import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
 import { IntelligentMiddle, IntelligentRight } from '@/components/IntelligentSignals'
@@ -69,6 +69,7 @@ export default async function Page() {
                 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: '#191714', lineHeight: 1.1 }}>
                 Market Tape
               </h1>
+              <p className="font-mono text-[0.68rem] leading-relaxed text-charcoal/50 mt-2 max-w-xl">Market, cloud, and AI infrastructure signals for technology finance decisions.</p>
             </div>
             <div className="text-right">
               <p className="text-[10px] font-mono text-charcoal/40">{formatTime(meta.generated_at_utc)}</p>
@@ -93,23 +94,21 @@ export default async function Page() {
               <SectorLeaders meta={meta} snapshot={snapshot} />
             </div>
 
-            {/* Middle: FinOps · Commitment · Cloud Val · CapEx · Laggards */}
+            {/* Middle: FinOps · Commitment · Cloud Val · CapEx */}
             <div className="md:col-span-1">
               <IntelligentMiddle />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLaggards meta={meta} />
             </div>
 
-            {/* Right: Tech Concentration · Risk Alerts · Sector Insights · Momentum Leaders */}
+            {/* Right: Tech Concentration · Risk Alerts · Sector Insights */}
             <div className="md:col-span-1">
               <TechConcentration snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <IntelligentRight />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLeaderboard meta={meta} />
             </div>
 
           </div>
+
+          <MomentumLeaderboard meta={meta} />
 
           {/* Full methodology-aware tracker follows the primary market dashboard. */}
           <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
