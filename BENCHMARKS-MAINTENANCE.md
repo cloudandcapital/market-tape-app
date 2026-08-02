@@ -43,7 +43,7 @@ Four entries remain that require manual quarterly or semi-annual review:
 | `gpuSupplyStatus` | Hopper sold out · Blackwell ~16-20 weeks | SemiAnalysis (Apr 2026) | Quarterly |
 | `dataCenterConstructionYoY` | Demand +38% / construction -5.6% YoY | CBRE H2 2025 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
-| `hyperscalerCapexTrend` | Expanding | Q1 2026 earnings guidance | Quarterly |
+| `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |
 
 ### Where to find updated values
 
@@ -51,7 +51,7 @@ Four entries remain that require manual quarterly or semi-annual review:
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
-**Hyperscaler CapEx trend** — AWS/Azure/GCP earnings calls (quarterly). If all three are guiding up, it's Expanding. If guidance is flat or mixed, Stable. Contracting if spending guidance comes down. Update after Q2 and Q4 earnings.
+**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, and Meta earnings calls (quarterly). Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current Q2 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $130–145B. Update after each earnings cycle.
 
 **SaaS 2021 peak multiple** — Historical reference. Only review to confirm the narrative framing ("compressed from 2021 peaks") is still accurate context. Rarely needs updating.
 

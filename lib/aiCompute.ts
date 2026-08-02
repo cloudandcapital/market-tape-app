@@ -5,11 +5,13 @@ export interface AiComputeRow {
   gw: string
   term: string
   announced: string
+  status: 'Signed' | 'Announced' | 'Target' | 'Reported / in talks'
   sourceUrl: string
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260727a'
+export const AI_COMPUTE_DATA_VERSION = '20260802a'
+export const AI_COMPUTE_LAST_UPDATED = '2026-08-02'
 
 export const aiComputeData: AiComputeRow[] = [
   {
@@ -19,6 +21,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '5 GW',
     term: '10 years',
     announced: 'Apr 2026',
+    status: 'Signed',
     sourceUrl: 'https://www.anthropic.com/news/anthropic-amazon-compute',
     notes: 'Anthropic blog, Apr 2026',
   },
@@ -29,6 +32,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '3.5 GW TPU',
     term: '5 years (starts 2027)',
     announced: 'Apr 2026',
+    status: 'Signed',
     sourceUrl: 'https://www.anthropic.com/news/google-broadcom-partnership-compute',
     notes: 'Financing closed June 2026: Apollo Global Management + Blackstone closed private credit package via SPV that purchases Google TPUs and leases back to Anthropic. Infrastructure online starting 2027. Anthropic run-rate revenue ~$30B as of Jun 2026.',
   },
@@ -39,6 +43,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '300 MW / 220K+ NVIDIA GPUs',
     term: '3 years',
     announced: 'May 20, 2026',
+    status: 'Reported / in talks',
     sourceUrl: 'https://techcrunch.com/2026/05/20/anthropic-will-pay-xai-1-25-billion-per-month-for-compute/',
     notes: 'TechCrunch + xAI blog, May 20 2026',
   },
@@ -49,6 +54,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '2 GW (1st GW H1 2027)',
     term: 'Starts H1 2027',
     announced: 'Jul 22, 2026',
+    status: 'Announced',
     sourceUrl: 'https://ir.amd.com/news-events/press-releases/detail/1292/amd-and-anthropic-announce-strategic-partnership-to-deploy-up-to-2-gigawatts-of-amd-instinct-mi450-series-gpus',
     notes: "AMD makes a strategic equity investment (up to $5B) in Anthropic, released as Anthropic hits deployment milestones; server purchase 'tens of billions' (WSJ). Anthropic's 4th distinct compute supplier (AWS Trainium, Google TPU, xAI/SpaceX, now AMD) — a compute-diversification story. AMD's largest counter to NVIDIA's grip on frontier-lab training/inference. Distinct from the Meta × AMD $60B/6GW row. Sources: AMD IR press release (primary), CNBC, Yahoo Finance.",
   },
@@ -59,18 +65,9 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '10 GW target / 7 GW planned',
     term: '2025–2029',
     announced: 'Jan 2025 (updated May 2026)',
+    status: 'Target',
     sourceUrl: 'https://openai.com/index/building-the-compute-infrastructure-for-the-intelligence-age/',
     notes: 'OpenAI blog, May 2026',
-  },
-  {
-    buyer: 'OpenAI',
-    provider: 'Microsoft Azure',
-    amount: 'ongoing (overflow + existing traffic)',
-    gw: '—',
-    term: 'ongoing',
-    announced: '2024+',
-    sourceUrl: 'https://blogs.microsoft.com/blog/2026/04/27/the-next-phase-of-the-microsoft-openai-partnership/',
-    notes: 'OpenAI / Microsoft partnership',
   },
   {
     buyer: 'OpenAI',
@@ -79,6 +76,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '5 GW (3 inference + 2 training)',
     term: '—',
     announced: 'Feb 2026',
+    status: 'Reported / in talks',
     sourceUrl: 'https://www.cnbc.com/2026/02/19/nvidia-is-in-talks-to-invest-up-to-30-billion-in-openai-source-says.html',
     notes: 'Restructured from the Sept 2025 $100B infrastructure LOI (10 GW target) into a direct $30B equity stake in OpenAI\'s Feb 2026 funding round. CNBC Feb 19, 2026.',
   },
@@ -89,6 +87,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '—',
     term: 'multi-year',
     announced: 'Feb 2026',
+    status: 'Announced',
     sourceUrl: 'https://nvidianews.nvidia.com/news/meta-builds-ai-infrastructure-with-nvidia',
     notes: "Tom's Hardware, Feb 2026",
   },
@@ -99,6 +98,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '6 GW',
     term: '5 years',
     announced: 'Feb 24, 2026',
+    status: 'Signed',
     sourceUrl: 'https://about.fb.com/news/2026/02/meta-amd-partner-longterm-ai-infrastructure-agreement/',
     notes: "TECHi / Tom's Hardware, Feb 24 2026",
   },
@@ -109,6 +109,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '—',
     term: '—',
     announced: '2026',
+    status: 'Reported / in talks',
     sourceUrl: 'https://techcrunch.com/2026/04/24/in-another-wild-turn-for-ai-chips-meta-signs-deal-for-millions-of-amazon-ai-cpus/',
     notes: 'The Next Web, 2026',
   },
@@ -119,6 +120,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '—',
     term: '—',
     announced: 'Apr 15, 2026',
+    status: 'Signed',
     sourceUrl: 'https://investors.coreweave.com/news/news-details/2026/Jane-Street-Signs-6-Billion-AI-Cloud-Agreement-With-CoreWeave/default.aspx',
     notes: 'Financial trading firm as major AI cloud buyer — signals enterprise/financial sector emerging as serious compute demand category alongside AI labs. CoreWeave IR, Apr 2026.',
   },
@@ -129,6 +131,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '750 MW',
     term: 'Multi-year',
     announced: 'Jun 23, 2026',
+    status: 'Announced',
     sourceUrl: 'https://openai.com/index/cerebras-partnership/',
     notes: 'First non-GPU deal at Market Tape scale — Cerebras WSE (wafer-scale engine) chips optimized for inference throughput, not GPU clusters. Inference-optimized architecture at hyperscale is a new market category. Cerebras Q1 FY2026 revenue $193M+. Sources: OpenAI blog, GlobeNewswire Q1 results, Reuters.',
   },
@@ -139,6 +142,7 @@ export const aiComputeData: AiComputeRow[] = [
     gw: '—',
     term: 'Oct 2026 – Jun 2029 (32 months)',
     announced: 'Jun 5, 2026',
+    status: 'Reported / in talks',
     sourceUrl: 'https://techcrunch.com/2026/06/05/google-will-pay-spacex-920m-per-month-for-compute/',
     notes: '~110,000 NVIDIA GPUs hosted at xAI data centers. Bridge capacity for unexpected Gemini Enterprise demand surge while Google builds its own infrastructure. Terminable with 90 days notice after Dec 31, 2026. Notable inversion: a hyperscaler (Google) as the compute buyer, not the supplier — complicates the standard "AI lab rents from hyperscaler" framing.',
   },

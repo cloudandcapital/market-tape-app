@@ -5,6 +5,7 @@ import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intell
 
 const CACHE_KEY = 'intelligent-brief-v11'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
+const REQUEST_TIMEOUT_MS = 18_000
 
 interface IntelligentState {
   data: BriefResponse | null
@@ -72,12 +73,16 @@ export function IntelligentProvider({ contextData, children }: Props) {
     }
     setLoading(true)
     setError(false)
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     try {
       const res = await fetch('/api/intelligent-brief', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ context: contextData }),
+        signal: controller.signal,
       })
+      if (!res.ok) throw new Error('Analysis request failed')
       const json = await res.json()
       if (json.success && json.data) {
         setData(json.data)
@@ -97,11 +102,15 @@ export function IntelligentProvider({ contextData, children }: Props) {
         if (raw) { const c: CachedBrief = JSON.parse(raw); setData(c.data) }
       } catch {}
     } finally {
+      window.clearTimeout(timeout)
       setLoading(false)
     }
   }, [contextData, hash])
 
-  useEffect(() => { fetchBrief() }, [fetchBrief])
+  useEffect(() => {
+    const kickoff = window.setTimeout(() => void fetchBrief(), 0)
+    return () => window.clearTimeout(kickoff)
+  }, [fetchBrief])
 
   const cachedAt = data ? formatCachedAt(data) : null
 
@@ -118,7 +127,7 @@ export function IntelligentProvider({ contextData, children }: Props) {
 }
 
 function BriefSection() {
-  const { data, loading, error, cachedAt, refresh } = useIntelligent()
+  const { data, loading, cachedAt, refresh } = useIntelligent()
 
   return (
     <div style={{ background: '#fefdfb' }}>
@@ -164,9 +173,14 @@ function BriefSection() {
         )}
 
         {!loading && !data && (
-          <p className="font-mono text-[0.73rem] py-3" style={{ color: 'rgba(0,0,0,0.35)' }}>
-            Analysis unavailable. Check ANTHROPIC_API_KEY environment variable.
-          </p>
+          <div className="flex flex-wrap items-center gap-3 py-3">
+            <p className="font-mono text-[0.73rem]" style={{ color: 'rgba(0,0,0,0.35)' }}>
+              Analysis is temporarily unavailable. Market data below is still current.
+            </p>
+            <button onClick={refresh} className="font-mono text-[0.52rem] tracking-[0.12em] uppercase text-charcoal/40 hover:text-charcoal/70">
+              Try again
+            </button>
+          </div>
         )}
 
         {!loading && data && (

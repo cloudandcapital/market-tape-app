@@ -2,6 +2,7 @@ import { BENCHMARKS } from '@/lib/industryBenchmarks'
 import { BASKETS } from '@/lib/liveMultiples'
 import { aiComputeData } from '@/lib/aiCompute'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Data Sources — Market Tape | Cloud & Capital',
@@ -103,8 +104,10 @@ export default function SourcesPage() {
         <SectionTitle>AI Compute Commitments</SectionTitle>
 
         <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
-          The $1.5T+ commitment table is compiled manually from public announcements and press releases.
-          Each row is sourced individually. The data is static until a new deal is announced —
+          This major-deal tracker is compiled manually from public announcements and press releases.
+          Each row is sourced and classified individually as Signed, Announced, Target, or Reported / in talks.
+          Dollar values and capacity are not aggregated because those categories are not economically equivalent.
+          The table excludes ongoing relationships with no disclosed value or capacity. The data is static until a material update —
           source code at{' '}
           <a
             href="https://github.com/cloudandcapital/market-tape-app/blob/main/lib/aiCompute.ts"
@@ -124,7 +127,7 @@ export default function SourcesPage() {
                   {row.buyer} — {row.provider}
                 </p>
                 <p className="font-mono text-[0.6rem] text-charcoal/45">
-                  {row.amount} · {row.gw} · {row.term} · announced {row.announced}
+                  {row.status} · {row.amount} · {row.gw} · {row.term} · announced {row.announced}
                 </p>
                 {row.notes && (
                   <p className="font-mono text-[0.58rem] text-charcoal/35 italic mt-0.5 leading-relaxed">
@@ -193,7 +196,7 @@ export default function SourcesPage() {
         {/* Footer */}
         <div className="mt-14 pt-5 border-t border-charcoal/8">
           <p className="font-mono text-[0.58rem] text-charcoal/30">
-            <a href="/" className="hover:text-charcoal/55 transition-colors">← Back to Market Tape</a>
+            <Link href="/" className="hover:text-charcoal/55 transition-colors">← Back to Market Tape</Link>
             {' · '}
             <a
               href="https://github.com/cloudandcapital/market-tape-app"

@@ -1,11 +1,17 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { aiComputeData, AI_COMPUTE_DATA_VERSION, type AiComputeRow } from '@/lib/aiCompute'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  aiComputeData,
+  AI_COMPUTE_DATA_VERSION,
+  AI_COMPUTE_LAST_UPDATED,
+  type AiComputeRow,
+} from '@/lib/aiCompute'
 
 const CACHE_KEY = `ai-compute-brief-${AI_COMPUTE_DATA_VERSION}`
 const CACHE_DURATION = 24 * 60 * 60 * 1000
-const FALLBACK = "$1.5T+ in AI compute committed across hyperscalers and AI labs in the past 18 months — with ~35 GW locked or in progress. The Anthropic-Google $200B deal and Anthropic-xAI Colossus lease both closed in May 2026. Reservation windows are tightening: the labs buying the most compute are simultaneously the most constrained on capacity."
+const REQUEST_TIMEOUT_MS = 18_000
+const FALLBACK = 'Major AI compute deals now span signed agreements, announced partnerships, infrastructure targets, and reported negotiations. Finance teams should evaluate each row by status rather than treating the tracker as a single committed total.'
 
 function loadCachedAnalysis(): string | null {
   try {
@@ -18,83 +24,60 @@ function loadCachedAnalysis(): string | null {
 }
 
 function saveCachedAnalysis(analysis: string) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ analysis, timestamp: Date.now() }))
-  } catch {}
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ analysis, timestamp: Date.now() })) } catch {}
+}
+
+function StatusBadge({ status }: { status: AiComputeRow['status'] }) {
+  return (
+    <span className="inline-block rounded-full border border-charcoal/10 px-2 py-0.5 font-mono text-[0.52rem] tracking-[0.05em] text-charcoal/55 whitespace-nowrap">
+      {status}
+    </span>
+  )
 }
 
 function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
   return (
-    <table className="w-full border-collapse hidden md:table">
-      <thead>
-        <tr>
-          {['Buyer', 'Compute Provider', '$ Committed', 'GW Locked', 'Term', 'Announced', 'Source'].map(h => (
-            <th key={h} className="text-left font-mono text-[0.48rem] tracking-[0.16em] uppercase text-charcoal/35 pb-2.5 pr-3 font-normal">
-              {h}
-            </th>
+    <div className="hidden md:block overflow-x-auto">
+      <table className="w-full min-w-[920px] border-collapse">
+        <thead><tr>
+          {['Buyer', 'Compute Provider', 'Status', 'Disclosed value', 'Capacity', 'Term', 'Announced', 'Source'].map(h => (
+            <th key={h} className="text-left font-mono text-[0.48rem] tracking-[0.16em] uppercase text-charcoal/35 pb-2.5 pr-3 font-normal">{h}</th>
           ))}
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-charcoal/8">
-        {rows.map((row, i) => (
-          <tr key={i}>
-            <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-[0.38rem] pr-3 whitespace-nowrap">{row.buyer}</td>
-            <td className="font-mono text-[0.68rem] text-charcoal/60 py-[0.38rem] pr-3">{row.provider}</td>
-            <td className="font-mono text-[0.72rem] font-medium py-[0.38rem] pr-3 whitespace-nowrap" style={{ color: '#6B8E7F' }}>{row.amount}</td>
-            <td className="font-mono text-[0.68rem] text-charcoal/60 py-[0.38rem] pr-3 whitespace-nowrap">{row.gw}</td>
-            <td className="font-mono text-[0.68rem] text-charcoal/55 py-[0.38rem] pr-3">{row.term}</td>
-            <td className="font-mono text-[0.68rem] text-charcoal/55 py-[0.38rem] pr-3 whitespace-nowrap">{row.announced}</td>
-            <td className="py-[0.38rem]">
-              <a
-                href={row.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-mono text-[0.6rem] tracking-[0.1em] uppercase transition-colors"
-                style={{ color: 'rgba(0,0,0,0.25)' }}
-                onMouseEnter={e => (e.currentTarget.style.color = '#6B8E7F')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.25)')}
-                aria-label={`Source for ${row.buyer} ${row.provider} deal`}
-              >
-                ↗
-              </a>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+        </tr></thead>
+        <tbody className="divide-y divide-charcoal/8">
+          {rows.map(row => (
+            <tr key={`${row.buyer}-${row.provider}`}>
+              <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">{row.buyer}</td>
+              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3">{row.provider}</td>
+              <td className="py-2 pr-3"><StatusBadge status={row.status} /></td>
+              <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}</td>
+              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.gw}</td>
+              <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3">{row.term}</td>
+              <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3 whitespace-nowrap">{row.announced}</td>
+              <td className="py-2"><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.6rem] text-charcoal/30 hover:text-sage transition-colors" aria-label={`Source for ${row.buyer} ${row.provider}`}>↗</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
 function MobileCards({ rows }: { rows: AiComputeRow[] }) {
   return (
-    <div className="md:hidden space-y-3">
-      {rows.map((row, i) => (
-        <div key={i} className="py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-          <div className="flex items-baseline justify-between mb-1">
-            <span className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</span>
-            <span className="font-mono text-[0.72rem] font-medium" style={{ color: '#6B8E7F' }}>{row.amount}</span>
+    <div className="md:hidden space-y-1">
+      {rows.map(row => (
+        <article key={`${row.buyer}-${row.provider}`} className="py-4 border-b border-charcoal/8">
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <div><p className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</p><p className="font-mono text-[0.65rem] text-charcoal/55 mt-0.5">{row.provider}</p></div>
+            <StatusBadge status={row.status} />
           </div>
-          <p className="font-mono text-[0.65rem] text-charcoal/55 mb-1">{row.provider}</p>
-          <div className="flex flex-wrap gap-x-3 gap-y-0.5">
-            <span className="font-mono text-[0.62rem] text-charcoal/45">{row.gw}</span>
-            <span className="font-mono text-[0.62rem] text-charcoal/35">·</span>
-            <span className="font-mono text-[0.62rem] text-charcoal/45">{row.term}</span>
-            <span className="font-mono text-[0.62rem] text-charcoal/35">·</span>
-            <span className="font-mono text-[0.62rem] text-charcoal/45">{row.announced}</span>
-            <a
-              href={row.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-[0.62rem] transition-colors"
-              style={{ color: 'rgba(0,0,0,0.25)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#6B8E7F')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.25)')}
-              aria-label="Source"
-            >
-              ↗ source
-            </a>
+          <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount}</p>
+          <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.62rem] text-charcoal/45">
+            <span>{row.gw}</span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
+            <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-charcoal/35 hover:text-charcoal/60">↗ source</a>
           </div>
-        </div>
+        </article>
       ))}
     </div>
   )
@@ -105,78 +88,61 @@ export default function AIComputeCommitments() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  useEffect(() => {
-    const cached = loadCachedAnalysis()
-    if (cached) {
-      setAnalysis(cached)
-      setLoading(false)
-      return
-    }
+  const statusCounts = useMemo(() => aiComputeData.reduce<Record<string, number>>((counts, row) => {
+    counts[row.status] = (counts[row.status] ?? 0) + 1
+    return counts
+  }, {}), [])
 
-    fetch('/api/ai-compute-brief')
-      .then(r => {
-        if (!r.ok) throw new Error('fetch failed')
-        return r.json()
-      })
-      .then(json => {
-        const text = json.analysis as string | null
-        setAnalysis(text || FALLBACK)
-        if (text) saveCachedAnalysis(text)
-      })
-      .catch(() => {
-        setError(true)
-        setAnalysis(FALLBACK)
-      })
-      .finally(() => setLoading(false))
+  const fetchAnalysis = useCallback(async (force = false) => {
+    if (!force) {
+      const cached = loadCachedAnalysis()
+      if (cached) { setAnalysis(cached); setLoading(false); return }
+    }
+    setLoading(true)
+    setError(false)
+    const controller = new AbortController()
+    const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+    try {
+      const response = await fetch('/api/ai-compute-brief', { signal: controller.signal })
+      if (!response.ok) throw new Error('AI compute analysis request failed')
+      const json = await response.json()
+      const text = json.analysis as string | null
+      setAnalysis(text || FALLBACK)
+      if (text) saveCachedAnalysis(text)
+    } catch {
+      setError(true)
+      setAnalysis(null)
+    } finally {
+      window.clearTimeout(timeout)
+      setLoading(false)
+    }
   }, [])
 
+  useEffect(() => {
+    const kickoff = window.setTimeout(() => void fetchAnalysis(), 0)
+    return () => window.clearTimeout(kickoff)
+  }, [fetchAnalysis])
+
   return (
-    <section>
-      {/* Section label — matches existing pattern exactly */}
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
-        AI Compute Commitments
-      </h2>
+    <section id="ai-compute-tracker">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">AI Compute Commitments</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
+        <div><p className="font-serif text-2xl text-charcoal">{aiComputeData.length}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/40">tracked deals</p></div>
+        {Object.entries(statusCounts).map(([status, count]) => <div key={status}><p className="font-serif text-2xl text-charcoal">{count}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/40">{status}</p></div>)}
+      </div>
+      <p className="font-mono text-[0.62rem] text-charcoal/45 mb-4">Last updated {AI_COMPUTE_LAST_UPDATED} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
 
-      {/* Headline number */}
-      <div className="mb-3">
-        <p
-          className="font-serif font-medium leading-tight"
-          style={{ fontSize: 'clamp(1.35rem, 3vw, 1.85rem)', color: '#191714' }}
-        >
-          $1.5T+
-        </p>
-        <p className="font-mono text-[0.65rem] tracking-[0.06em] text-charcoal/50 mt-0.5">
-          committed across major AI compute deals in the past 18 months · ~35 GW locked capacity
-        </p>
+      <div className="mb-5 min-h-8">
+        {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :
+          error ? <div className="flex flex-wrap items-center gap-3"><p className="font-serif italic text-[0.82rem] text-charcoal/55">Analysis is temporarily unavailable. Tracker data below is still current.</p><button onClick={() => void fetchAnalysis(true)} className="font-mono text-[0.55rem] uppercase tracking-[0.1em] text-charcoal/45 hover:text-charcoal/70">Try again</button></div> :
+          <p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p>}
       </div>
 
-      {/* Lumen analysis line */}
-      <div className="mb-5">
-        {loading ? (
-          <div className="flex items-center gap-2">
-            {[0, 1, 2].map(i => (
-              <span
-                key={i}
-                className="block w-1 h-1 rounded-full animate-pulse"
-                style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }}
-              />
-            ))}
-          </div>
-        ) : (
-          <p
-            className="font-serif italic text-[0.82rem] leading-relaxed"
-            style={{ color: error ? '#6B8E7F' : '#6B8E7F' }}
-          >
-            {analysis}
-          </p>
-        )}
-      </div>
-
-      {/* Table — desktop */}
-      <DesktopTable rows={aiComputeData} />
-
-      {/* Cards — mobile */}
-      <MobileCards rows={aiComputeData} />
+      <details className="group border-t border-charcoal/10 pt-3">
+        <summary className="cursor-pointer list-none font-mono text-[0.62rem] uppercase tracking-[0.12em] text-charcoal/55 hover:text-charcoal/80 mb-3">View full tracker <span aria-hidden="true" className="group-open:hidden">↓</span><span aria-hidden="true" className="hidden group-open:inline">↑</span></summary>
+        <DesktopTable rows={aiComputeData} />
+        <MobileCards rows={aiComputeData} />
+      </details>
     </section>
   )
 }

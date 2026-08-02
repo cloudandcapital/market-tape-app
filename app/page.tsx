@@ -2,7 +2,6 @@ import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/l
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
-import AIInfraCard from '@/components/AIInfraCard'
 import MomentumLeaderboard, { MomentumLaggards } from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
@@ -82,11 +81,6 @@ export default async function Page() {
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
         <IntelligentProvider contextData={contextData}>
 
-          {/* AI Compute Commitments — high visibility, just below Lumen's main Read */}
-          <div className="mb-8 px-7 py-5 overflow-x-auto" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
-            <AIComputeCommitments />
-          </div>
-
           {/* 3-column data grid — rendered after the brief */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
 
@@ -115,6 +109,11 @@ export default async function Page() {
               <MomentumLeaderboard meta={meta} />
             </div>
 
+          </div>
+
+          {/* Full methodology-aware tracker follows the primary market dashboard. */}
+          <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
+            <AIComputeCommitments />
           </div>
 
           <footer className="mt-12 pt-5 border-t border-charcoal/10">
