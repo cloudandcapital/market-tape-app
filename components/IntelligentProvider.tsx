@@ -5,7 +5,7 @@ import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intell
 
 const CACHE_KEY = 'intelligent-brief-v11'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
-const REQUEST_TIMEOUT_MS = 45_000
+const REQUEST_TIMEOUT_MS = 75_000
 
 interface IntelligentState {
   data: BriefResponse | null
