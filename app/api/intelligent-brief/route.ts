@@ -134,16 +134,21 @@ function parseResponse(text: string): BriefResponse {
 }
 
 export async function POST(req: Request) {
+  const requestStartedAt = performance.now()
+  let marketDataCompletedAt = requestStartedAt
+  let claudeStartedAt = requestStartedAt
   try {
     const { context }: { context: MarketContextData } = await req.json()
 
     // Fetch live multiples in parallel with no extra latency — Next.js cache
     // serves subsequent calls within the 30-min window from memory.
     const multiples = await fetchLiveMultiples()
+    marketDataCompletedAt = performance.now()
+    claudeStartedAt = marketDataCompletedAt
 
     const message = await client.messages.create({
       model: 'claude-sonnet-4-6',
-      max_tokens: 3500,
+      max_tokens: 2200,
       system: [
         {
           type: 'text',
@@ -156,11 +161,22 @@ export async function POST(req: Request) {
 
     const text = message.content[0].type === 'text' ? message.content[0].text : ''
     const data = parseResponse(text)
+    const completedAt = performance.now()
+    console.info(
+      `[intelligent-brief:timing] marketDataMs=${Math.round(marketDataCompletedAt - requestStartedAt)} ` +
+      `claudeMs=${Math.round(completedAt - claudeStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)}`,
+    )
 
     return NextResponse.json({ success: true, data }, {
       headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' },
     })
   } catch (err) {
+    const failedAt = performance.now()
+    const marketDataFailed = claudeStartedAt === requestStartedAt
+    console.info(
+      `[intelligent-brief:timing] marketDataMs=${Math.round((marketDataFailed ? failedAt : marketDataCompletedAt) - requestStartedAt)} ` +
+      `claudeMs=${marketDataFailed ? 0 : Math.round(failedAt - claudeStartedAt)} totalMs=${Math.round(failedAt - requestStartedAt)} failed=true`,
+    )
     console.error('Intelligent brief error:', err)
     return NextResponse.json({ success: false, error: String(err) }, { status: 500 })
   }

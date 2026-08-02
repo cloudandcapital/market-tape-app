@@ -36,6 +36,7 @@ ${JSON.stringify(aiComputeData, null, 2)}`
 }
 
 export async function GET() {
+  const requestStartedAt = performance.now()
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
@@ -44,11 +45,14 @@ export async function GET() {
       messages: [{ role: 'user', content: buildUserMessage() }],
     })
     const text = message.content[0]?.type === 'text' ? message.content[0].text.trim() : null
+    const completedAt = performance.now()
+    console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(completedAt - requestStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)}`)
     return NextResponse.json(
       { analysis: text || FALLBACK },
       { headers: { 'Cache-Control': 's-maxage=14400, stale-while-revalidate=86400' } },
     )
   } catch (err) {
+    console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(performance.now() - requestStartedAt)} totalMs=${Math.round(performance.now() - requestStartedAt)} failed=true`)
     console.error('AI compute brief error:', err)
     return NextResponse.json({ analysis: null }, { status: 503 })
   }
