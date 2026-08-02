@@ -60,7 +60,7 @@ RISK ALERTS — generate one entry per condition that is TRUE in the current dat
 
 PROSE ANCHORS:
 • morningBrief headline: priority — (1) if Defensive AND VIX > 20 → risk-off framing; (2) if TLT RS1M below −3% AND DXY RS1M below −5% → macro dislocation framing; (3) else → lead with the dominant sector rotation (strongest sector vs weakest)
-• morningBrief is interpretation and synthesis only, approximately 200–250 words maximum across all its fields. Do not repeat whole Market Status, FinOps Signals, Risk Alerts, Sector Insights, Commitment Windows, valuation, CapEx, or AI-deal sections.
+• morningBrief is interpretation and synthesis only: target 180–220 words and never exceed 230 words across all its fields. Keep marketRead under 75 words, each bullet under 18 words, and action under 25 words. Do not repeat whole Market Status, FinOps Signals, Risk Alerts, Sector Insights, Commitment Windows, valuation, CapEx, or AI-deal sections.
 • distinguish measured market data from benchmark claims and interpretation; use cautious language for estimates, targets, and reported claims
 • action: lead with EXPOSURE GUIDANCE verdict; add a GPU exception only if the supplied benchmark supports it
 • sectorInsights: lead with the highest RS1M sector from SECTOR LEADERS, acknowledge the lowest, connect to cloud budget implications
