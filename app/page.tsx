@@ -89,22 +89,26 @@ export default async function Page() {
 
           <div className="space-y-10 md:space-y-12">
             {/* Band 2 */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" aria-label="Primary market signals">
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" aria-label="Primary market signals">
               <MarketStatus meta={meta} />
               <div>
                 <FinOpsSignals />
                 <hr className="border-charcoal/10 my-6" />
                 <TechConcentration snapshot={snapshot} />
               </div>
-              <RiskAlerts />
             </section>
 
             {/* Band 3 */}
+            <section className="border-t border-charcoal/10 pt-8" aria-label="Risk alerts">
+              <RiskAlerts />
+            </section>
+
+            {/* Band 4 */}
             <section className="border-t border-charcoal/10 pt-8" aria-label="Commitment windows">
               <CommitmentWindows />
             </section>
 
-            {/* Band 4 */}
+            {/* Band 5 */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 border-t border-charcoal/10 pt-8" aria-label="Market internals and momentum">
               <div>
                 <MarketInternals snapshot={snapshot} />
@@ -116,7 +120,7 @@ export default async function Page() {
               </div>
             </section>
 
-            {/* Band 5 */}
+            {/* Band 6 */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-charcoal/10 pt-8" aria-label="Sector and cloud benchmarks">
               <Sectors snapshot={snapshot} />
               <div>
@@ -126,7 +130,7 @@ export default async function Page() {
               </div>
             </section>
 
-            {/* Band 6 */}
+            {/* Band 7 */}
             <section className="border-t border-charcoal/10 pt-8" aria-label="Hyperscaler capital expenditure">
               <HyperscalerCapex />
             </section>

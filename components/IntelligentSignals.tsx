@@ -40,14 +40,16 @@ function ValuationRow({ label, value, tooltip }: { label: string; value: string;
   const interpretation = value.split(/\s+—\s+/).slice(1).join(' — ').trim()
 
   return (
-    <div className="py-3 border-b border-charcoal/8">
-      <div className="flex items-center gap-1 mb-1">
+    <div className="py-2.5 border-b border-charcoal/8">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
-        <BenchmarkTooltip {...tooltip} />
+        <div className="flex items-center gap-1.5">
+          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{multiple} <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span></p>
+          <BenchmarkTooltip {...tooltip} />
+        </div>
       </div>
-      <p className="font-serif text-[1.25rem] leading-none text-charcoal">{multiple} <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span></p>
-      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-1">{periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
-      {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-relaxed mt-1.5">{interpretation}</p>}
+      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-0.5">{periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
+      {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
     </div>
   )
 }
@@ -191,22 +193,33 @@ export function RiskAlerts() {
   )
 
   if (!data) return null
-  const { riskAlerts } = data
+  const { riskAlerts, cloudValuations } = data
+
+  const sourceForAlert = (title: string): RowTooltip => {
+    if (/GPU/i.test(title)) {
+      return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
+    }
+    if (/SaaS/i.test(title)) return valuationTooltip(cloudValuations.saasAverage, 'saas')
+    return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }
+  }
 
   return (
     <div>
       {riskAlerts && riskAlerts.length > 0 && (
         <>
           <SectionLabel>Risk Alerts</SectionLabel>
-          <div className="space-y-3 mb-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
             {riskAlerts.map((alert, i) => (
-              <div key={i} className="flex items-start gap-2">
+              <div key={i} className="flex items-start gap-2 py-4 md:px-6 first:pl-0 last:pr-0">
                 <span className="text-[13px] flex-shrink-0 mt-0.5">
                   {alert.type === 'warning' ? '⚠️' : '✅'}
                 </span>
-                <div>
-                  <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none mb-1">{alert.title}</p>
-                  <p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed">{alert.message}</p>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1 mb-1">
+                    <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none">{alert.title}</p>
+                    <BenchmarkTooltip {...sourceForAlert(alert.title)} />
+                  </div>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65 leading-snug">{alert.message}</p>
                 </div>
               </div>
             ))}
