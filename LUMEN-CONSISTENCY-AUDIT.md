@@ -23,7 +23,7 @@
 | Morning Brief — Headline | No | Low/Medium | ✅ Priority order added |
 | Morning Brief — Paragraph 1 | Partial (example exists) | Low (market story, prose variation acceptable) | No change needed |
 | Cloud Valuations | Yes (anchored to specific multiples) | Low | No change needed |
-| AI Compute Commitments line | Yes (anchored to table data + $750B+) | Low | No change needed |
+| AI Compute Commitments line | Yes (anchored to row-level data and status; no aggregate) | Low | Methodology updated 2026-08-02 |
 
 ---
 

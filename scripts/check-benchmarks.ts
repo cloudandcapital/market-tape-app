@@ -4,6 +4,7 @@
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
 import { BENCHMARKS } from '../lib/industryBenchmarks'
+import { getStatusSafeAiComputeFallback, isStatusSafeAiComputeBrief } from '../lib/aiCompute'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -23,12 +24,26 @@ function daysUntilDue(dueDateStr: string): number {
 }
 
 function formatDate(str: string): string {
-  return new Date(str).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 const entries = Object.entries(BENCHMARKS)
 let overdueCount = 0
 let dueSoonCount = 0
+
+const safeAiComputeFallback = getStatusSafeAiComputeFallback()
+if (!isStatusSafeAiComputeBrief(safeAiComputeFallback)) {
+  throw new Error('AI compute fallback violates status-safe aggregation rules')
+}
+for (const unsafeBrief of [
+  '$1.5T+ pipeline spans signed, announced, and reported deals.',
+  'The combined 35 GW total includes signed agreements and targets.',
+  '$500B of announced and signed commitments are now in the pipeline.',
+]) {
+  if (isStatusSafeAiComputeBrief(unsafeBrief)) {
+    throw new Error(`AI compute status-safety check accepted an invalid aggregate: ${unsafeBrief}`)
+  }
+}
 
 const todayStr = today.toISOString().split('T')[0]
 console.log(`\n${BOLD}Industry Benchmarks — Freshness Report${RESET}`)

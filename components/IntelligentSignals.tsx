@@ -2,12 +2,13 @@
 
 import { useIntelligent } from './IntelligentProvider'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
-import { BASKETS } from '@/lib/liveMultiples'
+import { BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
+import DashboardIcon from './DashboardIcon'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
       {children}
     </h2>
   )
@@ -20,24 +21,51 @@ interface RowTooltip {
   isLive?: boolean
 }
 
-function Row({ label, value, color, sub, tooltip }: {
-  label: string; value: string; color?: string; sub?: string; tooltip?: RowTooltip
+function valuationTooltip(value: string, basket: keyof typeof BASKETS): RowTooltip {
+  if (/Q[1-4]\s+20\d{2}/.test(value)) {
+    return {
+      source: `${QUARTERLY_MULTIPLES[basket].source} · ${BASKETS[basket].tickers.join(', ')}`,
+      lastUpdated: QUARTERLY_MULTIPLES[basket].lastUpdated,
+    }
+  }
+  return {
+    source: `Yahoo Finance basket: ${BASKETS[basket].tickers.join(', ')}`,
+    lastUpdated: 'updates every 30 min',
+    isLive: true,
+  }
+}
+
+function ValuationRow({ label, value, tooltip }: { label: string; value: string; tooltip: RowTooltip }) {
+  const multiple = value.match(/~?\d+(?:\.\d+)?×/)?.[0] ?? value
+  const periodMatch = value.match(/Q[1-4]\s+20\d{2}/)?.[0]
+  const interpretation = value.split(/\s+—\s+/).slice(1).join(' — ').trim()
+
+  return (
+    <div className="py-2.5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{multiple} <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span></p>
+          <BenchmarkTooltip {...tooltip} />
+        </div>
+      </div>
+      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-0.5">{periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
+      {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
+    </div>
+  )
+}
+
+function CapexRow({ label, value, detail, color, tooltip }: {
+  label: string; value: string; detail: string; color: string; tooltip: RowTooltip
 }) {
   return (
-    <div className="flex items-start justify-between py-[0.32rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.055)' }}>
-      <span className="font-mono text-[0.5rem] tracking-[0.16em] uppercase text-charcoal/40 flex-shrink-0 mt-0.5">{label}</span>
-      <div className="text-right ml-2 min-w-0 flex items-baseline justify-end gap-0.5">
-        <p className="font-mono text-[0.75rem] font-medium leading-snug" style={{ color: color ?? '#191714' }}>{value}</p>
-        {tooltip && (
-          <BenchmarkTooltip
-            source={tooltip.source}
-            sourceUrl={tooltip.sourceUrl}
-            lastUpdated={tooltip.lastUpdated}
-            isLive={tooltip.isLive}
-          />
-        )}
-        {sub && <p className="font-mono text-[0.48rem] text-charcoal/30 mt-0.5">{sub}</p>}
+    <div className="py-4 md:px-6 first:pl-0 last:pr-0">
+      <div className="flex items-center gap-1 mb-1">
+        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <BenchmarkTooltip {...tooltip} />
       </div>
+      <p className="font-mono text-[0.82rem] font-semibold leading-snug" style={{ color }}>{value}</p>
+      <p className="font-mono text-[0.64rem] text-charcoal/60 leading-relaxed mt-1">{detail}</p>
     </div>
   )
 }
@@ -59,138 +87,143 @@ function Skeleton({ count = 3 }: { count?: number }) {
   )
 }
 
-/** Middle column: FinOps Signals + Commitment Windows + Cloud Valuations + Hyperscaler CapEx */
-export function IntelligentMiddle() {
+export function FinOpsSignals() {
   const { data, loading } = useIntelligent()
-
-  if (loading) return (
-    <div className="space-y-8">
-      {['FinOps Signals', 'Commitment Windows', 'Cloud Valuations', 'Hyperscaler CapEx'].map(l => (
-        <div key={l}><SectionLabel>{l}</SectionLabel><Skeleton /></div>
-      ))}
-    </div>
-  )
-
+  if (loading) return <div><SectionLabel>FinOps Signals</SectionLabel><Skeleton /></div>
   if (!data) return null
-  const { finopsSignals, commitmentWindows, cloudValuations, hyperscalerCapex } = data
+  const { finopsSignals } = data
 
   return (
     <div>
       <SectionLabel>FinOps Signals</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
+      <div className="rows-subtle">
         {[
-          { emoji: '☁️', label: 'Cloud Spend',    text: finopsSignals.cloudSpend },
-          { emoji: '💰', label: 'SaaS Renewals',  text: finopsSignals.saasRenewals },
-          { emoji: '🔧', label: 'Infrastructure', text: finopsSignals.infrastructure },
-        ].map(({ emoji, label, text }) => (
+          { icon: 'cloud' as const, label: 'Cloud Spend', text: finopsSignals.cloudSpend },
+          { icon: 'renewal' as const, label: 'SaaS Renewals', text: finopsSignals.saasRenewals },
+          { icon: 'infrastructure' as const, label: 'Infrastructure', text: finopsSignals.infrastructure },
+        ].map(({ icon, label, text }) => (
           <div key={label} className="py-2.5 flex items-start gap-2">
-            <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
+            <DashboardIcon name={icon} />
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35 mb-0.5">{label}</p>
+              <p className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50 mb-0.5">{label}</p>
               <p className="text-[0.76rem] font-mono text-charcoal/75 leading-snug">{text}</p>
             </div>
           </div>
         ))}
       </div>
-
-      <hr className="border-charcoal/10 my-6" />
-
-      <SectionLabel>Commitment Windows</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
-        {[
-          { emoji: '☁️', label: '1-Year Reserved', win: commitmentWindows.oneYear },
-          { emoji: '💰', label: '3-Year Commits',  win: commitmentWindows.threeYear },
-          { emoji: '🔧', label: 'Spot/On-Demand',  win: commitmentWindows.spot },
-        ].map(({ emoji, label, win }) => (
-          <div key={label} className="py-2.5">
-            {/* Row 1: label + badge — short content, no flex competition */}
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] flex-shrink-0">{emoji}</span>
-                <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35">{label}</span>
-              </div>
-              <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
-                style={{ color: statusColor(win.status) }}>{win.status}</span>
-            </div>
-            {/* Row 2: reason — block-level paragraph, full column width, no flex siblings */}
-            <p className="text-[9px] font-mono text-charcoal/50 leading-relaxed pl-5">{win.reason}</p>
-          </div>
-        ))}
-      </div>
-
-      <hr className="border-charcoal/10 my-6" />
-
-      <SectionLabel>Cloud Valuations</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
-        <Row label="Public Cloud"      value={cloudValuations.publicCloud}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.publicCloud.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
-        <Row label="SaaS Average"      value={cloudValuations.saasAverage}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.saas.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
-        <Row label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.aiInfra.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
-      </div>
-
-      <hr className="border-charcoal/10 my-6" />
-
-      <SectionLabel>Hyperscaler CapEx</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
-        <Row label="AWS/Azure/GCP" value={hyperscalerCapex.trend}
-          color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'}
-          tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <Row label="GPU Supply"    value={hyperscalerCapex.gpuLeadTimes}  color="#C9A961"
-          tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
-        <Row label="Data Center"   value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
-          tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
-      </div>
-      {hyperscalerCapex.detail && (
-        <p className="font-mono text-[0.48rem] tracking-[0.06em] text-charcoal/30 mt-2 leading-relaxed">
-          {hyperscalerCapex.detail}
-        </p>
-      )}
     </div>
   )
 }
 
-/** Right column: Risk Alerts + Sector Insights */
-export function IntelligentRight() {
+export function CommitmentWindows() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Commitment Windows</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { commitmentWindows } = data
+
+  return (
+    <div>
+      <SectionLabel>Commitment Windows</SectionLabel>
+      <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
+        {[
+          { label: '1-Year Commitment', win: commitmentWindows.oneYear },
+          { label: '3-Year Commitment', win: commitmentWindows.threeYear },
+          { label: 'Spot / On-Demand',  win: commitmentWindows.spot },
+        ].map(({ label, win }) => (
+          <div key={label} className="py-4 md:px-6 first:pl-0 last:pr-0">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <span className="text-[0.62rem] font-mono uppercase tracking-[0.12em] text-charcoal/55">{label}</span>
+              <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
+                style={{ color: statusColor(win.status) }}>{win.status.charAt(0) + win.status.slice(1).toLowerCase()}</span>
+            </div>
+            <p className="text-[0.68rem] font-mono text-charcoal/70 leading-relaxed">{win.reason}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export function CloudValuations() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Cloud Valuations</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { cloudValuations } = data
+  return (
+    <div>
+      <SectionLabel>Cloud Valuations</SectionLabel>
+      <div className="rows-subtle">
+        <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
+          tooltip={valuationTooltip(cloudValuations.publicCloud, 'publicCloud')} />
+        <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage}
+          tooltip={valuationTooltip(cloudValuations.saasAverage, 'saas')} />
+        <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
+          tooltip={valuationTooltip(cloudValuations.aiInfrastructure, 'aiInfra')} />
+      </div>
+    </div>
+  )
+}
+
+export function HyperscalerCapex() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Hyperscaler CapEx</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { hyperscalerCapex } = data
+  const capexMatch = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0]
+  const capexDirection = capexMatch ? capexMatch.charAt(0).toUpperCase() + capexMatch.slice(1).toLowerCase() : hyperscalerCapex.trend
+  return (
+    <div>
+      <SectionLabel>Hyperscaler CapEx</SectionLabel>
+      <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
+        <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
+          color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
+          tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
+        <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
+          tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
+        <CapexRow label="Data-center capacity" value="Tightening" detail={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
+          tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
+      </div>
+    </div>
+  )
+}
+
+export function RiskAlerts() {
   const { data, loading } = useIntelligent()
 
   if (loading) return (
-    <div className="space-y-6">
-      <div><SectionLabel>Risk Alerts</SectionLabel><Skeleton count={2} /></div>
-      <div><SectionLabel>Sector Insights</SectionLabel><Skeleton count={4} /></div>
-    </div>
+    <div><SectionLabel>Risk &amp; Opportunity</SectionLabel><Skeleton count={2} /></div>
   )
 
   if (!data) return null
-  const { riskAlerts, sectorInsights } = data
+  const { riskAlerts, cloudValuations } = data
+
+  const sourceForAlert = (title: string): RowTooltip => {
+    if (/GPU/i.test(title)) {
+      return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
+    }
+    if (/SaaS/i.test(title)) return valuationTooltip(cloudValuations.saasAverage, 'saas')
+    return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }
+  }
 
   return (
     <div>
       {riskAlerts && riskAlerts.length > 0 && (
         <>
-          <SectionLabel>Risk Alerts</SectionLabel>
-          <div className="space-y-3 mb-0">
+          <SectionLabel>Risk &amp; Opportunity</SectionLabel>
+          <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
             {riskAlerts.map((alert, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <span className="text-[13px] flex-shrink-0 mt-0.5">
-                  {alert.type === 'warning' ? '⚠️' : '✅'}
-                </span>
-                <div>
-                  <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none mb-1">{alert.title}</p>
-                  <p className="font-mono text-[0.65rem] text-charcoal/50 leading-snug">{alert.message}</p>
+              <div key={i} className="flex items-start gap-2 py-4 md:px-6 first:pl-0 last:pr-0">
+                <DashboardIcon name={alert.type === 'warning' ? 'warning' : 'opportunity'} tone={alert.type === 'warning' ? 'caution' : 'positive'} />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1 mb-1">
+                    <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none">{alert.title}</p>
+                    <BenchmarkTooltip {...sourceForAlert(alert.title)} />
+                  </div>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65 leading-snug">{alert.message}</p>
                 </div>
               </div>
             ))}
           </div>
-        </>
-      )}
-
-      {sectorInsights && (
-        <>
-          <hr className="border-charcoal/10 my-6" />
-          <SectionLabel>Sector Insights</SectionLabel>
-          <p className="font-mono text-[0.72rem] text-charcoal/60 leading-relaxed">{sectorInsights}</p>
         </>
       )}
     </div>
@@ -199,5 +232,5 @@ export function IntelligentRight() {
 
 /** Default: everything (legacy, unused in current layout) */
 export default function IntelligentSignals() {
-  return <><IntelligentMiddle /><hr className="border-charcoal/10 my-6" /><IntelligentRight /></>
+  return <><FinOpsSignals /><CommitmentWindows /><CloudValuations /><HyperscalerCapex /><RiskAlerts /></>
 }

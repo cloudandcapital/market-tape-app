@@ -53,6 +53,8 @@ const FALLBACKS: Pick<LiveMultiples, 'publicCloud' | 'saas' | 'aiInfra'> = {
   aiInfra:     QUARTERLY_MULTIPLES.aiInfra.value,
 }
 
+const YAHOO_REQUEST_TIMEOUT_MS = 2_500
+
 // ─── Yahoo Finance fetch ───────────────────────────────────────────────────
 
 async function fetchTickerMultiple(ticker: string): Promise<number | null> {
@@ -63,6 +65,7 @@ async function fetchTickerMultiple(ticker: string): Promise<number | null> {
 
     const res = await fetch(url, {
       next: { revalidate: 1800 },
+      signal: AbortSignal.timeout(YAHOO_REQUEST_TIMEOUT_MS),
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; market-tape/1.0)',
         Accept: 'application/json',
@@ -126,6 +129,9 @@ export function multiplesSourceLabel(source: 'live' | 'fallback', basket: keyof 
 
 export async function fetchLiveMultiples(): Promise<LiveMultiples> {
   try {
+    // All baskets and every ticker within each basket run concurrently. Each
+    // request has its own deadline and returns null on failure, allowing the
+    // basket median or quarterly fallback to complete without a slow outlier.
     const [publicCloud, saas, aiInfra] = await Promise.all([
       computeBasket(BASKETS.publicCloud.tickers),
       computeBasket(BASKETS.saas.tickers),

@@ -12,7 +12,7 @@
 |---|------|-------|--------|-----------|----------------|
 | 1 | `app/api/intelligent-brief/route.ts` | claude-opus-4-7 | Main Lumen analysis block (Morning Brief headline+3 paragraphs, FinOps Signals, Commitment Windows, Risk Alerts, Sector Insights, Cloud Valuations, Hyperscaler CapEx) | 2,500 | **Partially Grounded** |
 | 2 | `app/api/morning-brief/route.ts` | claude-sonnet-4-6 | Legacy morning brief (no longer surfaced as primary, may be vestigial or backup) | 400 | **Hallucination Risk** |
-| 3 | `app/api/ai-compute-brief/route.ts` | claude-haiku-4-5-20251001 | AI Compute Commitments — Lumen analysis line beneath the $750B+ headline | 100 | **Grounded** (with one voice rule concern) |
+| 3 | `app/api/ai-compute-brief/route.ts` | claude-haiku-4-5-20251001 | AI Compute Commitments — Lumen row-status analysis line | 100 | **Grounded** (methodology revised 2026-08-02) |
 
 ### Grounding Score Definitions
 - **Grounded** — all numbers Lumen might cite are present in the context passed to it
@@ -104,7 +104,7 @@ GROUNDING RULE: Use only the data provided above. Do not cite specific valuation
 
 ### Call Site 3 — `ai-compute-brief/route.ts` (Grounded, one concern)
 
-This is the most responsibly constructed of the three prompts. The AI compute commitment data (with specific dollar amounts, GW figures, terms, and source URLs) is passed in full as JSON context. Lumen is told to reference "$750B+" only if citing a total.
+The AI compute deal data (with specific dollar amounts, capacity figures, terms, statuses, and source URLs) is passed in full as JSON context. As of 2026-08-02, Lumen is explicitly prohibited from calculating an aggregate across unlike statuses.
 
 **Issue A — "Quantify everything" voice rule without a data scope limit**
 
@@ -140,8 +140,7 @@ Change the voice rule to:
 | `components/CloudValuations.tsx` | 2 | `8.2×` (Public Cloud NTM Revenue) | Valuation multiple | Quarterly earnings comps | 2026-04-24 | Medium |
 | `components/CloudValuations.tsx` | 3 | `6.5×` (SaaS Average NTM Revenue) | Valuation multiple | Quarterly earnings comps | 2026-04-24 | Medium |
 | `components/CloudValuations.tsx` | 4 | `12.3×` (AI Infrastructure NTM Revenue) | Valuation multiple | Quarterly earnings comps | 2026-04-24 | Medium |
-| `components/AIComputeCommitments.tsx` | 146 | `$750B+` | Aggregate of table data | `lib/aiCompute.ts` rows (verified — see Section 5) | 2026-04-29 | Low — derived from table |
-| `components/AIComputeCommitments.tsx` | 149 | `~25 GW` | Aggregate of table data | `lib/aiCompute.ts` rows (verified — see Section 5) | 2026-04-29 | Low — derived from table |
+| `components/AIComputeCommitments.tsx` | — | Deal count and status mix | Derived from table rows | `lib/aiCompute.ts` | 2026-08-02 | Low — reproducible row count |
 | `app/api/ai-compute-brief/route.ts` | 7 | Fallback paragraph text | Qualitative assertion | N/A — editorial | 2026-04-29 | Low — qualitative, no specific numbers |
 
 ### Prompt vs. UI Discrepancy (Flag)
@@ -206,41 +205,9 @@ Both `intelligent-brief/route.ts` (prompt context block) and the display compone
 
 ## Section 5: Specific Post Claims Verification
 
-### Claim: "$750B+ committed across the past 18 months"
+### Retired AI compute aggregate claims
 
-**Source: `lib/aiCompute.ts`** — verified by summing the `amount` field:
-
-| Row | Amount |
-|-----|--------|
-| Anthropic / AWS | $100B+ |
-| Anthropic / Google | $40B |
-| OpenAI / Microsoft Azure | ~$250B |
-| OpenAI / Oracle | ~$300B |
-| OpenAI / AWS | $38B |
-| Meta / AWS | Multi-billion (undisclosed) |
-| xAI / Self-built | ~$18B |
-| **Disclosed total** | **~$746B+ (excl. Meta)** |
-
-**Verdict: CONFIRMED.** $750B+ is a conservative rounding of the disclosed figures; the undisclosed Meta deal makes the true total higher. The figure is directly derivable from the table.
-
----
-
-### Claim: "~25 GW of locked capacity"
-
-**Source: `lib/aiCompute.ts`** — summing the `gw` field for rows with specific figures:
-
-| Row | GW |
-|-----|----|
-| Anthropic / AWS | 5 GW |
-| Anthropic / Google | 5 GW |
-| OpenAI / Microsoft (Stargate) | 10 GW |
-| OpenAI / Oracle | 4.5 GW |
-| OpenAI / AWS | GPU units, no GW stated |
-| Meta / AWS | CPU cores, no GW stated |
-| xAI / Colossus | 2 GW |
-| **Sum of stated GW** | **26.5 GW** |
-
-**Verdict: CONFIRMED.** 26.5 GW rounds conservatively to ~25 GW, and two rows (OpenAI/AWS, Meta/AWS) have no GW equivalent disclosed, so ~25 GW is a defensible floor.
+The earlier audit treated heterogeneous rows as additive. That methodology was retired on 2026-08-02 because the table mixes signed agreements, announcements, targets, equity investments, planned capacity, and reported negotiations. The public product now reports only the tracked-deal count and status mix; it does not publish a combined dollar or capacity total.
 
 ---
 

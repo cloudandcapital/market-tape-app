@@ -40,18 +40,18 @@ Four entries remain that require manual quarterly or semi-annual review:
 
 | Benchmark | Current Value | Source | Review Cadence |
 |-----------|---------------|--------|---------------|
-| `gpuSupplyStatus` | Hopper sold out · Blackwell ~16-20 weeks | SemiAnalysis (Apr 2026) | Quarterly |
+| `gpuSupplyStatus` | H100/H200 sampled cloud price ranges · Blackwell supply-constrained | Thunder Compute (Jul 2026) + NVIDIA Q1 FY2027 | Quarterly |
 | `dataCenterConstructionYoY` | Demand +38% / construction -5.6% YoY | CBRE H2 2025 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
-| `hyperscalerCapexTrend` | Expanding | Q1 2026 earnings guidance | Quarterly |
+| `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |
 
 ### Where to find updated values
 
-**GPU supply status** — SemiAnalysis newsletter (newsletter.semianalysis.com). Also check NVIDIA earnings calls, CDW/Dell reseller portals for current availability. Update whenever SemiAnalysis publishes a major supply chain piece, or after each NVIDIA earnings call.
+**GPU supply status** — Use NVIDIA earnings disclosures for supply commentary and a dated, transparent cloud-market survey for rental availability and pricing. Keep rental prices separate from hardware procurement and do not publish backlog or lead-time estimates unless the linked source states them directly. Refresh after each NVIDIA earnings call and quarterly pricing survey.
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
-**Hyperscaler CapEx trend** — AWS/Azure/GCP earnings calls (quarterly). If all three are guiding up, it's Expanding. If guidance is flat or mixed, Stable. Contracting if spending guidance comes down. Update after Q2 and Q4 earnings.
+**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, and Meta earnings calls (quarterly). Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current Q2 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $130–145B. Update after each earnings cycle.
 
 **SaaS 2021 peak multiple** — Historical reference. Only review to confirm the narrative framing ("compressed from 2021 peaks") is still accurate context. Rarely needs updating.
 
@@ -64,7 +64,7 @@ Four entries remain that require manual quarterly or semi-annual review:
 3. Update: `value`, `numeric`, `source`, `sourceUrl`, `lastUpdated`, `nextReviewDue`
    - Set `nextReviewDue` based on cadence: quarterly = +90 days, semi-annual = +180 days
 4. Run `npm run check-benchmarks` — confirm the entry turns 🟢 green
-5. Commit: `Update gpuSupplyStatus — Blackwell lead times extended to 18-22 weeks (SemiAnalysis 2026-08-10)`
+5. Commit with a claim-specific message, for example: `Update GPU supply benchmark after NVIDIA earnings`
 6. Push and deploy
 
 ---

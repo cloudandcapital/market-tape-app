@@ -1,12 +1,13 @@
-import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/lib/data'
+import { fetchMeta, fetchSnapshot, formatMarketSessionLabel, getRow, getSectorRows } from '@/lib/data'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
-import MarketStatus from '@/components/MarketStatus'
-import SectorLeaders from '@/components/SectorLeaders'
-import AIInfraCard from '@/components/AIInfraCard'
-import MomentumLeaderboard, { MomentumLaggards } from '@/components/MomentumLeaderboard'
+import { fetchLiveMultiples } from '@/lib/liveMultiples'
+import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
+import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
+import { CountriesGlobal, Sectors } from '@/components/SectorLeaders'
+import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
-import { IntelligentMiddle, IntelligentRight } from '@/components/IntelligentSignals'
+import { CloudValuations, CommitmentWindows, FinOpsSignals, HyperscalerCapex, RiskAlerts } from '@/components/IntelligentSignals'
 import { IntelligentProvider } from '@/components/IntelligentProvider'
 import AIComputeCommitments from '@/components/AIComputeCommitments'
 import type { MarketContextData } from '@/lib/intelligentTypes'
@@ -54,8 +55,11 @@ export default async function Page() {
   // Logs to deployment output if any benchmark is >6 months past its review date.
   checkServerStaleness()
 
-  const [meta, snapshot] = await Promise.all([fetchMeta(), fetchSnapshot()])
+  const [meta, snapshot, multiples] = await Promise.all([fetchMeta(), fetchSnapshot(), fetchLiveMultiples()])
   const contextData = buildContextData(meta, snapshot)
+  const initialBrief = await getCachedIntelligentBrief(contextData, multiples)
+    .then(result => result.data)
+    .catch(() => null)
 
   return (
     <div className="min-h-screen bg-cream">
@@ -65,70 +69,90 @@ export default async function Page() {
         <header className="mb-5">
           <div className="flex items-baseline justify-between flex-wrap gap-3">
             <div>
-              <p className="text-[9px] font-mono tracking-[0.22em] uppercase text-charcoal/35 mb-0.5">Cloud &amp; Capital</p>
+              <p className="text-[9px] font-mono tracking-[0.22em] uppercase text-charcoal/50 mb-0.5">Cloud &amp; Capital</p>
               <h1 className="font-serif italic font-normal tracking-tight"
                 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: '#191714', lineHeight: 1.1 }}>
                 Market Tape
               </h1>
+              <p className="font-mono text-[0.68rem] leading-relaxed text-charcoal/50 mt-2 max-w-xl">Market, cloud, and AI infrastructure signals for technology finance decisions.</p>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-mono text-charcoal/40">{formatTime(meta.generated_at_utc)}</p>
-              <p className="text-[9px] font-mono text-charcoal/25 mt-0.5">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
+            <div className="text-left sm:text-right">
+              <p className="text-[0.62rem] font-mono uppercase tracking-[0.08em] text-charcoal/55">{formatMarketSessionLabel(meta.generated_at_utc)}</p>
+              <p className="text-[0.58rem] font-mono text-charcoal/50 mt-1">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
-          <hr className="border-charcoal/10 mt-4" />
+          <hr className="rule-major-bottom border-0 mt-4" />
         </header>
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
-        <IntelligentProvider contextData={contextData}>
+        <IntelligentProvider contextData={contextData} initialData={initialBrief}>
 
-          {/* AI Compute Commitments — high visibility, just below Lumen's main Read */}
-          <div className="mb-8 px-7 py-5 overflow-x-auto" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
+          <div className="space-y-10 md:space-y-12">
+            {/* Band 2 */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" aria-label="Primary market signals">
+              <MarketStatus meta={meta} />
+              <div>
+                <FinOpsSignals />
+                <hr className="rule-subtle-bottom border-0 my-6" />
+                <TechConcentration snapshot={snapshot} />
+              </div>
+            </section>
+
+            {/* Band 3 */}
+            <section aria-label="Risk and opportunity">
+              <RiskAlerts />
+            </section>
+
+            {/* Band 4 */}
+            <section aria-label="Commitment windows">
+              <CommitmentWindows />
+            </section>
+
+            {/* Band 5 */}
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" aria-label="Market internals and momentum">
+              <div>
+                <MarketInternals snapshot={snapshot} />
+                <hr className="rule-subtle-bottom border-0 my-6" />
+                <MacroContext snapshot={snapshot} />
+              </div>
+              <div className="md:col-span-2">
+                <MomentumLeaderboard meta={meta} />
+              </div>
+            </section>
+
+            {/* Band 6 */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" aria-label="Sector and cloud benchmarks">
+              <Sectors snapshot={snapshot} />
+              <div>
+                <CountriesGlobal meta={meta} />
+                <hr className="rule-subtle-bottom border-0 my-7" />
+                <CloudValuations />
+              </div>
+            </section>
+
+            {/* Band 7 */}
+            <section aria-label="Hyperscaler capital expenditure">
+              <HyperscalerCapex />
+            </section>
+          </div>
+
+          {/* Full methodology-aware tracker follows the primary market dashboard. */}
+          <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
             <AIComputeCommitments />
           </div>
 
-          {/* 3-column data grid — rendered after the brief */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-
-            {/* Left: Status · Internals · Macro · Sectors */}
-            <div className="md:col-span-1">
-              <MarketStatus meta={meta} snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <MacroContext snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <SectorLeaders meta={meta} snapshot={snapshot} />
-            </div>
-
-            {/* Middle: FinOps · Commitment · Cloud Val · CapEx · Laggards */}
-            <div className="md:col-span-1">
-              <IntelligentMiddle />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLaggards meta={meta} />
-            </div>
-
-            {/* Right: Tech Concentration · Risk Alerts · Sector Insights · Momentum Leaders */}
-            <div className="md:col-span-1">
-              <TechConcentration snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <IntelligentRight />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLeaderboard meta={meta} />
-            </div>
-
-          </div>
-
-          <footer className="mt-12 pt-5 border-t border-charcoal/10">
+          <footer className="mt-12 pt-5 rule-major-top">
             <div className="flex flex-wrap justify-between items-center gap-3">
-              <p className="text-[9px] font-mono text-charcoal/30">
+              <p className="text-[0.6rem] font-mono text-charcoal/55">
                 Data via yFinance · Refreshes every 30 min · Intelligence via Lumen ·{' '}
-                <a href="/sources" className="hover:text-charcoal/60 transition-colors">Data Sources</a>
+                <a href="/sources" className="hover:text-charcoal/60 transition-colors">Methodology &amp; Sources</a>
               </p>
-              <p className="text-[9px] font-mono text-charcoal/25">
+              <p className="text-[0.6rem] font-mono text-charcoal/50">
                 © 2026 Cloud &amp; Capital ·{' '}
                 <a href="https://cloudandcapital.com" className="hover:text-charcoal/60 transition-colors">cloudandcapital.com</a>
               </p>
             </div>
-            <p className="text-[9px] font-mono text-charcoal/20 mt-2">
+            <p className="text-[0.58rem] font-mono text-charcoal/50 mt-2">
               For informational purposes only · Not investment, financial, or tax advice
             </p>
           </footer>

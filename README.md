@@ -14,8 +14,8 @@ There's no shortage of market data. There's a shortage of translation between ma
 
 | Section | What it shows |
 |---|---|
-| **Lumen Analysis** | Three-paragraph market read with FinOps Signals (cloud spend / SaaS renewals / infrastructure), Risk Alerts, and Sector Insights — all anchored to specific signals to prevent flip-flopping verdicts across regenerations |
-| **AI Compute Commitments** | Every major AI lab × hyperscaler deal in one tracker. $750B+ committed across the past 18 months, ~25 GW locked capacity. The structural shift behind every other AI cost signal on the dashboard |
+| **Lumen Analysis** | Three-paragraph market read with FinOps Signals (cloud spend / SaaS renewals / infrastructure), Risk & Opportunity, and Sector Insights — all anchored to specific signals to prevent flip-flopping verdicts across regenerations |
+| **AI Compute Commitments** | Major AI compute deals with a source-linked status for each row: Signed, Announced, Target, or Reported / in talks. No misleading aggregate is calculated across unlike deal types |
 | **Market Status** | Exposure guidance (Risk-On / Neutral / Defensive), trend, breadth, momentum |
 | **Commitment Windows** | Spot / 1-Year / 3-Year guidance, each anchored to specific market signals |
 | **Macro Context** | Rates (TLT), gold (GLD), small caps (IWM), Nasdaq (QQQ), dollar (DXY) — relative strength readings tied to commitment math |
@@ -42,6 +42,8 @@ Market Tape ships under a "trust first, real receipts" rule. Every numeric claim
 3. Is a Lumen interpretation explicitly framed as such
 
 Hardcoded industry benchmarks live in a single source of truth (`lib/industryBenchmarks.ts`) with `lastUpdated`, `nextReviewDue`, `source`, and `reviewCadence` metadata. Before each deployment:
+
+The AI compute tracker follows a conservative methodology: it includes major deals with a disclosed dollar value or capacity, labels each row by what its source confirms, and does not combine signed contracts, targets, equity investments, or negotiations into one dollar or GW headline.
 
 ```bash
 npm run check-benchmarks

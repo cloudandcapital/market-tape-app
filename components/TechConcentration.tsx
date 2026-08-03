@@ -18,14 +18,14 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
         Tech Concentration
       </h2>
 
-      <div className="divide-y divide-charcoal/8">
+      <div className="rows-subtle">
         {xlk && (
           <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[10px] font-mono text-charcoal/40">XLK vs SPY</span>
+            <span className="text-[10px] font-mono text-charcoal/55">XLK vs SPY</span>
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs font-mono font-medium" style={{ color: gradeColor(xlk.trend_grade) }}>
                 Grade {xlk.trend_grade}
@@ -38,7 +38,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
         )}
         {growthSpread !== null && (
           <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[10px] font-mono text-charcoal/40">Growth ratio (QQQ/SPY)</span>
+            <span className="text-[10px] font-mono text-charcoal/55">Growth ratio (QQQ/SPY)</span>
             <span className="text-xs font-mono font-medium" style={{ color: growthLeading ? '#6B8E7F' : '#C0443A' }}>
               {growthLeading ? 'Leading' : 'Lagging'} {growthSpread > '0' ? '+' : ''}{growthSpread}
             </span>
@@ -46,7 +46,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
         )}
         {qqq && (
           <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[10px] font-mono text-charcoal/40">Mag 7 proxy (QQQ)</span>
+            <span className="text-[10px] font-mono text-charcoal/55">Mag 7 proxy (QQQ)</span>
             <span className="text-xs font-mono font-medium text-charcoal">
               ${qqq.last.toFixed(0)} &nbsp;
               <span style={{ color: qqq.d1_pct > 0 ? '#6B8E7F' : '#C0443A' }}>
