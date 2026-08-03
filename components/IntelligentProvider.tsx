@@ -45,8 +45,12 @@ function saveCache(data: BriefResponse, hash: string) {
 
 function formatCachedAt(data: BriefResponse): string {
   try {
-    // 24-hour format: "07:04" — no AM/PM suffix, fits narrow viewports, matches terminal aesthetic
-    return new Date(data.generatedAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true,
+    }).formatToParts(new Date(data.generatedAt))
+    const value = (type: Intl.DateTimeFormatPartTypes) => parts.find(part => part.type === type)?.value ?? ''
+    return `Generated ${value('month')} ${value('day')} · ${value('hour')}:${value('minute')} ${value('dayPeriod')} ET`
   } catch { return '' }
 }
 
@@ -143,7 +147,7 @@ function BriefSection() {
           {cachedAt && !loading && (
             <>
               <span className="font-mono text-[0.48rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-              <span className="font-mono text-[0.48rem] tracking-[0.1em] whitespace-nowrap flex-shrink-0" style={{ color: 'rgba(0,0,0,0.25)' }}>
+              <span className="font-mono text-[0.54rem] tracking-[0.06em] uppercase whitespace-nowrap flex-shrink-0 text-charcoal/50">
                 {cachedAt}
               </span>
             </>
@@ -152,10 +156,10 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="font-mono text-[0.48rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-30 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-3"
-          style={{ color: 'rgba(0,0,0,0.3)' }}
+          className="font-mono text-[0.54rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-3"
+          style={{ color: 'rgba(0,0,0,0.55)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.3)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
         >
           {loading ? 'generating…' : '↺ refresh'}
         </button>
@@ -182,7 +186,7 @@ function BriefSection() {
             <p className="font-mono text-[0.73rem]" style={{ color: 'rgba(0,0,0,0.35)' }}>
               Analysis is temporarily unavailable. Market data below is still current.
             </p>
-            <button onClick={refresh} className="font-mono text-[0.52rem] tracking-[0.12em] uppercase text-charcoal/40 hover:text-charcoal/70">
+            <button onClick={refresh} className="font-mono text-[0.56rem] tracking-[0.12em] uppercase text-charcoal/55 hover:text-charcoal/80">
               Try again
             </button>
           </div>
@@ -191,25 +195,25 @@ function BriefSection() {
         {!loading && data && (
           <div>
             {data.morningBrief.headline && (
-              <p className="font-mono text-[0.5rem] tracking-[0.18em] uppercase mb-3" style={{ color: '#6B8E7F' }}>
+              <p className="font-mono text-[0.54rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
                 {data.morningBrief.headline}
               </p>
             )}
             <div className="grid gap-4 md:grid-cols-[1.25fr_1fr]">
               <div>
                 <p className="font-serif text-[0.95rem] leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
-                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/45 mb-2">What changed</p>
+                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/55 mb-2">What changed</p>
                 <ul className="space-y-1.5">
                   {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
               </div>
               <div className="md:border-l md:border-charcoal/10 md:pl-5">
-                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/45 mb-2">Cloud-finance implication</p>
+                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/55 mb-2">Cloud-finance implication</p>
                 <ul className="space-y-1.5 mb-4">
                   {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
                 <div className="border-t border-charcoal/10 pt-3">
-                  <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-sage mb-1.5">Decision to monitor</p>
+                  <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">Decision to monitor</p>
                   <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
                 </div>
               </div>

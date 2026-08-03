@@ -16,10 +16,10 @@ export default function BenchmarkTooltip({ source, sourceUrl, lastUpdated, isLiv
   const updatedLabel = isLive ? lastUpdated : `Updated ${formatDate(lastUpdated)}`
   return (
     <details className="relative inline-block align-middle ml-1 group">
-      <summary className="list-none cursor-pointer rounded-sm font-mono text-[0.62rem] text-charcoal/35 hover:text-charcoal/65 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-sage" aria-label="Open source information">ⓘ</summary>
+      <summary className="list-none cursor-pointer rounded-sm font-mono text-[0.68rem] text-charcoal/50 hover:text-charcoal/75 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-sage" aria-label="Open source information">ⓘ</summary>
       <span className="absolute z-50 bottom-full right-0 mb-2 block w-64 max-w-[80vw] rounded-sm bg-charcoal px-3 py-2 text-left shadow-md">
-        <span className={`block font-mono text-[0.62rem] mb-1 ${isLive ? 'text-sage' : 'text-white/55'}`}>{isLive ? `Live · ${updatedLabel}` : updatedLabel}</span>
-        {sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="block font-mono text-[0.65rem] leading-relaxed text-white/75 underline underline-offset-2 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">{source}</a> : <span className="block font-mono text-[0.65rem] leading-relaxed text-white/75">{source}</span>}
+        <span className={`block font-mono text-[0.64rem] mb-1 ${isLive ? 'text-sage' : 'text-white/70'}`}>{isLive ? `Live · ${updatedLabel}` : updatedLabel}</span>
+        {sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="block font-mono text-[0.68rem] leading-relaxed text-white/85 underline underline-offset-2 focus-visible:outline focus-visible:outline-1 focus-visible:outline-white">{source}</a> : <span className="block font-mono text-[0.68rem] leading-relaxed text-white/85">{source}</span>}
       </span>
     </details>
   )

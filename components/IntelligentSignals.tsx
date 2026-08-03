@@ -7,7 +7,7 @@ import BenchmarkTooltip from './BenchmarkTooltip'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
       {children}
     </h2>
   )
@@ -20,24 +20,35 @@ interface RowTooltip {
   isLive?: boolean
 }
 
-function Row({ label, value, color, sub, tooltip }: {
-  label: string; value: string; color?: string; sub?: string; tooltip?: RowTooltip
+function ValuationRow({ label, value, tooltip }: { label: string; value: string; tooltip: RowTooltip }) {
+  const multiple = value.match(/~?\d+(?:\.\d+)?×/)?.[0] ?? value
+  const periodMatch = value.match(/Q[1-4]\s+20\d{2}/)?.[0]
+  const interpretation = value.split(/\s+—\s+/).slice(1).join(' — ').trim()
+
+  return (
+    <div className="py-3 border-b border-charcoal/8">
+      <div className="flex items-center gap-1 mb-1">
+        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <BenchmarkTooltip {...tooltip} />
+      </div>
+      <p className="font-serif text-[1.25rem] leading-none text-charcoal">{multiple} <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span></p>
+      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-1">{periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
+      {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-relaxed mt-1.5">{interpretation}</p>}
+    </div>
+  )
+}
+
+function CapexRow({ label, value, detail, color, tooltip }: {
+  label: string; value: string; detail: string; color: string; tooltip: RowTooltip
 }) {
   return (
-    <div className="flex items-start justify-between py-[0.32rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.055)' }}>
-      <span className="font-mono text-[0.5rem] tracking-[0.16em] uppercase text-charcoal/40 flex-shrink-0 mt-0.5">{label}</span>
-      <div className="text-right ml-2 min-w-0 flex items-baseline justify-end gap-0.5">
-        <p className="font-mono text-[0.75rem] font-medium leading-snug" style={{ color: color ?? '#191714' }}>{value}</p>
-        {tooltip && (
-          <BenchmarkTooltip
-            source={tooltip.source}
-            sourceUrl={tooltip.sourceUrl}
-            lastUpdated={tooltip.lastUpdated}
-            isLive={tooltip.isLive}
-          />
-        )}
-        {sub && <p className="font-mono text-[0.48rem] text-charcoal/30 mt-0.5">{sub}</p>}
+    <div className="py-3 border-b border-charcoal/8">
+      <div className="flex items-center gap-1 mb-1">
+        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <BenchmarkTooltip {...tooltip} />
       </div>
+      <p className="font-mono text-[0.82rem] font-semibold leading-snug" style={{ color }}>{value}</p>
+      <p className="font-mono text-[0.64rem] text-charcoal/60 leading-relaxed mt-1">{detail}</p>
     </div>
   )
 }
@@ -86,7 +97,7 @@ export function IntelligentMiddle() {
           <div key={label} className="py-2.5 flex items-start gap-2">
             <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
             <div>
-              <p className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35 mb-0.5">{label}</p>
+              <p className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50 mb-0.5">{label}</p>
               <p className="text-[0.76rem] font-mono text-charcoal/75 leading-snug">{text}</p>
             </div>
           </div>
@@ -107,13 +118,13 @@ export function IntelligentMiddle() {
             <div className="flex items-center justify-between gap-2 mb-1">
               <div className="flex items-center gap-1.5">
                 <span className="text-[11px] flex-shrink-0">{emoji}</span>
-                <span className="text-[9px] font-mono uppercase tracking-[0.1em] text-charcoal/35">{label}</span>
+                <span className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50">{label}</span>
               </div>
               <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
                 style={{ color: statusColor(win.status) }}>{win.status}</span>
             </div>
             {/* Row 2: reason — block-level paragraph, full column width, no flex siblings */}
-            <p className="text-[9px] font-mono text-charcoal/50 leading-relaxed pl-5">{win.reason}</p>
+            <p className="text-[0.64rem] font-mono text-charcoal/65 leading-relaxed pl-5">{win.reason}</p>
           </div>
         ))}
       </div>
@@ -121,44 +132,41 @@ export function IntelligentMiddle() {
       <hr className="border-charcoal/10 my-6" />
 
       <SectionLabel>Cloud Valuations</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
-        <Row label="Public Cloud"      value={cloudValuations.publicCloud}
+      <div>
+        <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
           tooltip={{ source: `Yahoo Finance basket: ${BASKETS.publicCloud.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
-        <Row label="SaaS Average"      value={cloudValuations.saasAverage}
+        <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage}
           tooltip={{ source: `Yahoo Finance basket: ${BASKETS.saas.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
-        <Row label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
+        <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
           tooltip={{ source: `Yahoo Finance basket: ${BASKETS.aiInfra.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
       </div>
 
       <hr className="border-charcoal/10 my-6" />
 
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
-        <Row label="AWS/Azure/GCP" value={hyperscalerCapex.trend}
+      <div>
+        <CapexRow label="Hyperscaler spend" value={hyperscalerCapex.trend} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
           color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <Row label="GPU Supply"    value={hyperscalerCapex.gpuSupplyStatus}  color="#C9A961"
+        <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
-        <Row label="Data Center"   value={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
+        <CapexRow label="Data-center capacity" value="Tightening" detail={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
     </div>
   )
 }
 
-/** Right column: Risk Alerts + Sector Insights */
+/** Right column: Risk Alerts */
 export function IntelligentRight() {
   const { data, loading } = useIntelligent()
 
   if (loading) return (
-    <div className="space-y-6">
-      <div><SectionLabel>Risk Alerts</SectionLabel><Skeleton count={2} /></div>
-      <div><SectionLabel>Sector Insights</SectionLabel><Skeleton count={4} /></div>
-    </div>
+    <div><SectionLabel>Risk Alerts</SectionLabel><Skeleton count={2} /></div>
   )
 
   if (!data) return null
-  const { riskAlerts, sectorInsights } = data
+  const { riskAlerts } = data
 
   return (
     <div>
@@ -173,19 +181,11 @@ export function IntelligentRight() {
                 </span>
                 <div>
                   <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none mb-1">{alert.title}</p>
-                  <p className="font-mono text-[0.65rem] text-charcoal/50 leading-snug">{alert.message}</p>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed">{alert.message}</p>
                 </div>
               </div>
             ))}
           </div>
-        </>
-      )}
-
-      {sectorInsights && (
-        <>
-          <hr className="border-charcoal/10 my-6" />
-          <SectionLabel>Sector Insights</SectionLabel>
-          <p className="font-mono text-[0.72rem] text-charcoal/60 leading-relaxed">{sectorInsights}</p>
         </>
       )}
     </div>

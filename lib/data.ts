@@ -20,7 +20,7 @@ export function sparklineUrl(ticker: string): string {
 }
 
 export function pctColor(pct: number): string {
-  if (pct > 0) return 'text-sage'
+  if (pct > 0) return 'text-sage-dark'
   if (pct < 0) return 'text-loss'
   return 'text-charcoal/50'
 }
@@ -31,7 +31,7 @@ export function pctLabel(pct: number): string {
 }
 
 export function gradeColor(grade: string): string {
-  if (grade === 'A') return 'text-sage font-semibold'
+  if (grade === 'A') return 'text-sage-dark font-semibold'
   if (grade === 'C') return 'text-loss'
   return 'text-charcoal/50'
 }
@@ -61,14 +61,12 @@ export function trendArrow(val: string): string {
   return '↔'
 }
 
-export function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString('en-US', {
+export function formatMarketSessionLabel(iso: string): string {
+  const sessionDate = new Date(iso).toLocaleDateString('en-US', {
     timeZone: 'America/New_York',
     month: 'short',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true,
-    timeZoneName: 'short',
+    year: 'numeric',
   })
+  return `Market data · ${sessionDate} close · ET`
 }

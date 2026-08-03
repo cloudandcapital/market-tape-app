@@ -1,4 +1,4 @@
-import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/lib/data'
+import { fetchMeta, fetchSnapshot, formatMarketSessionLabel, getRow, getSectorRows } from '@/lib/data'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
 import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
@@ -69,16 +69,16 @@ export default async function Page() {
         <header className="mb-5">
           <div className="flex items-baseline justify-between flex-wrap gap-3">
             <div>
-              <p className="text-[9px] font-mono tracking-[0.22em] uppercase text-charcoal/35 mb-0.5">Cloud &amp; Capital</p>
+              <p className="text-[9px] font-mono tracking-[0.22em] uppercase text-charcoal/50 mb-0.5">Cloud &amp; Capital</p>
               <h1 className="font-serif italic font-normal tracking-tight"
                 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: '#191714', lineHeight: 1.1 }}>
                 Market Tape
               </h1>
               <p className="font-mono text-[0.68rem] leading-relaxed text-charcoal/50 mt-2 max-w-xl">Market, cloud, and AI infrastructure signals for technology finance decisions.</p>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-mono text-charcoal/40">{formatTime(meta.generated_at_utc)}</p>
-              <p className="text-[9px] font-mono text-charcoal/25 mt-0.5">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
+            <div className="text-left sm:text-right">
+              <p className="text-[0.62rem] font-mono uppercase tracking-[0.08em] text-charcoal/55">{formatMarketSessionLabel(meta.generated_at_utc)}</p>
+              <p className="text-[0.58rem] font-mono text-charcoal/50 mt-1">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
           <hr className="border-charcoal/10 mt-4" />
@@ -104,16 +104,16 @@ export default async function Page() {
               <IntelligentMiddle />
             </div>
 
-            {/* Right: Tech Concentration · Risk Alerts · Sector Insights */}
+            {/* Right: Tech Concentration · Risk Alerts · Momentum */}
             <div className="md:col-span-1">
               <TechConcentration snapshot={snapshot} />
               <hr className="border-charcoal/10 my-6" />
               <IntelligentRight />
+              <hr className="border-charcoal/10 my-6" />
+              <MomentumLeaderboard meta={meta} />
             </div>
 
           </div>
-
-          <MomentumLeaderboard meta={meta} />
 
           {/* Full methodology-aware tracker follows the primary market dashboard. */}
           <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
@@ -122,16 +122,16 @@ export default async function Page() {
 
           <footer className="mt-12 pt-5 border-t border-charcoal/10">
             <div className="flex flex-wrap justify-between items-center gap-3">
-              <p className="text-[9px] font-mono text-charcoal/30">
+              <p className="text-[0.6rem] font-mono text-charcoal/55">
                 Data via yFinance · Refreshes every 30 min · Intelligence via Lumen ·{' '}
                 <a href="/sources" className="hover:text-charcoal/60 transition-colors">Data Sources</a>
               </p>
-              <p className="text-[9px] font-mono text-charcoal/25">
+              <p className="text-[0.6rem] font-mono text-charcoal/50">
                 © 2026 Cloud &amp; Capital ·{' '}
                 <a href="https://cloudandcapital.com" className="hover:text-charcoal/60 transition-colors">cloudandcapital.com</a>
               </p>
             </div>
-            <p className="text-[9px] font-mono text-charcoal/20 mt-2">
+            <p className="text-[0.58rem] font-mono text-charcoal/50 mt-2">
               For informational purposes only · Not investment, financial, or tax advice
             </p>
           </footer>

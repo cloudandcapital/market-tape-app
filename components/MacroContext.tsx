@@ -6,10 +6,10 @@ function MacroRow({
 }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="flex items-baseline justify-between py-[0.35rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-      <span className="text-[10px] font-mono text-charcoal/40">{label}</span>
+      <span className="text-[10px] font-mono text-charcoal/55">{label}</span>
       <div className="text-right">
         <span className="text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
-        {sub && <span className="text-[9px] font-mono text-charcoal/30 ml-1">{sub}</span>}
+        {sub && <span className="text-[9px] font-mono text-charcoal/50 ml-1">{sub}</span>}
       </div>
     </div>
   )
@@ -38,7 +38,7 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
         Macro Context
       </h2>
 

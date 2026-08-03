@@ -41,7 +41,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
       <table className="w-full min-w-[920px] border-collapse">
         <thead><tr>
           {['Buyer', 'Compute Provider', 'Status', 'Disclosed value', 'Capacity', 'Term', 'Announced', 'Source'].map(h => (
-            <th key={h} className="text-left font-mono text-[0.48rem] tracking-[0.16em] uppercase text-charcoal/35 pb-2.5 pr-3 font-normal">{h}</th>
+            <th key={h} className="text-left font-mono text-[0.52rem] tracking-[0.16em] uppercase text-charcoal/55 pb-2.5 pr-3 font-normal">{h}</th>
           ))}
         </tr></thead>
         <tbody className="divide-y divide-charcoal/8">
@@ -54,7 +54,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
               <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.gw}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3">{row.term}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3 whitespace-nowrap">{row.announced}</td>
-              <td className="py-2"><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.6rem] text-charcoal/30 hover:text-sage transition-colors" aria-label={`Source for ${row.buyer} ${row.provider}`}>↗</a></td>
+              <td className="py-2"><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.65rem] text-charcoal/55 hover:text-sage-dark transition-colors" aria-label={`Source for ${row.buyer} ${row.provider}`}>↗</a></td>
             </tr>
           ))}
         </tbody>
@@ -73,9 +73,9 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
             <StatusBadge status={row.status} />
           </div>
           <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount}</p>
-          <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.62rem] text-charcoal/45">
+          <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.64rem] text-charcoal/55">
             <span>{row.gw}</span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
-            <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-charcoal/35 hover:text-charcoal/60">↗ source</a>
+            <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-charcoal/60 hover:text-charcoal/80">↗ source</a>
           </div>
         </article>
       ))}
@@ -125,12 +125,12 @@ export default function AIComputeCommitments() {
 
   return (
     <section id="ai-compute-tracker">
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">AI Compute Commitments</h2>
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">AI Compute Commitments</h2>
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
-        <div><p className="font-serif text-2xl text-charcoal">{aiComputeData.length}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/40">tracked deals</p></div>
-        {Object.entries(statusCounts).map(([status, count]) => <div key={status}><p className="font-serif text-2xl text-charcoal">{count}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/40">{status}</p></div>)}
+        <div><p className="font-serif text-2xl text-charcoal">{aiComputeData.length}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">tracked deals</p></div>
+        {Object.entries(statusCounts).map(([status, count]) => <div key={status}><p className="font-serif text-2xl text-charcoal">{count}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">{status}</p></div>)}
       </div>
-      <p className="font-mono text-[0.62rem] text-charcoal/45 mb-4">Last updated {AI_COMPUTE_LAST_UPDATED} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
+      <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {AI_COMPUTE_LAST_UPDATED} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
 
       <div className="mb-5 min-h-8">
         {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :

@@ -9,7 +9,7 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
         Sectors · RS1M vs SPY
       </h2>
 
@@ -21,7 +21,7 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
             <div key={s.ticker}>
               <div className="flex justify-between items-baseline mb-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-mono text-charcoal/25 w-3">{i + 1}</span>
+                  <span className="text-[9px] font-mono text-charcoal/50 w-3">{i + 1}</span>
                   <span className="text-[11px] font-mono font-semibold text-charcoal">{s.ticker}</span>
                 </div>
                 <span className={`text-[11px] font-mono font-medium ${isPos ? 'text-sage' : 'text-loss'}`}>
@@ -41,7 +41,7 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
 
       <hr className="border-charcoal/10 mb-4" />
 
-      <p className="text-xs font-mono text-charcoal/40 mb-3">Countries / Global</p>
+      <p className="text-xs font-mono text-charcoal/55 mb-3">Countries / Global</p>
       <div className="space-y-3">
         {countries.map((c, i) => {
           const isPos = c.rs1m >= 0
@@ -50,7 +50,7 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
             <div key={c.ticker}>
               <div className="flex justify-between items-baseline mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-charcoal/30">{i + 1}</span>
+                  <span className="text-[10px] font-mono text-charcoal/50">{i + 1}</span>
                   <span className="text-sm font-mono font-medium text-charcoal">{c.ticker}</span>
                 </div>
                 <span className={`text-sm font-mono ${isPos ? 'text-sage' : 'text-loss'}`}>

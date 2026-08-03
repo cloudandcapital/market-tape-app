@@ -13,7 +13,7 @@ function InternalRow({
   return (
     <div className="flex items-baseline justify-between py-[0.28rem]">
       <div className="flex items-baseline gap-1">
-        <span className="text-[10px] font-mono text-charcoal/40">{label}</span>
+        <span className="text-[10px] font-mono text-charcoal/55">{label}</span>
         {arrow && <span className="text-[10px] font-mono font-medium" style={{ color: arrowColor }}>{arrow}</span>}
       </div>
       <div className="flex items-baseline gap-1.5">
@@ -38,7 +38,7 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
         Market Status
       </h2>
 
@@ -61,8 +61,8 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
           />
         </div>
         <div className="flex items-baseline justify-between mt-1">
-          <span className="text-xs font-mono text-charcoal/40">{exposure.level}/100</span>
-          <span className="text-[9px] font-mono text-charcoal/25">0 = max defensive · 100 = max risk-on</span>
+          <span className="text-xs font-mono text-charcoal/55">{exposure.level}/100</span>
+          <span className="text-[9px] font-mono text-charcoal/50">0 = max defensive · 100 = max risk-on</span>
         </div>
       </div>
 
@@ -78,7 +78,7 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
             { label: 'Short-term',   val: trend.short_term },
           ].map(({ label, val }) => (
             <div key={label} className="flex justify-between items-center">
-              <span className="text-xs font-mono text-charcoal/40">{label}</span>
+              <span className="text-xs font-mono text-charcoal/55">{label}</span>
               <span className={`text-xs font-mono font-medium ${
                 val === 'Up' ? 'text-sage' : val === 'Down' ? 'text-loss' : 'text-charcoal/50'
               }`}>{val}</span>
@@ -101,11 +101,11 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
         </div>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-xs font-mono text-charcoal/40">Above 20d MA</span>
+            <span className="text-xs font-mono text-charcoal/55">Above 20d MA</span>
             <span className="text-xs font-mono font-medium">{breadth.above_20d_pct.toFixed(0)}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-xs font-mono text-charcoal/40">Above 50d MA</span>
+            <span className="text-xs font-mono text-charcoal/55">Above 50d MA</span>
             <span className="text-xs font-mono font-medium">{breadth.above_50d_pct.toFixed(0)}%</span>
           </div>
         </div>
@@ -123,14 +123,14 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
             { label: 'Momentum',   val: risk.momentum },
           ].map(({ label, val }) => (
             <div key={label} className="flex justify-between">
-              <span className="text-xs font-mono text-charcoal/40">{label}</span>
+              <span className="text-xs font-mono text-charcoal/55">{label}</span>
               <span className="text-xs font-mono font-medium text-charcoal">{val}</span>
             </div>
           ))}
         </div>
         <div className="mt-4 pt-4 border-t border-charcoal/10">
           <div className="flex justify-between items-baseline">
-            <span className="text-xs font-mono text-charcoal/40">Momentum Env</span>
+            <span className="text-xs font-mono text-charcoal/55">Momentum Env</span>
             <span className="text-sm font-serif font-semibold text-charcoal">{momentum_env.label}</span>
           </div>
           <div className="h-1 bg-charcoal/10 rounded-full overflow-hidden mt-2">
@@ -143,7 +143,7 @@ export default function MarketStatus({ meta, snapshot }: { meta: Meta; snapshot:
 
       {/* Market Internals */}
       <div>
-        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/40 mb-3">
+        <p className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-3">
           Market Internals
         </p>
         <div className="divide-y divide-charcoal/8">
