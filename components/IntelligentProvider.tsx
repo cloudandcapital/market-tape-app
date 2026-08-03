@@ -141,13 +141,13 @@ function BriefSection() {
   return (
     <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
-      <div className="flex items-center justify-between px-4 sm:px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
           <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
               <span className="font-mono text-[0.48rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-              <span className="font-mono text-[0.54rem] tracking-[0.06em] uppercase whitespace-nowrap flex-shrink-0 text-charcoal/50">
+              <span className="font-mono text-[0.54rem] tracking-[0.06em] uppercase text-charcoal/50">
                 {cachedAt}
               </span>
             </>
@@ -156,7 +156,7 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading}
-          className="font-mono text-[0.54rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-3"
+          className="font-mono text-[0.54rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-auto sm:ml-3"
           style={{ color: 'rgba(0,0,0,0.55)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
