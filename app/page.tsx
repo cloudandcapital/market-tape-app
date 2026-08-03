@@ -1,5 +1,7 @@
 import { fetchMeta, fetchSnapshot, formatTime, getRow, getSectorRows } from '@/lib/data'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
+import { fetchLiveMultiples } from '@/lib/liveMultiples'
+import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
 import MarketStatus from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
@@ -53,8 +55,11 @@ export default async function Page() {
   // Logs to deployment output if any benchmark is >6 months past its review date.
   checkServerStaleness()
 
-  const [meta, snapshot] = await Promise.all([fetchMeta(), fetchSnapshot()])
+  const [meta, snapshot, multiples] = await Promise.all([fetchMeta(), fetchSnapshot(), fetchLiveMultiples()])
   const contextData = buildContextData(meta, snapshot)
+  const initialBrief = await getCachedIntelligentBrief(contextData, multiples)
+    .then(result => result.data)
+    .catch(() => null)
 
   return (
     <div className="min-h-screen bg-cream">
@@ -80,7 +85,7 @@ export default async function Page() {
         </header>
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
-        <IntelligentProvider contextData={contextData}>
+        <IntelligentProvider contextData={contextData} initialData={initialBrief}>
 
           {/* 3-column data grid — rendered after the brief */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">

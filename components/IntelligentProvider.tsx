@@ -52,12 +52,13 @@ function formatCachedAt(data: BriefResponse): string {
 
 interface Props {
   contextData: MarketContextData
+  initialData?: BriefResponse | null
   children: ReactNode
 }
 
-export function IntelligentProvider({ contextData, children }: Props) {
-  const [data, setData] = useState<BriefResponse | null>(null)
-  const [loading, setLoading] = useState(true)
+export function IntelligentProvider({ contextData, initialData = null, children }: Props) {
+  const [data, setData] = useState<BriefResponse | null>(initialData)
+  const [loading, setLoading] = useState(!initialData)
   const [error, setError] = useState(false)
 
   const hash = hashContext(contextData)
@@ -108,9 +109,13 @@ export function IntelligentProvider({ contextData, children }: Props) {
   }, [contextData, hash])
 
   useEffect(() => {
+    if (initialData) {
+      saveCache(initialData, hash)
+      return
+    }
     const kickoff = window.setTimeout(() => void fetchBrief(), 0)
     return () => window.clearTimeout(kickoff)
-  }, [fetchBrief])
+  }, [fetchBrief, hash, initialData])
 
   const cachedAt = data ? formatCachedAt(data) : null
 

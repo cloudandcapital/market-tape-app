@@ -152,7 +152,7 @@ export async function generateIntelligentBrief(
 
 // Shared Data Cache entry: one generation per unique 30-minute market snapshot.
 // Bump the version whenever the response schema or prompt contract changes.
-const getCachedIntelligentBrief = unstable_cache(
+export const getCachedIntelligentBrief = unstable_cache(
   async (
     context: MarketContextData,
     multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
