@@ -1,10 +1,8 @@
 import type { Meta, Snapshot } from '@/lib/types'
 import { getSectorRows } from '@/lib/data'
 
-export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot: Snapshot }) {
+export function Sectors({ snapshot }: { snapshot: Snapshot }) {
   const sectors = getSectorRows(snapshot)
-  const { countries } = meta.leaders
-
   const maxAbs = Math.max(...sectors.map(s => Math.abs(s.rs1m)), 1)
 
   return (
@@ -13,7 +11,7 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
         Sectors · RS1M vs SPY
       </h2>
 
-      <div className="space-y-[0.55rem] mb-6">
+      <div className="space-y-[0.55rem]">
         {sectors.map((s, i) => {
           const isPos = s.rs1m >= 0
           const barPct = Math.min((Math.abs(s.rs1m) / maxAbs) * 100, 100)
@@ -39,9 +37,16 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
         })}
       </div>
 
-      <hr className="border-charcoal/10 mb-4" />
+    </div>
+  )
+}
 
-      <p className="text-xs font-mono text-charcoal/55 mb-3">Countries / Global</p>
+export function CountriesGlobal({ meta }: { meta: Meta }) {
+  const { countries } = meta.leaders
+
+  return (
+    <div>
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">Countries / Global</h2>
       <div className="space-y-3">
         {countries.map((c, i) => {
           const isPos = c.rs1m >= 0
@@ -66,4 +71,8 @@ export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot
       </div>
     </div>
   )
+}
+
+export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot: Snapshot }) {
+  return <><Sectors snapshot={snapshot} /><hr className="border-charcoal/10 my-6" /><CountriesGlobal meta={meta} /></>
 }

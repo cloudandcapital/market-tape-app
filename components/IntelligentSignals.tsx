@@ -56,7 +56,7 @@ function CapexRow({ label, value, detail, color, tooltip }: {
   label: string; value: string; detail: string; color: string; tooltip: RowTooltip
 }) {
   return (
-    <div className="py-3 border-b border-charcoal/8">
+    <div className="py-4 md:px-6 first:pl-0 last:pr-0 border-b last:border-b-0 md:border-b-0 border-charcoal/8">
       <div className="flex items-center gap-1 mb-1">
         <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
         <BenchmarkTooltip {...tooltip} />
@@ -170,7 +170,7 @@ export function HyperscalerCapex() {
   return (
     <div>
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
-      <div>
+      <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />

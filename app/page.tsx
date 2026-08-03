@@ -3,7 +3,7 @@ import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
 import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
 import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
-import SectorLeaders from '@/components/SectorLeaders'
+import { CountriesGlobal, Sectors } from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
@@ -91,12 +91,12 @@ export default async function Page() {
             {/* Band 2 */}
             <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" aria-label="Primary market signals">
               <MarketStatus meta={meta} />
-              <FinOpsSignals />
               <div>
-                <TechConcentration snapshot={snapshot} />
+                <FinOpsSignals />
                 <hr className="border-charcoal/10 my-6" />
-                <RiskAlerts />
+                <TechConcentration snapshot={snapshot} />
               </div>
+              <RiskAlerts />
             </section>
 
             {/* Band 3 */}
@@ -118,12 +118,17 @@ export default async function Page() {
 
             {/* Band 5 */}
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-charcoal/10 pt-8" aria-label="Sector and cloud benchmarks">
-              <SectorLeaders meta={meta} snapshot={snapshot} />
+              <Sectors snapshot={snapshot} />
               <div>
-                <CloudValuations />
+                <CountriesGlobal meta={meta} />
                 <hr className="border-charcoal/10 my-7" />
-                <HyperscalerCapex />
+                <CloudValuations />
               </div>
+            </section>
+
+            {/* Band 6 */}
+            <section className="border-t border-charcoal/10 pt-8" aria-label="Hyperscaler capital expenditure">
+              <HyperscalerCapex />
             </section>
           </div>
 
