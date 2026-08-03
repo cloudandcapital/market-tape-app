@@ -1,5 +1,6 @@
 import type { Meta, Snapshot } from '@/lib/types'
 import { getRow } from '@/lib/data'
+import DashboardIcon from './DashboardIcon'
 
 interface Rec { label: string; color: string; note: string }
 interface Recs { oneYear: Rec; threeYear: Rec; spot: Rec }
@@ -33,9 +34,9 @@ export default function CommitmentWindow({ meta, snapshot }: { meta: Meta; snaps
   const recs = getRecs(vix, guidance, longTrend)
 
   const rows = [
-    { emoji: '☁️', label: '1-Year Reserved', rec: recs.oneYear },
-    { emoji: '💰', label: '3-Year Commits',  rec: recs.threeYear },
-    { emoji: '🔧', label: 'Spot/On-Demand',  rec: recs.spot },
+    { icon: 'cloud' as const, label: '1-Year Reserved', rec: recs.oneYear },
+    { icon: 'renewal' as const, label: '3-Year Commits', rec: recs.threeYear },
+    { icon: 'infrastructure' as const, label: 'Spot/On-Demand', rec: recs.spot },
   ]
 
   return (
@@ -48,10 +49,10 @@ export default function CommitmentWindow({ meta, snapshot }: { meta: Meta; snaps
       </p>
 
       <div className="divide-y divide-charcoal/8">
-        {rows.map(({ emoji, label, rec }) => (
+        {rows.map(({ icon, label, rec }) => (
           <div key={label} className="py-2.5 flex items-start justify-between gap-2">
             <div className="flex items-start gap-2 min-w-0">
-              <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
+              <DashboardIcon name={icon} />
               <div className="min-w-0">
                 <p className="text-[10px] font-mono text-charcoal/50 leading-none mb-0.5">{label}</p>
                 <p className="text-[9px] font-mono text-charcoal/30 truncate">{rec.note}</p>

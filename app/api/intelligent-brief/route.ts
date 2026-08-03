@@ -7,7 +7,7 @@ import { fetchLiveMultiples } from '@/lib/liveMultiples'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
-const INTELLIGENT_BRIEF_SYSTEM_PROMPT = 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.'
+const INTELLIGENT_BRIEF_SYSTEM_PROMPT = 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. Treat market and benchmark signals as strategic decision support. Do not present them as organization-specific operational mandates without workload, utilization, contractual, and business context. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.'
 
 function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
   const { marketData: m, sectorData, macroData: mac, leaderboard } = ctx
@@ -50,9 +50,9 @@ Based on ALL of the above, generate a comprehensive FinOps intelligence report.
 SIGNAL ANCHORS — apply these rules to produce deterministic verdicts on consistent data:
 
 FINOPS SIGNALS:
-• cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): freeze non-critical spend, push vendors. Neutral (40-60): hold and optimize existing. Risk-On (>60): proceed with planned expansion. Cite exposure level.
-• saasRenewals → primary: SaaS NTM multiple + HYG RS1M. SaaS materially compressed from peak (well off 2021 highs) AND HYG negative → push hard, vendors will negotiate — buyers have leverage. SaaS recovering toward peak OR HYG positive → lock in pricing before it re-rates. Cite the actual visible multiple and HYG grade; do not reference any specific threshold number.
-• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. If the source says supply-constrained, protect access to scarce accelerators while treating broadly available models as standard procurement. Cite only the supplied status and price ranges; do not infer a booking horizon.
+• cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): review or defer non-critical expansion and raise the approval threshold for discretionary expansion. Neutral (40-60): review utilization and optimize existing capacity. Risk-On (>60): review planned expansion against workload and business needs. Cite exposure level.
+• saasRenewals → primary: SaaS NTM multiple + HYG RS1M. If SaaS is materially compressed from peak and HYG is negative, benchmark renewal pricing and test for concessions. If SaaS is recovering or HYG is positive, monitor pricing before extending commitment duration. Cite the actual visible multiple and HYG grade; do not reference any specific threshold number.
+• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. If the source says supply-constrained, protect existing Blackwell access when workloads depend on it while treating broadly available models as standard procurement. Cite only the supplied status and price ranges; do not infer urgency or a booking horizon.
 
 RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
 • "GPU Capacity Tightening" (warning): if the GPU benchmark explicitly describes any current product generation as supply-constrained
@@ -65,7 +65,7 @@ PROSE ANCHORS:
 • morningBrief headline: priority — (1) if Defensive AND VIX > 20 → risk-off framing; (2) if TLT RS1M below −3% AND DXY RS1M below −5% → macro dislocation framing; (3) else → lead with the dominant sector rotation (strongest sector vs weakest)
 • morningBrief is interpretation and synthesis only: target 180–220 words and never exceed 230 words across all its fields. Keep marketRead under 75 words, each bullet under 18 words, and action under 25 words. Do not repeat whole Market Status, FinOps Signals, Risk Alerts, Sector Insights, Commitment Windows, valuation, CapEx, or AI-deal sections.
 • distinguish measured market data from benchmark claims and interpretation; use cautious language for estimates, targets, and reported claims
-• action: lead with EXPOSURE GUIDANCE verdict; add a GPU exception only if the supplied benchmark supports it
+• action: lead with an EXPOSURE GUIDANCE review priority; mention protecting GPU access only when the supplied benchmark supports it and workload dependence would justify it
 • sectorInsights: lead with the highest RS1M sector from SECTOR LEADERS, acknowledge the lowest, connect to cloud budget implications
 
 Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
@@ -79,22 +79,22 @@ Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
     "action": "one clear action or decision to monitor"
   },
   "finopsSignals": {
-    "cloudSpend": "one operational sentence; do not repeat Lumen",
-    "saasRenewals": "one operational sentence; do not repeat Lumen",
-    "infrastructure": "one operational sentence; do not repeat Lumen"
+    "cloudSpend": "one strategic decision-support sentence; do not repeat Lumen",
+    "saasRenewals": "one strategic decision-support sentence; do not repeat Lumen",
+    "infrastructure": "one strategic decision-support sentence; do not repeat Lumen"
   },
   "commitmentWindows": {
     "oneYear": {
       "status": "Use EXPOSURE GUIDANCE as the primary signal — if guidance is Risk-On: FAVORABLE; if Neutral: HOLD; if Defensive: HOLD. Upgrade to CAUTION only if VIX is above 28 AND breadth is below 40%. Cite exposure guidance level and VIX.",
-      "reason": "1-2 sentences citing exposure guidance, VIX, and breadth. Example: 'Defensive signal at 21/100 with VIX at 17 — market is not in panic but conditions do not support locking new 1-year spend. Wait for Risk-On signal before committing.'"
+      "reason": "1-2 sentences citing exposure guidance, VIX, and breadth. Example: 'Defensive signal at 21/100 with VIX at 17 — market is not in panic, but review or defer non-critical expansion and monitor before extending commitment duration.'"
     },
     "threeYear": {
       "status": "Use TLT 1M RS direction as the primary signal — if TLT is negative (rates rising, bonds selling off): CAUTION; if TLT is modestly negative and DXY is also negative by more than 5%: CAUTION; if TLT is rising and macro stable: FAVORABLE; otherwise HOLD. Cite TLT RS1M and DXY RS1M.",
-      "reason": "1-2 sentences citing bond direction and dollar trend. Example: 'TLT down 6.23% in a month with the dollar falling 9.47% — too much macro movement to lock long duration at current pricing. Wait for rate stabilization.'"
+      "reason": "1-2 sentences citing bond direction and dollar trend. Example: 'TLT down 6.23% in a month with the dollar falling 9.47% — monitor for rate stabilization before extending commitment duration.'"
     },
     "spot": {
       "status": "Evaluate general cloud workloads ONLY (compute, storage, network, batch jobs) — NOT GPU or accelerated compute. GPU supply is covered in riskAlerts, do not let it influence this verdict. Use VIX and breadth as the sole signals: VIX below 20 AND breadth above 55% = SAFE; VIX above 28 OR breadth below 40% = RISKY; in between use judgment but lean SAFE if VIX is below 22. Cite VIX and breadth only.",
-      "reason": "1 sentence citing VIX and breadth for general cloud workloads only. Example: 'VIX at 17 and 73% of names above their 50-day MA mean general spot pricing is stable — safe for tactical workloads and batch jobs.'"
+      "reason": "1 sentence citing VIX and breadth for general cloud workloads only. Example: 'VIX at 17 and 73% of names above their 50-day MA support reviewing spot use for tactical workloads and batch jobs.'"
     }
   },
   "riskAlerts": [
@@ -160,7 +160,7 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v13', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v14', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )
 

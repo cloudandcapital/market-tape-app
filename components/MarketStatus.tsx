@@ -150,7 +150,7 @@ export function MarketInternals({ snapshot }: { snapshot: Snapshot }) {
         Market Internals
       </h2>
       <div className="rows-subtle">
-        {vix && <InternalRow label={vix.last > 30 ? 'VIX ⚠' : 'VIX'} value={vix.last.toFixed(1)} change={vix.d1_pct} invertColor arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'} />}
+        {vix && <InternalRow label={vix.last > 30 ? 'VIX elevated' : 'VIX'} value={vix.last.toFixed(1)} change={vix.d1_pct} invertColor arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'} />}
         {tnx && <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} />}
         {dxy && <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} />}
         {gld && <InternalRow label="Gold (GLD)" value={`$${gld.last.toFixed(0)}`} change={gld.d1_pct} />}

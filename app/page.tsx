@@ -145,7 +145,7 @@ export default async function Page() {
             <div className="flex flex-wrap justify-between items-center gap-3">
               <p className="text-[0.6rem] font-mono text-charcoal/55">
                 Data via yFinance · Refreshes every 30 min · Intelligence via Lumen ·{' '}
-                <a href="/sources" className="hover:text-charcoal/60 transition-colors">Data Sources</a>
+                <a href="/sources" className="hover:text-charcoal/60 transition-colors">Methodology &amp; Sources</a>
               </p>
               <p className="text-[0.6rem] font-mono text-charcoal/50">
                 © 2026 Cloud &amp; Capital ·{' '}

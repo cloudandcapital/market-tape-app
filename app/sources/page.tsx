@@ -5,8 +5,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Data Sources — Market Tape | Cloud & Capital',
-  description: 'Every data source behind Market Tape: live market data, AI compute commitments, and manually-maintained industry benchmarks.',
+  title: 'Methodology & Sources — Market Tape | Cloud & Capital',
+  description: 'How Market Tape calculates and presents market signals, plus the primary sources behind its benchmarks and AI compute tracker.',
 }
 
 function formatDate(isoDate: string): string {
@@ -34,14 +34,54 @@ export default function SourcesPage() {
         <header className="mb-10">
           <p className="font-mono text-[0.55rem] tracking-[0.22em] uppercase text-charcoal/35 mb-1">Cloud &amp; Capital · Market Tape</p>
           <h1 className="font-serif font-medium" style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', color: '#191714', lineHeight: 1.15 }}>
-            Data Sources
+            Methodology &amp; Sources
           </h1>
           <p className="font-mono text-[0.72rem] text-charcoal/50 mt-2 leading-relaxed">
-            Every number on Market Tape comes from one of three layers: live market data refreshed every 30 minutes,
-            manually-maintained benchmarks updated on a scheduled cadence, or public announcements compiled by hand.
-            This page documents all of them.
+            Market Tape is strategic decision support for technology-finance review. It connects public-market conditions,
+            cloud benchmarks, and major AI infrastructure announcements without turning them into individualized investment
+            advice or workload-level operating mandates.
           </p>
         </header>
+
+        <SectionTitle>Methodology at a Glance</SectionTitle>
+
+        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
+          <p>
+            The <span className="text-charcoal/80">tracked universe</span> is the set of instruments published across the
+            dashboard&apos;s market, macro, sector, and global views. The broader <span className="text-charcoal/80">screened
+            universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.
+          </p>
+          <p>
+            Market data refreshes every 30 minutes. On weekends and market holidays, the timestamp identifies the latest
+            completed US trading session—not the page view, build, or deployment time.
+          </p>
+          <p>
+            The 0–100 exposure score combines trend, breadth, momentum, volatility, and risk inputs from the upstream pipeline.
+            Lower readings are Defensive, 40–60 is Hold/Neutral, and higher readings are Risk-On. These bands frame review
+            priorities; they do not prescribe a portfolio allocation or cloud purchase.
+          </p>
+        </div>
+
+        <SectionTitle>Signal Definitions</SectionTitle>
+
+        <dl className="space-y-4 font-mono text-[0.68rem] leading-relaxed">
+          <div>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Trends</dt>
+            <dd className="text-charcoal/60">Long-, intermediate-, and short-term directional regimes calculated by the upstream market pipeline; they describe observed price direction, not forecasts.</dd>
+          </div>
+          <div>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Breadth</dt>
+            <dd className="text-charcoal/60">The share of tracked instruments trading above their 20-day and 50-day moving averages.</dd>
+          </div>
+          <div>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Relative strength</dt>
+            <dd className="text-charcoal/60">One-month performance relative to SPY. Positive values indicate outperformance; negative values indicate underperformance.</dd>
+          </div>
+          <div>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Grades</dt>
+            <dd className="text-charcoal/60">A, B, and C summarize relative trend strength in the source pipeline: A is strongest, B is intermediate, and C is weakest.</dd>
+          </div>
+        </dl>
 
         {/* ── LIVE MARKET DATA ─────────────────────────────────────────── */}
         <SectionTitle>Live Market Data</SectionTitle>
@@ -105,8 +145,12 @@ export default function SourcesPage() {
 
         <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
           This major-deal tracker is compiled manually from public announcements and press releases.
-          Each row is sourced and classified individually as Signed, Announced, Target, or Reported / in talks.
-          Dollar values and capacity are not aggregated because those categories are not economically equivalent.
+          Each row is sourced and classified individually: <span className="text-charcoal/75">Signed</span> means an
+          executed agreement is confirmed; <span className="text-charcoal/75">Announced</span> means the parties publicly
+          described a deal or partnership without equivalent confirmation of execution; <span className="text-charcoal/75">Target</span>
+          means a planned capacity or investment goal; and <span className="text-charcoal/75">Reported / in talks</span> means
+          a negotiation or third-party report that is not a completed commitment. Dollar values and capacity are not aggregated
+          because these unlike statuses are not economically equivalent.
           The table excludes ongoing relationships with no disclosed value or capacity. The data is static until a material update —
           source code at{' '}
           <a
@@ -160,7 +204,8 @@ export default function SourcesPage() {
           >
             lib/industryBenchmarks.ts
           </a>
-          . Each entry has a review cadence. Run{' '}
+          . Each entry records its last update, next review date, and review cadence. The automated freshness check warns
+          within 14 days of a due date and fails once a benchmark is overdue. Run{' '}
           <code className="font-mono text-[0.65rem] bg-charcoal/6 px-1 py-0.5 rounded-sm">npm run check-benchmarks</code>
           {' '}to see current freshness status.
         </p>
@@ -191,6 +236,22 @@ export default function SourcesPage() {
               </div>
             </div>
           ))}
+        </div>
+
+        <SectionTitle>Lumen Synthesis &amp; Limitations</SectionTitle>
+
+        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
+          <p>
+            Lumen is an AI-generated synthesis of the market data and sourced benchmarks displayed on Market Tape. Its role is
+            to surface relationships and review priorities, not to create new facts. Completed analysis is shared within the
+            market-data refresh window so visitors see a consistent reading of the same snapshot.
+          </p>
+          <p>
+            Market Tape provides strategic context, not individualized investment, financial, tax, procurement, or workload
+            advice. Organization-specific decisions still require workload demand, utilization, contract terms, risk tolerance,
+            and business priorities. Data may be delayed, revised, approximate, or temporarily unavailable; follow the linked
+            primary sources before acting on a benchmark or announcement.
+          </p>
         </div>
 
         {/* Footer */}

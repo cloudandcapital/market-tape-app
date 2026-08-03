@@ -4,6 +4,7 @@ import { useIntelligent } from './IntelligentProvider'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
 import { BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
+import DashboardIcon from './DashboardIcon'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -97,12 +98,12 @@ export function FinOpsSignals() {
       <SectionLabel>FinOps Signals</SectionLabel>
       <div className="rows-subtle">
         {[
-          { emoji: '☁️', label: 'Cloud Spend',    text: finopsSignals.cloudSpend },
-          { emoji: '💰', label: 'SaaS Renewals',  text: finopsSignals.saasRenewals },
-          { emoji: '🔧', label: 'Infrastructure', text: finopsSignals.infrastructure },
-        ].map(({ emoji, label, text }) => (
+          { icon: 'cloud' as const, label: 'Cloud Spend', text: finopsSignals.cloudSpend },
+          { icon: 'renewal' as const, label: 'SaaS Renewals', text: finopsSignals.saasRenewals },
+          { icon: 'infrastructure' as const, label: 'Infrastructure', text: finopsSignals.infrastructure },
+        ].map(({ icon, label, text }) => (
           <div key={label} className="py-2.5 flex items-start gap-2">
-            <span className="text-[11px] flex-shrink-0 mt-0.5">{emoji}</span>
+            <DashboardIcon name={icon} />
             <div>
               <p className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50 mb-0.5">{label}</p>
               <p className="text-[0.76rem] font-mono text-charcoal/75 leading-snug">{text}</p>
@@ -212,9 +213,7 @@ export function RiskAlerts() {
           <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
             {riskAlerts.map((alert, i) => (
               <div key={i} className="flex items-start gap-2 py-4 md:px-6 first:pl-0 last:pr-0">
-                <span className="text-[13px] flex-shrink-0 mt-0.5">
-                  {alert.type === 'warning' ? '⚠️' : '✅'}
-                </span>
+                <DashboardIcon name={alert.type === 'warning' ? 'warning' : 'opportunity'} tone={alert.type === 'warning' ? 'caution' : 'positive'} />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1 mb-1">
                     <p className="font-mono text-[0.7rem] font-semibold text-charcoal/80 leading-none">{alert.title}</p>

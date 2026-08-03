@@ -1,28 +1,29 @@
 import type { Meta } from '@/lib/types'
+import DashboardIcon from './DashboardIcon'
 
 interface Props { meta: Meta }
 
 interface Signal {
-  emoji: string
+  icon: 'cloud' | 'renewal' | 'infrastructure'
   category: string
   action: string
 }
 
 const SIGNALS: Record<string, Signal[]> = {
   'Risk-On': [
-    { emoji: '☁️', category: 'Cloud Spend',      action: 'Accelerate commits — conditions support it' },
-    { emoji: '💰', category: 'SaaS Renewals',     action: 'Expand strategically, lock multi-year' },
-    { emoji: '🔧', category: 'Infrastructure',    action: 'Add capacity now, before rates move' },
+    { icon: 'cloud', category: 'Cloud Spend', action: 'Review planned expansion against utilization and business demand' },
+    { icon: 'renewal', category: 'SaaS Renewals', action: 'Benchmark renewal pricing before extending duration' },
+    { icon: 'infrastructure', category: 'Infrastructure', action: 'Review capacity additions against workload requirements' },
   ],
   'Hold': [
-    { emoji: '☁️', category: 'Cloud Spend',      action: 'Hold non-critical commits' },
-    { emoji: '💰', category: 'SaaS Renewals',     action: 'Negotiate harder on renewals' },
-    { emoji: '🔧', category: 'Infrastructure',    action: 'Lock Tech capacity now' },
+    { icon: 'cloud', category: 'Cloud Spend', action: 'Review or defer non-critical expansion' },
+    { icon: 'renewal', category: 'SaaS Renewals', action: 'Benchmark renewals and test for concessions' },
+    { icon: 'infrastructure', category: 'Infrastructure', action: 'Monitor before extending commitment duration' },
   ],
   'Defensive': [
-    { emoji: '☁️', category: 'Cloud Spend',      action: 'Pause expansion, audit utilization' },
-    { emoji: '💰', category: 'SaaS Renewals',     action: 'Renegotiate everything aggressively' },
-    { emoji: '🔧', category: 'Infrastructure',    action: 'Cut discretionary capacity' },
+    { icon: 'cloud', category: 'Cloud Spend', action: 'Raise the approval threshold for discretionary expansion' },
+    { icon: 'renewal', category: 'SaaS Renewals', action: 'Benchmark pricing and test for concessions' },
+    { icon: 'infrastructure', category: 'Infrastructure', action: 'Review discretionary capacity against utilization' },
   ],
 }
 
@@ -40,7 +41,7 @@ export default function FinOpsSignals({ meta }: Props) {
         {signals.map(s => (
           <div key={s.category} className="py-2.5">
             <p className="text-[10px] font-mono tracking-[0.1em] uppercase text-charcoal/35 mb-0.5 flex items-center gap-1.5">
-              <span>{s.emoji}</span>
+              <DashboardIcon name={s.icon} />
               <span>{s.category}</span>
             </p>
             <p className="text-[0.78rem] font-mono text-charcoal/80 leading-snug">
