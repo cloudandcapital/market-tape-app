@@ -2,7 +2,7 @@
 
 import { useIntelligent } from './IntelligentProvider'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
-import { BASKETS } from '@/lib/liveMultiples'
+import { BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
@@ -18,6 +18,20 @@ interface RowTooltip {
   sourceUrl?: string
   lastUpdated: string
   isLive?: boolean
+}
+
+function valuationTooltip(value: string, basket: keyof typeof BASKETS): RowTooltip {
+  if (/Q[1-4]\s+20\d{2}/.test(value)) {
+    return {
+      source: `${QUARTERLY_MULTIPLES[basket].source} · ${BASKETS[basket].tickers.join(', ')}`,
+      lastUpdated: QUARTERLY_MULTIPLES[basket].lastUpdated,
+    }
+  }
+  return {
+    source: `Yahoo Finance basket: ${BASKETS[basket].tickers.join(', ')}`,
+    lastUpdated: 'updates every 30 min',
+    isLive: true,
+  }
 }
 
 function ValuationRow({ label, value, tooltip }: { label: string; value: string; tooltip: RowTooltip }) {
@@ -84,6 +98,7 @@ export function IntelligentMiddle() {
 
   if (!data) return null
   const { finopsSignals, commitmentWindows, cloudValuations, hyperscalerCapex } = data
+  const capexDirection = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0] ?? hyperscalerCapex.trend
 
   return (
     <div>
@@ -134,19 +149,19 @@ export function IntelligentMiddle() {
       <SectionLabel>Cloud Valuations</SectionLabel>
       <div>
         <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.publicCloud.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
+          tooltip={valuationTooltip(cloudValuations.publicCloud, 'publicCloud')} />
         <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.saas.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
+          tooltip={valuationTooltip(cloudValuations.saasAverage, 'saas')} />
         <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
-          tooltip={{ source: `Yahoo Finance basket: ${BASKETS.aiInfra.tickers.join(', ')}`, lastUpdated: 'updates every 30 min', isLive: true }} />
+          tooltip={valuationTooltip(cloudValuations.aiInfrastructure, 'aiInfra')} />
       </div>
 
       <hr className="border-charcoal/10 my-6" />
 
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div>
-        <CapexRow label="Hyperscaler spend" value={hyperscalerCapex.trend} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
-          color={hyperscalerCapex.trend === 'Expanding' ? '#6B8E7F' : hyperscalerCapex.trend === 'Contracting' ? '#C0443A' : '#888'}
+        <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
+          color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
         <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
