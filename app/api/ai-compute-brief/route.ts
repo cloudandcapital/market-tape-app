@@ -18,7 +18,7 @@ Voice rules (non-negotiable):
 - No em-dash decoration. Use em-dashes only for genuine parentheticals.
 - Grounding rule: Do not invent industry benchmarks, pricing statistics, or figures not present in the DATA section. Use qualitative language if the data doesn't supply a specific number.
 
-TASK: Below is the current state of major AI compute deals. Write ONE sentence (max 35 words) that summarizes what the status mix means for finance teams making cloud and AI cost decisions in the next 6 months.
+TASK: Below is the current state of major AI compute deals. Write ONE sentence, targeting 25–30 words and never exceeding 30 words, that summarizes what the status mix means for finance teams making cloud and AI cost decisions in the next 6 months.
 
 Do not calculate or cite an aggregate dollar or gigawatt total. The rows mix signed agreements, announcements, targets, equity investments, planned capacity, and reported negotiations. Treat each row's status as authoritative and do not describe non-signed rows as commitments.
 
@@ -40,10 +40,10 @@ export async function GET() {
   try {
     const message = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 100,
+      max_tokens: 80,
       system: [{ type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: buildUserMessage() }],
-    })
+    }, { signal: AbortSignal.timeout(12_000) })
     const text = message.content[0]?.type === 'text' ? message.content[0].text.trim() : null
     const completedAt = performance.now()
     console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(completedAt - requestStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)}`)
@@ -53,7 +53,9 @@ export async function GET() {
     )
   } catch (err) {
     console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(performance.now() - requestStartedAt)} totalMs=${Math.round(performance.now() - requestStartedAt)} failed=true`)
-    console.error('AI compute brief error:', err)
+    const errorStatus = typeof err === 'object' && err !== null && 'status' in err ? String(err.status) : 'unknown'
+    const errorName = err instanceof Error ? err.name : 'UnknownError'
+    console.error(`[ai-compute-brief:error] name=${errorName} status=${errorStatus}`)
     return NextResponse.json({ analysis: null }, { status: 503 })
   }
 }
