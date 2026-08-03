@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { unstable_cache } from 'next/cache'
 import { NextResponse } from 'next/server'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
@@ -6,7 +7,6 @@ import { fetchLiveMultiples } from '@/lib/liveMultiples'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
-export const INTELLIGENT_BRIEF_HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 const INTELLIGENT_BRIEF_SYSTEM_PROMPT = 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.'
 
 function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
@@ -150,15 +150,26 @@ export async function generateIntelligentBrief(
   return parseResponse(text)
 }
 
+// Shared Data Cache entry: one generation per unique 30-minute market snapshot.
+// Bump the version whenever the response schema or prompt contract changes.
+const getCachedIntelligentBrief = unstable_cache(
+  async (
+    context: MarketContextData,
+    multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
+  ) => ({
+    data: await generateIntelligentBrief(context, multiples),
+    cachedAt: Date.now(),
+  }),
+  ['intelligent-brief-v13', INTELLIGENT_BRIEF_MODEL],
+  { revalidate: 1800, tags: ['intelligent-brief'] },
+)
+
 export async function POST(req: Request) {
   const requestStartedAt = performance.now()
   let marketDataCompletedAt = requestStartedAt
   let claudeStartedAt = requestStartedAt
   try {
     const { context }: { context: MarketContextData } = await req.json()
-    const comparisonModel = req.headers.get('x-market-tape-model-comparison') === 'haiku'
-      ? INTELLIGENT_BRIEF_HAIKU_MODEL
-      : INTELLIGENT_BRIEF_MODEL
 
     // Fetch live multiples in parallel with no extra latency — Next.js cache
     // serves subsequent calls within the 30-min window from memory.
@@ -166,15 +177,18 @@ export async function POST(req: Request) {
     marketDataCompletedAt = performance.now()
     claudeStartedAt = marketDataCompletedAt
 
-    const data = await generateIntelligentBrief(context, multiples, comparisonModel)
+    const cachedResult = await getCachedIntelligentBrief(context, multiples)
+    const data = cachedResult.data
     const completedAt = performance.now()
+    const cacheAgeMs = Math.max(0, Date.now() - cachedResult.cachedAt)
     console.info(
       `[intelligent-brief:timing] marketDataMs=${Math.round(marketDataCompletedAt - requestStartedAt)} ` +
-      `claudeMs=${Math.round(completedAt - claudeStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)}`,
+      `claudeMs=${Math.round(completedAt - claudeStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)} ` +
+      `cacheAgeMs=${cacheAgeMs}`,
     )
 
     return NextResponse.json({ success: true, data }, {
-      headers: { 'Cache-Control': 's-maxage=3600, stale-while-revalidate=86400' },
+      headers: { 'Cache-Control': 's-maxage=1800, stale-while-revalidate=86400' },
     })
   } catch (err) {
     const failedAt = performance.now()
