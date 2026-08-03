@@ -141,7 +141,7 @@ function BriefSection() {
   return (
     <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.07)' }}>
+      <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem] rule-subtle-bottom">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
           <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
@@ -207,12 +207,12 @@ function BriefSection() {
                   {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
               </div>
-              <div className="md:border-l md:border-charcoal/10 md:pl-5">
+              <div className="md:border-l md:pl-5" style={{ borderColor: 'var(--rule-subtle)' }}>
                 <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/55 mb-2">Cloud-finance implication</p>
                 <ul className="space-y-1.5 mb-4">
                   {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
-                <div className="border-t border-charcoal/10 pt-3">
+                <div className="rule-subtle-top pt-3">
                   <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">Decision to monitor</p>
                   <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
                 </div>

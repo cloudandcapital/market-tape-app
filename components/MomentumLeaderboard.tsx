@@ -6,7 +6,7 @@ function MomentumList({ title, rows, tone }: { title: string; rows: LeaderboardE
   return (
     <section aria-labelledby={`momentum-${tone}`}>
       <h3 id={`momentum-${tone}`} className="font-mono text-[0.62rem] tracking-[0.18em] uppercase text-charcoal/55 mb-2">{title}</h3>
-      <div className="divide-y divide-charcoal/8 border-y border-charcoal/8">
+      <div className="rows-subtle">
         {rows.map((row, i) => (
           <div key={row.ticker} className="grid grid-cols-[1rem_2.25rem_minmax(0,1fr)_auto] items-center gap-2 py-2 min-h-[3rem]">
             <span className="font-mono text-[0.62rem] text-charcoal/55 text-right">{i + 1}</span>

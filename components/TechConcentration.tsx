@@ -22,7 +22,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
         Tech Concentration
       </h2>
 
-      <div className="divide-y divide-charcoal/8">
+      <div className="rows-subtle">
         {xlk && (
           <div className="flex items-baseline justify-between py-[0.35rem]">
             <span className="text-[10px] font-mono text-charcoal/55">XLK vs SPY</span>

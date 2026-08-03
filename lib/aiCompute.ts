@@ -10,7 +10,7 @@ export interface AiComputeRow {
   notes?: string  // editorial context; shown on /sources, not in the main table
 }
 
-export const AI_COMPUTE_DATA_VERSION = '20260802a'
+export const AI_COMPUTE_DATA_VERSION = '20260802b'
 export const AI_COMPUTE_LAST_UPDATED = '2026-08-02'
 
 export const aiComputeData: AiComputeRow[] = [
@@ -147,3 +147,32 @@ export const aiComputeData: AiComputeRow[] = [
     notes: '~110,000 NVIDIA GPUs hosted at xAI data centers. Bridge capacity for unexpected Gemini Enterprise demand surge while Google builds its own infrastructure. Terminable with 90 days notice after Dec 31, 2026. Notable inversion: a hyperscaler (Google) as the compute buyer, not the supplier — complicates the standard "AI lab rents from hyperscaler" framing.',
   },
 ]
+
+export function getSignedDollarSummary(rows: AiComputeRow[] = aiComputeData): { count: number; totalLabel: string } {
+  const signedRows = rows.filter(row => row.status === 'Signed')
+  const totalBillions = signedRows.reduce((total, row) => {
+    const match = row.amount.match(/\$([\d.]+)B/i)
+    return total + (match ? Number(match[1]) : 0)
+  }, 0)
+  const hasOpenEndedValue = signedRows.some(row => /\+/.test(row.amount))
+  return {
+    count: signedRows.length,
+    totalLabel: `$${totalBillions.toLocaleString('en-US', { maximumFractionDigits: 1 })}B${hasOpenEndedValue ? '+' : ''}`,
+  }
+}
+
+export function getStatusSafeAiComputeFallback(rows: AiComputeRow[] = aiComputeData): string {
+  const { count, totalLabel } = getSignedDollarSummary(rows)
+  return `Signed deals total ${totalLabel} across ${count} suppliers. Announced, reported/in-talks, and target arrangements remain separate because their certainty and structure differ, while finance teams face supplier-concentration and infrastructure-timing risk.`
+}
+
+export function isStatusSafeAiComputeBrief(text: string, rows: AiComputeRow[] = aiComputeData): boolean {
+  const { totalLabel } = getSignedDollarSummary(rows)
+  const dollarClaims = text.match(/\$[\d,.]+(?:\.\d+)?[BMT](?:\+)?/gi) ?? []
+  if (/\bpipeline\b/i.test(text)) return false
+  if (/\b(?:aggregate|combined|total)\b.{0,24}\d+(?:\.\d+)?\s*GW/i.test(text)) return false
+  if (/\d+(?:\.\d+)?\s*GW.{0,24}\b(?:aggregate|combined|total)\b/i.test(text)) return false
+  if (dollarClaims.some(claim => claim.toUpperCase() !== totalLabel.toUpperCase())) return false
+  if (dollarClaims.length > 0 && !/\bsigned\b/i.test(text)) return false
+  return true
+}

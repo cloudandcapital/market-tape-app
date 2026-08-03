@@ -5,7 +5,7 @@ function MacroRow({
   label, value, sub, color,
 }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div className="flex items-baseline justify-between py-[0.35rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+    <div className="flex items-baseline justify-between py-[0.35rem] rule-subtle-bottom">
       <span className="text-[10px] font-mono text-charcoal/55">{label}</span>
       <div className="text-right">
         <span className="text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>

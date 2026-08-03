@@ -14,7 +14,7 @@ There's no shortage of market data. There's a shortage of translation between ma
 
 | Section | What it shows |
 |---|---|
-| **Lumen Analysis** | Three-paragraph market read with FinOps Signals (cloud spend / SaaS renewals / infrastructure), Risk Alerts, and Sector Insights — all anchored to specific signals to prevent flip-flopping verdicts across regenerations |
+| **Lumen Analysis** | Three-paragraph market read with FinOps Signals (cloud spend / SaaS renewals / infrastructure), Risk & Opportunity, and Sector Insights — all anchored to specific signals to prevent flip-flopping verdicts across regenerations |
 | **AI Compute Commitments** | Major AI compute deals with a source-linked status for each row: Signed, Announced, Target, or Reported / in talks. No misleading aggregate is calculated across unlike deal types |
 | **Market Status** | Exposure guidance (Risk-On / Neutral / Defensive), trend, breadth, momentum |
 | **Commitment Windows** | Spot / 1-Year / 3-Year guidance, each anchored to specific market signals |

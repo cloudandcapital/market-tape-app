@@ -40,7 +40,7 @@ function ValuationRow({ label, value, tooltip }: { label: string; value: string;
   const interpretation = value.split(/\s+—\s+/).slice(1).join(' — ').trim()
 
   return (
-    <div className="py-2.5 border-b border-charcoal/8">
+    <div className="py-2.5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
         <div className="flex items-center gap-1.5">
@@ -58,7 +58,7 @@ function CapexRow({ label, value, detail, color, tooltip }: {
   label: string; value: string; detail: string; color: string; tooltip: RowTooltip
 }) {
   return (
-    <div className="py-4 md:px-6 first:pl-0 last:pr-0 border-b last:border-b-0 md:border-b-0 border-charcoal/8">
+    <div className="py-4 md:px-6 first:pl-0 last:pr-0">
       <div className="flex items-center gap-1 mb-1">
         <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
         <BenchmarkTooltip {...tooltip} />
@@ -95,7 +95,7 @@ export function FinOpsSignals() {
   return (
     <div>
       <SectionLabel>FinOps Signals</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
+      <div className="rows-subtle">
         {[
           { emoji: '☁️', label: 'Cloud Spend',    text: finopsSignals.cloudSpend },
           { emoji: '💰', label: 'SaaS Renewals',  text: finopsSignals.saasRenewals },
@@ -123,17 +123,17 @@ export function CommitmentWindows() {
   return (
     <div>
       <SectionLabel>Commitment Windows</SectionLabel>
-      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
         {[
-          { label: '1-Year Reserved', win: commitmentWindows.oneYear },
-          { label: '3-Year Commits',  win: commitmentWindows.threeYear },
+          { label: '1-Year Commitment', win: commitmentWindows.oneYear },
+          { label: '3-Year Commitment', win: commitmentWindows.threeYear },
           { label: 'Spot / On-Demand',  win: commitmentWindows.spot },
         ].map(({ label, win }) => (
           <div key={label} className="py-4 md:px-6 first:pl-0 last:pr-0">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="text-[0.62rem] font-mono uppercase tracking-[0.12em] text-charcoal/55">{label}</span>
               <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
-                style={{ color: statusColor(win.status) }}>{win.status}</span>
+                style={{ color: statusColor(win.status) }}>{win.status.charAt(0) + win.status.slice(1).toLowerCase()}</span>
             </div>
             <p className="text-[0.68rem] font-mono text-charcoal/70 leading-relaxed">{win.reason}</p>
           </div>
@@ -151,7 +151,7 @@ export function CloudValuations() {
   return (
     <div>
       <SectionLabel>Cloud Valuations</SectionLabel>
-      <div>
+      <div className="rows-subtle">
         <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
           tooltip={valuationTooltip(cloudValuations.publicCloud, 'publicCloud')} />
         <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage}
@@ -168,11 +168,12 @@ export function HyperscalerCapex() {
   if (loading) return <div><SectionLabel>Hyperscaler CapEx</SectionLabel><Skeleton /></div>
   if (!data) return null
   const { hyperscalerCapex } = data
-  const capexDirection = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0] ?? hyperscalerCapex.trend
+  const capexMatch = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0]
+  const capexDirection = capexMatch ? capexMatch.charAt(0).toUpperCase() + capexMatch.slice(1).toLowerCase() : hyperscalerCapex.trend
   return (
     <div>
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
-      <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
+      <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
@@ -189,7 +190,7 @@ export function RiskAlerts() {
   const { data, loading } = useIntelligent()
 
   if (loading) return (
-    <div><SectionLabel>Risk Alerts</SectionLabel><Skeleton count={2} /></div>
+    <div><SectionLabel>Risk &amp; Opportunity</SectionLabel><Skeleton count={2} /></div>
   )
 
   if (!data) return null
@@ -207,8 +208,8 @@ export function RiskAlerts() {
     <div>
       {riskAlerts && riskAlerts.length > 0 && (
         <>
-          <SectionLabel>Risk Alerts</SectionLabel>
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
+          <SectionLabel>Risk &amp; Opportunity</SectionLabel>
+          <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
             {riskAlerts.map((alert, i) => (
               <div key={i} className="flex items-start gap-2 py-4 md:px-6 first:pl-0 last:pr-0">
                 <span className="text-[13px] flex-shrink-0 mt-0.5">

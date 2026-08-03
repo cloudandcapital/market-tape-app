@@ -81,7 +81,7 @@ export default async function Page() {
               <p className="text-[0.58rem] font-mono text-charcoal/50 mt-1">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
-          <hr className="border-charcoal/10 mt-4" />
+          <hr className="rule-major-bottom border-0 mt-4" />
         </header>
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
@@ -93,26 +93,26 @@ export default async function Page() {
               <MarketStatus meta={meta} />
               <div>
                 <FinOpsSignals />
-                <hr className="border-charcoal/10 my-6" />
+                <hr className="rule-subtle-bottom border-0 my-6" />
                 <TechConcentration snapshot={snapshot} />
               </div>
             </section>
 
             {/* Band 3 */}
-            <section className="border-t border-charcoal/10 pt-8" aria-label="Risk alerts">
+            <section aria-label="Risk and opportunity">
               <RiskAlerts />
             </section>
 
             {/* Band 4 */}
-            <section className="border-t border-charcoal/10 pt-8" aria-label="Commitment windows">
+            <section aria-label="Commitment windows">
               <CommitmentWindows />
             </section>
 
             {/* Band 5 */}
-            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 border-t border-charcoal/10 pt-8" aria-label="Market internals and momentum">
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" aria-label="Market internals and momentum">
               <div>
                 <MarketInternals snapshot={snapshot} />
-                <hr className="border-charcoal/10 my-6" />
+                <hr className="rule-subtle-bottom border-0 my-6" />
                 <MacroContext snapshot={snapshot} />
               </div>
               <div className="md:col-span-2">
@@ -121,17 +121,17 @@ export default async function Page() {
             </section>
 
             {/* Band 6 */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-charcoal/10 pt-8" aria-label="Sector and cloud benchmarks">
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" aria-label="Sector and cloud benchmarks">
               <Sectors snapshot={snapshot} />
               <div>
                 <CountriesGlobal meta={meta} />
-                <hr className="border-charcoal/10 my-7" />
+                <hr className="rule-subtle-bottom border-0 my-7" />
                 <CloudValuations />
               </div>
             </section>
 
             {/* Band 7 */}
-            <section className="border-t border-charcoal/10 pt-8" aria-label="Hyperscaler capital expenditure">
+            <section aria-label="Hyperscaler capital expenditure">
               <HyperscalerCapex />
             </section>
           </div>
@@ -141,7 +141,7 @@ export default async function Page() {
             <AIComputeCommitments />
           </div>
 
-          <footer className="mt-12 pt-5 border-t border-charcoal/10">
+          <footer className="mt-12 pt-5 rule-major-top">
             <div className="flex flex-wrap justify-between items-center gap-3">
               <p className="text-[0.6rem] font-mono text-charcoal/55">
                 Data via yFinance · Refreshes every 30 min · Intelligence via Lumen ·{' '}

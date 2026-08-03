@@ -5,13 +5,18 @@ import {
   aiComputeData,
   AI_COMPUTE_DATA_VERSION,
   AI_COMPUTE_LAST_UPDATED,
+  getStatusSafeAiComputeFallback,
   type AiComputeRow,
 } from '@/lib/aiCompute'
 
 const CACHE_KEY = `ai-compute-brief-${AI_COMPUTE_DATA_VERSION}`
 const CACHE_DURATION = 24 * 60 * 60 * 1000
 const REQUEST_TIMEOUT_MS = 18_000
-const FALLBACK = 'Major AI compute deals now span signed agreements, announced partnerships, infrastructure targets, and reported negotiations. Finance teams should evaluate each row by status rather than treating the tracker as a single committed total.'
+const FALLBACK = getStatusSafeAiComputeFallback()
+
+function formatUpdatedDate(raw: string): string {
+  return new Date(`${raw}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
 function loadCachedAnalysis(): string | null {
   try {
@@ -44,7 +49,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
             <th key={h} className="text-left font-mono text-[0.52rem] tracking-[0.16em] uppercase text-charcoal/55 pb-2.5 pr-3 font-normal">{h}</th>
           ))}
         </tr></thead>
-        <tbody className="divide-y divide-charcoal/8">
+        <tbody className="rows-subtle">
           {rows.map(row => (
             <tr key={`${row.buyer}-${row.provider}`}>
               <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">{row.buyer}</td>
@@ -65,9 +70,9 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
 
 function MobileCards({ rows }: { rows: AiComputeRow[] }) {
   return (
-    <div className="md:hidden space-y-1">
+    <div className="md:hidden space-y-1 rows-subtle">
       {rows.map(row => (
-        <article key={`${row.buyer}-${row.provider}`} className="py-4 border-b border-charcoal/8">
+        <article key={`${row.buyer}-${row.provider}`} className="py-4">
           <div className="flex items-start justify-between gap-3 mb-2">
             <div><p className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</p><p className="font-mono text-[0.65rem] text-charcoal/55 mt-0.5">{row.provider}</p></div>
             <StatusBadge status={row.status} />
@@ -130,7 +135,7 @@ export default function AIComputeCommitments() {
         <div><p className="font-serif text-2xl text-charcoal">{aiComputeData.length}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">tracked deals</p></div>
         {Object.entries(statusCounts).map(([status, count]) => <div key={status}><p className="font-serif text-2xl text-charcoal">{count}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">{status}</p></div>)}
       </div>
-      <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {AI_COMPUTE_LAST_UPDATED} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
+      <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {formatUpdatedDate(AI_COMPUTE_LAST_UPDATED)} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
 
       <div className="mb-5 min-h-8">
         {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :
@@ -138,7 +143,7 @@ export default function AIComputeCommitments() {
           <p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p>}
       </div>
 
-      <details className="group border-t border-charcoal/10 pt-3">
+      <details className="group rule-subtle-top pt-3">
         <summary className="cursor-pointer list-none font-mono text-[0.62rem] uppercase tracking-[0.12em] text-charcoal/55 hover:text-charcoal/80 mb-3">View full tracker <span aria-hidden="true" className="group-open:hidden">↓</span><span aria-hidden="true" className="hidden group-open:inline">↑</span></summary>
         <DesktopTable rows={aiComputeData} />
         <MobileCards rows={aiComputeData} />

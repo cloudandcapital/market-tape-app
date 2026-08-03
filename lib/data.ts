@@ -68,5 +68,5 @@ export function formatMarketSessionLabel(iso: string): string {
     day: 'numeric',
     year: 'numeric',
   })
-  return `Market data · ${sessionDate} close · ET`
+  return `Market data · ${sessionDate} · close · ET`
 }

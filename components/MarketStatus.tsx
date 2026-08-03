@@ -60,7 +60,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
         </div>
       </div>
 
-      <hr className="border-charcoal/10 mb-6" />
+      <hr className="rule-subtle-bottom border-0 mb-6" />
 
       {/* Trend */}
       <div className="mb-6">
@@ -81,7 +81,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
         </div>
       </div>
 
-      <hr className="border-charcoal/10 mb-6" />
+      <hr className="rule-subtle-bottom border-0 mb-6" />
 
       {/* Breadth */}
       <div className="mb-6">
@@ -105,7 +105,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
         </div>
       </div>
 
-      <hr className="border-charcoal/10 mb-6" />
+      <hr className="rule-subtle-bottom border-0 mb-6" />
 
       {/* Risk */}
       <div className="mb-6">
@@ -122,7 +122,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
             </div>
           ))}
         </div>
-        <div className="mt-4 pt-4 border-t border-charcoal/10">
+        <div className="mt-4 pt-4 rule-subtle-top">
           <div className="flex justify-between items-baseline">
             <span className="text-xs font-mono text-charcoal/55">Momentum Env</span>
             <span className="text-sm font-serif font-semibold text-charcoal">{momentum_env.label}</span>
@@ -149,7 +149,7 @@ export function MarketInternals({ snapshot }: { snapshot: Snapshot }) {
       <h2 id="market-internals-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-3">
         Market Internals
       </h2>
-      <div className="divide-y divide-charcoal/8">
+      <div className="rows-subtle">
         {vix && <InternalRow label={vix.last > 30 ? 'VIX ⚠' : 'VIX'} value={vix.last.toFixed(1)} change={vix.d1_pct} invertColor arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'} />}
         {tnx && <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} />}
         {dxy && <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} />}

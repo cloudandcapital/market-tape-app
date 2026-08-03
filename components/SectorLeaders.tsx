@@ -74,5 +74,5 @@ export function CountriesGlobal({ meta }: { meta: Meta }) {
 }
 
 export default function SectorLeaders({ meta, snapshot }: { meta: Meta; snapshot: Snapshot }) {
-  return <><Sectors snapshot={snapshot} /><hr className="border-charcoal/10 my-6" /><CountriesGlobal meta={meta} /></>
+  return <><Sectors snapshot={snapshot} /><hr className="rule-subtle-bottom border-0 my-6" /><CountriesGlobal meta={meta} /></>
 }
