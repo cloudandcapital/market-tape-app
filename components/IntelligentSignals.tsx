@@ -84,21 +84,11 @@ function Skeleton({ count = 3 }: { count?: number }) {
   )
 }
 
-/** Middle column: FinOps Signals + Commitment Windows + Cloud Valuations + Hyperscaler CapEx */
-export function IntelligentMiddle() {
+export function FinOpsSignals() {
   const { data, loading } = useIntelligent()
-
-  if (loading) return (
-    <div className="space-y-8">
-      {['FinOps Signals', 'Commitment Windows', 'Cloud Valuations', 'Hyperscaler CapEx'].map(l => (
-        <div key={l}><SectionLabel>{l}</SectionLabel><Skeleton /></div>
-      ))}
-    </div>
-  )
-
+  if (loading) return <div><SectionLabel>FinOps Signals</SectionLabel><Skeleton /></div>
   if (!data) return null
-  const { finopsSignals, commitmentWindows, cloudValuations, hyperscalerCapex } = data
-  const capexDirection = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0] ?? hyperscalerCapex.trend
+  const { finopsSignals } = data
 
   return (
     <div>
@@ -118,34 +108,46 @@ export function IntelligentMiddle() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
 
-      <hr className="border-charcoal/10 my-6" />
+export function CommitmentWindows() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Commitment Windows</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { commitmentWindows } = data
 
+  return (
+    <div>
       <SectionLabel>Commitment Windows</SectionLabel>
-      <div className="divide-y divide-charcoal/8">
+      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-charcoal/10 border-y border-charcoal/10">
         {[
-          { emoji: '☁️', label: '1-Year Reserved', win: commitmentWindows.oneYear },
-          { emoji: '💰', label: '3-Year Commits',  win: commitmentWindows.threeYear },
-          { emoji: '🔧', label: 'Spot/On-Demand',  win: commitmentWindows.spot },
-        ].map(({ emoji, label, win }) => (
-          <div key={label} className="py-2.5">
-            {/* Row 1: label + badge — short content, no flex competition */}
+          { label: '1-Year Reserved', win: commitmentWindows.oneYear },
+          { label: '3-Year Commits',  win: commitmentWindows.threeYear },
+          { label: 'Spot / On-Demand',  win: commitmentWindows.spot },
+        ].map(({ label, win }) => (
+          <div key={label} className="py-4 md:px-6 first:pl-0 last:pr-0">
             <div className="flex items-center justify-between gap-2 mb-1">
-              <div className="flex items-center gap-1.5">
-                <span className="text-[11px] flex-shrink-0">{emoji}</span>
-                <span className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50">{label}</span>
-              </div>
+              <span className="text-[0.62rem] font-mono uppercase tracking-[0.12em] text-charcoal/55">{label}</span>
               <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
                 style={{ color: statusColor(win.status) }}>{win.status}</span>
             </div>
-            {/* Row 2: reason — block-level paragraph, full column width, no flex siblings */}
-            <p className="text-[0.64rem] font-mono text-charcoal/65 leading-relaxed pl-5">{win.reason}</p>
+            <p className="text-[0.68rem] font-mono text-charcoal/70 leading-relaxed">{win.reason}</p>
           </div>
         ))}
       </div>
+    </div>
+  )
+}
 
-      <hr className="border-charcoal/10 my-6" />
-
+export function CloudValuations() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Cloud Valuations</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { cloudValuations } = data
+  return (
+    <div>
       <SectionLabel>Cloud Valuations</SectionLabel>
       <div>
         <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
@@ -155,9 +157,18 @@ export function IntelligentMiddle() {
         <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
           tooltip={valuationTooltip(cloudValuations.aiInfrastructure, 'aiInfra')} />
       </div>
+    </div>
+  )
+}
 
-      <hr className="border-charcoal/10 my-6" />
-
+export function HyperscalerCapex() {
+  const { data, loading } = useIntelligent()
+  if (loading) return <div><SectionLabel>Hyperscaler CapEx</SectionLabel><Skeleton /></div>
+  if (!data) return null
+  const { hyperscalerCapex } = data
+  const capexDirection = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0] ?? hyperscalerCapex.trend
+  return (
+    <div>
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div>
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
@@ -172,8 +183,7 @@ export function IntelligentMiddle() {
   )
 }
 
-/** Right column: Risk Alerts */
-export function IntelligentRight() {
+export function RiskAlerts() {
   const { data, loading } = useIntelligent()
 
   if (loading) return (
@@ -209,5 +219,5 @@ export function IntelligentRight() {
 
 /** Default: everything (legacy, unused in current layout) */
 export default function IntelligentSignals() {
-  return <><IntelligentMiddle /><hr className="border-charcoal/10 my-6" /><IntelligentRight /></>
+  return <><FinOpsSignals /><CommitmentWindows /><CloudValuations /><HyperscalerCapex /><RiskAlerts /></>
 }

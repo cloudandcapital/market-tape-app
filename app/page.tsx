@@ -2,12 +2,12 @@ import { fetchMeta, fetchSnapshot, formatMarketSessionLabel, getRow, getSectorRo
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
 import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
-import MarketStatus from '@/components/MarketStatus'
+import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
 import SectorLeaders from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
 import TechConcentration from '@/components/TechConcentration'
-import { IntelligentMiddle, IntelligentRight } from '@/components/IntelligentSignals'
+import { CloudValuations, CommitmentWindows, FinOpsSignals, HyperscalerCapex, RiskAlerts } from '@/components/IntelligentSignals'
 import { IntelligentProvider } from '@/components/IntelligentProvider'
 import AIComputeCommitments from '@/components/AIComputeCommitments'
 import type { MarketContextData } from '@/lib/intelligentTypes'
@@ -87,32 +87,44 @@ export default async function Page() {
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
         <IntelligentProvider contextData={contextData} initialData={initialBrief}>
 
-          {/* 3-column data grid — rendered after the brief */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          <div className="space-y-10 md:space-y-12">
+            {/* Band 2 */}
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10" aria-label="Primary market signals">
+              <MarketStatus meta={meta} />
+              <FinOpsSignals />
+              <div>
+                <TechConcentration snapshot={snapshot} />
+                <hr className="border-charcoal/10 my-6" />
+                <RiskAlerts />
+              </div>
+            </section>
 
-            {/* Left: Status · Internals · Macro · Sectors */}
-            <div className="md:col-span-1">
-              <MarketStatus meta={meta} snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <MacroContext snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
+            {/* Band 3 */}
+            <section className="border-t border-charcoal/10 pt-8" aria-label="Commitment windows">
+              <CommitmentWindows />
+            </section>
+
+            {/* Band 4 */}
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 border-t border-charcoal/10 pt-8" aria-label="Market internals and momentum">
+              <div>
+                <MarketInternals snapshot={snapshot} />
+                <hr className="border-charcoal/10 my-6" />
+                <MacroContext snapshot={snapshot} />
+              </div>
+              <div className="md:col-span-2">
+                <MomentumLeaderboard meta={meta} />
+              </div>
+            </section>
+
+            {/* Band 5 */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 border-t border-charcoal/10 pt-8" aria-label="Sector and cloud benchmarks">
               <SectorLeaders meta={meta} snapshot={snapshot} />
-            </div>
-
-            {/* Middle: FinOps · Commitment · Cloud Val · CapEx */}
-            <div className="md:col-span-1">
-              <IntelligentMiddle />
-            </div>
-
-            {/* Right: Tech Concentration · Risk Alerts · Momentum */}
-            <div className="md:col-span-1">
-              <TechConcentration snapshot={snapshot} />
-              <hr className="border-charcoal/10 my-6" />
-              <IntelligentRight />
-              <hr className="border-charcoal/10 my-6" />
-              <MomentumLeaderboard meta={meta} />
-            </div>
-
+              <div>
+                <CloudValuations />
+                <hr className="border-charcoal/10 my-7" />
+                <HyperscalerCapex />
+              </div>
+            </section>
           </div>
 
           {/* Full methodology-aware tracker follows the primary market dashboard. */}

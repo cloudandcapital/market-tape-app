@@ -35,7 +35,7 @@ export default function MomentumLeaderboard({ meta }: { meta: Meta }) {
         <h2 id="momentum-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/55">Momentum</h2>
         <p className="font-mono text-[0.62rem] text-charcoal/50 mt-1">Top and bottom 5 · {meta.leaderboard.universe_count} instruments</p>
       </div>
-      <div className="space-y-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8">
         <MomentumList title="Leaders" rows={meta.leaderboard.leaders.slice(0, 5)} tone="gain" />
         <MomentumList title="Laggards" rows={meta.leaderboard.laggards.slice(0, 5)} tone="loss" />
       </div>
