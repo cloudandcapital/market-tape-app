@@ -25,16 +25,16 @@ const dmMono = DM_Mono({
 export const metadata: Metadata = {
   title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
   description:
-    'Real-time market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen reading the tape every 30 minutes — translating market moves into FinOps decisions in plain English.',
+    'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
   openGraph: {
     title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
-    description: 'Real-time market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen reading the tape every 30 minutes — translating market moves into FinOps decisions in plain English.',
+    description: 'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
     url: 'https://market-tape.cloudandcapital.com',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    description: 'Real-time market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen reading the tape every 30 minutes — translating market moves into FinOps decisions in plain English.',
+    description: 'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
     title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
     images: ['/og-image.png'],
   },

@@ -13,6 +13,7 @@ export interface Benchmark {
   numeric?: number | { min: number; max: number } | Record<string, number>  // machine-readable form for comparisons
   source: string                                                             // citation or "Industry consensus — needs verification"
   sourceUrl: string                                                          // direct link to report/post; empty if unverified
+  sourceLinks?: { label: string; url: string }[]                             // separately linked when multiple sources support distinct claims
   lastUpdated: string                                                        // YYYY-MM-DD — date this entry was last confirmed
   nextReviewDue: string                                                      // YYYY-MM-DD — when to recheck the value
   reviewCadence: 'monthly' | 'quarterly' | 'semi-annual'
@@ -24,13 +25,17 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 broadly available ($2.01–$14/hr cloud range) · H200 $2.50–$6/hr cloud range · Blackwell demand remains supply-constrained',
-    source: 'Thunder Compute GPU rental market survey (pricing) + NVIDIA Q1 FY2027 earnings (supply)',
-    sourceUrl: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx',
-    lastUpdated: '2026-07-20',
-    nextReviewDue: '2026-10-20',
+    value: 'H100 widely available ($2.19–$11.06/hr) · H200 $3.44–$10.60/hr · B200 extremely limited ($3.50–$27.04/hr); availability remains constrained relative to demand',
+    source: 'Thunder Compute GPU rental market survey (pricing and availability); NVIDIA Q1 FY2027 earnings (NVIDIA-specific supply commentary)',
+    sourceUrl: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends',
+    sourceLinks: [
+      { label: 'Thunder Compute — GPU rental pricing and availability', url: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends' },
+      { label: 'NVIDIA — Q1 FY2027 supply commentary', url: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx' },
+    ],
+    lastUpdated: '2026-08-09',
+    nextReviewDue: '2026-11-09',
     reviewCadence: 'quarterly',
-    notes: 'Estimate/status as of July 2026. Thunder Compute’s July market survey reports H100 at $2.01–$14/GPU-hour and H200 at $2.50–$6/GPU-hour across sampled clouds; provider, commitment, and configuration differences make these ranges non-comparable to hardware purchase prices. NVIDIA’s Q1 FY2027 disclosure describes continued strong Blackwell demand and supply constraints. Exact backlog and procurement lead-time claims were removed because the linked sources did not directly substantiate them. Pricing reference: https://www.thundercompute.com/blog/ai-gpu-rental-market-trends. Refresh after each NVIDIA earnings call and quarterly pricing survey.',
+    notes: 'August 1, 2026 survey: H100 $2.19–$11.06/GPU-hour and widely available; H200 $3.44–$10.60; B200 $3.50–$27.04 and extremely limited/supply-constrained. Provider, commitment, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA is retained separately only for NVIDIA-specific supply commentary. Refresh after each quarterly pricing survey and relevant NVIDIA earnings call.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────

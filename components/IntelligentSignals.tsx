@@ -17,6 +17,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 interface RowTooltip {
   source: string
   sourceUrl?: string
+  sourceLinks?: { label: string; url: string }[]
   lastUpdated: string
   isLive?: boolean
 }
@@ -179,7 +180,7 @@ export function HyperscalerCapex() {
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
         <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
-          tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
+          tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
         <CapexRow label="Data-center capacity" value="Tightening" detail={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
@@ -199,7 +200,7 @@ export function RiskAlerts() {
 
   const sourceForAlert = (title: string): RowTooltip => {
     if (/GPU/i.test(title)) {
-      return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
+      return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
     }
     if (/SaaS/i.test(title)) return valuationTooltip(cloudValuations.saasAverage, 'saas')
     return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }

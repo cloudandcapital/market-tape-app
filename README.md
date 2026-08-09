@@ -6,7 +6,7 @@ Live at [market-tape.cloudandcapital.com](https://market-tape.cloudandcapital.co
 
 ## What it does
 
-52 instruments across 7 groups. Refreshed every 30 minutes during market hours. Lumen — an AI analyst layer powered by Claude — reads the tape and translates moves into plain-English FinOps actions.
+52 instruments across 7 groups. The upstream pipeline is scheduled to check every 30 minutes during weekday market hours; unchanged snapshots are intentional no-ops. Lumen reads the latest published snapshot and translates moves into plain-English FinOps actions.
 
 There's no shortage of market data. There's a shortage of translation between markets and infrastructure decisions. That's the gap Market Tape fills.
 
@@ -31,7 +31,7 @@ There's no shortage of market data. There's a shortage of translation between ma
 - **Styling:** Tailwind CSS v4
 - **AI:** Anthropic Claude API (`@anthropic-ai/sdk` 0.91.0) — Haiku for AI Compute analysis line, Sonnet for the heavier intelligent brief
 - **Live multiples:** yFinance via API route (BVP Cloud Index basket + AI infra + public cloud baskets)
-- **Static market data:** Refreshed every 30 minutes by the Python pipeline at [cloudandcapital/market-tape](https://github.com/cloudandcapital/market-tape), fetched via GitHub raw URLs with ISR revalidation
+- **Static market data:** Checked on a 30-minute weekday schedule by the Python pipeline at [cloudandcapital/market-tape](https://github.com/cloudandcapital/market-tape), fetched via GitHub raw URLs with 30-minute ISR revalidation
 - **Hosting:** Vercel
 
 ## Verification discipline

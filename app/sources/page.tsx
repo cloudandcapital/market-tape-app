@@ -52,7 +52,7 @@ export default function SourcesPage() {
             universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.
           </p>
           <p>
-            Market data refreshes every 30 minutes. On weekends and market holidays, the timestamp identifies the latest
+            The upstream pipeline is scheduled to check for new data every 30 minutes during its weekday window, though GitHub Actions may delay or skip scheduled runs. On weekends and market holidays, the timestamp identifies the latest
             completed US trading session—not the page view, build, or deployment time.
           </p>
           <p>
@@ -88,7 +88,7 @@ export default function SourcesPage() {
 
         <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
           Prices, momentum scores, sector rotation, and macro indicators are fetched from{' '}
-          <span className="text-charcoal/80">yFinance</span> via a data pipeline that runs every 30 minutes
+          <span className="text-charcoal/80">yFinance</span> via a data pipeline scheduled to check every 30 minutes during weekday market hours
           and publishes to{' '}
           <a
             href="https://github.com/cloudandcapital/market-tape"
@@ -97,7 +97,7 @@ export default function SourcesPage() {
           >
             github.com/cloudandcapital/market-tape
           </a>
-          . The frontend revalidates against that source every 30 minutes.
+          . Successful checks intentionally publish no commit when the snapshot is unchanged. The frontend revalidates against the latest published snapshot every 30 minutes.
         </p>
 
         <div className="space-y-4">
@@ -150,8 +150,8 @@ export default function SourcesPage() {
           described a deal or partnership without equivalent confirmation of execution; <span className="text-charcoal/75">Target</span>
           means a planned capacity or investment goal; and <span className="text-charcoal/75">Reported / in talks</span> means
           a negotiation or third-party report that is not a completed commitment. Dollar values and capacity are not aggregated
-          because these unlike statuses are not economically equivalent.
-          The table excludes ongoing relationships with no disclosed value or capacity. The data is static until a material update —
+          across unlike statuses or agreement types. The signed-dollar headline includes only structured, company-disclosed,
+          comparable signed compute/cloud-service values; equity and reported or estimated figures are excluded. The data is static until a material update —
           source code at{' '}
           <a
             href="https://github.com/cloudandcapital/market-tape-app/blob/main/lib/aiCompute.ts"
@@ -171,7 +171,7 @@ export default function SourcesPage() {
                   {row.buyer} — {row.provider}
                 </p>
                 <p className="font-mono text-[0.6rem] text-charcoal/45">
-                  {row.status} · {row.amount} · {row.gw} · {row.term} · announced {row.announced}
+                  {row.status} · {row.agreementType} · value: {row.amount} ({row.amountBasis}) · capacity: {row.capacity} ({row.capacityBasis}) · {row.term} · announced {row.announced}
                 </p>
                 {row.notes && (
                   <p className="font-mono text-[0.58rem] text-charcoal/35 italic mt-0.5 leading-relaxed">
@@ -179,13 +179,9 @@ export default function SourcesPage() {
                   </p>
                 )}
               </div>
-              <a
-                href={row.sourceUrl}
-                target="_blank" rel="noopener noreferrer"
-                className="font-mono text-[0.58rem] tracking-[0.1em] uppercase flex-shrink-0 mt-0.5 transition-colors text-charcoal/30 hover:text-charcoal/60"
-              >
-                source ↗
-              </a>
+              <div className="flex flex-col items-end flex-shrink-0 mt-0.5">
+                {row.sources.map(source => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.58rem] tracking-[0.08em] uppercase transition-colors text-charcoal/30 hover:text-charcoal/60">{source.label} · {source.kind} ↗</a>)}
+              </div>
             </div>
           ))}
         </div>
@@ -218,7 +214,9 @@ export default function SourcesPage() {
                 <span className="font-mono text-[0.72rem] font-medium text-charcoal/85">{bm.value}</span>
               </div>
               <div className="space-y-0.5">
-                {bm.sourceUrl ? (
+                {'sourceLinks' in bm && bm.sourceLinks ? (
+                  <div>{bm.sourceLinks.map((source: { label: string; url: string }) => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="block font-mono text-[0.62rem] text-charcoal/50 hover:text-charcoal/75 underline transition-colors">{source.label}</a>)}</div>
+                ) : bm.sourceUrl ? (
                   <a
                     href={bm.sourceUrl}
                     target="_blank" rel="noopener noreferrer"
