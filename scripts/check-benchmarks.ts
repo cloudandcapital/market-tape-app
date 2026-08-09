@@ -4,7 +4,7 @@
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
 import { BENCHMARKS } from '../lib/industryBenchmarks'
-import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
+import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -32,6 +32,22 @@ let overdueCount = 0
 let dueSoonCount = 0
 
 const safeAiComputeFallback = getStatusSafeAiComputeFallback()
+const validClaudeOutput = 'Company-disclosed signed compute contracts remain structurally distinct, so finance teams should compare agreement terms and provenance before making capacity decisions.'
+const validResolution = resolveAiComputeBrief(validClaudeOutput)
+if (validResolution.fallback || !isCacheableAiComputeResponse(validResolution)) {
+  throw new Error('A valid AI compute response was not accepted for the 24-hour Lumen cache')
+}
+const validationFallback = resolveAiComputeBrief('$500B of announced and signed commitments are now in the pipeline.')
+if (!validationFallback.fallback || validationFallback.analysis !== safeAiComputeFallback) {
+  throw new Error('A validation-rejected AI compute response was not marked as fallback')
+}
+if (isCacheableAiComputeResponse(validationFallback)) {
+  throw new Error('A validation fallback was accepted for the 24-hour Lumen cache')
+}
+const exceptionFallback = resolveAiComputeBrief(null)
+if (!exceptionFallback.fallback || isCacheableAiComputeResponse(exceptionFallback)) {
+  throw new Error('An exception-path AI compute fallback was accepted for the 24-hour Lumen cache')
+}
 if (isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: true })) {
   throw new Error('AI compute deterministic fallback was accepted for the 24-hour Lumen cache')
 }
