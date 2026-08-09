@@ -18,7 +18,7 @@ Voice rules (non-negotiable):
 
 TASK: Below is the current state of major AI compute deals. Write ONE sentence, targeting 25–30 words and never exceeding 30 words, that summarizes what the status mix means for finance teams making cloud and AI cost decisions in the next 6 months.
 
-You may cite the supplied SIGNED-ONLY TOTAL, which is derived exclusively from rows whose status is Signed. Never calculate or cite a total across announced, target, reported/in-talks, or mixed-status rows. Never call unlike statuses a pipeline. Never aggregate gigawatt values across rows. Treat each row's status as authoritative and do not describe non-signed rows as commitments.
+You may cite the supplied DISCLOSED COMPARABLE SIGNED TOTAL, derived only from structured numeric fields on Signed compute/cloud-service rows whose amount basis is company-disclosed. Never include reported, estimated, undisclosed, hardware/chip, infrastructure-target, or equity values. Never calculate from display strings. Never call unlike statuses a pipeline, aggregate gigawatts, or describe a reported arrangement as signed.
 
 BENCHMARK SCOPE: This analysis covers AI compute deal commitments only. Do not cite GPU supply status, market multiples, construction growth rates, or other infrastructure benchmarks — they are outside the scope of this context.
 
@@ -30,7 +30,7 @@ function buildUserMessage(): string {
   const signed = getSignedDollarSummary()
   return `Current benchmark reference (for your information only, do not include in output): GPU supply — ${BENCHMARKS.gpuSupplyStatus.value}; DC demand/supply — ${BENCHMARKS.dataCenterConstructionYoY.value}.
 
-SIGNED-ONLY TOTAL (derived from ${signed.count} Signed rows): ${signed.totalLabel}. All other statuses must be described separately and qualitatively.
+DISCLOSED COMPARABLE SIGNED TOTAL (derived from ${signed.count} company-disclosed Signed compute/cloud-service rows): ${signed.totalLabel}. ${signed.undisclosedOrReportedCount} additional Signed rows have undisclosed or reported-only values. All other statuses and bases must remain separate.
 
 DATA:
 ${JSON.stringify(aiComputeData, null, 2)}`
@@ -57,7 +57,10 @@ export async function GET() {
     console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(performance.now() - requestStartedAt)} totalMs=${Math.round(performance.now() - requestStartedAt)} failed=true`)
     const errorStatus = typeof err === 'object' && err !== null && 'status' in err ? String(err.status) : 'unknown'
     const errorName = err instanceof Error ? err.name : 'UnknownError'
-    console.error(`[ai-compute-brief:error] name=${errorName} status=${errorStatus}`)
-    return NextResponse.json({ analysis: null }, { status: 503 })
+    console.warn(`[ai-compute-brief:fallback] name=${errorName} status=${errorStatus}`)
+    return NextResponse.json(
+      { analysis: getStatusSafeAiComputeFallback(), fallback: true },
+      { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=3600' } },
+    )
   }
 }

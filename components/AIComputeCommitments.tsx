@@ -6,6 +6,7 @@ import {
   AI_COMPUTE_DATA_VERSION,
   AI_COMPUTE_LAST_UPDATED,
   getStatusSafeAiComputeFallback,
+  isCacheableAiComputeResponse,
   type AiComputeRow,
 } from '@/lib/aiCompute'
 
@@ -15,7 +16,11 @@ const REQUEST_TIMEOUT_MS = 18_000
 const FALLBACK = getStatusSafeAiComputeFallback()
 
 function formatUpdatedDate(raw: string): string {
-  return new Date(`${raw}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return raw
+}
+
+function SourceLinks({ row, compact = false }: { row: AiComputeRow; compact?: boolean }) {
+  return <>{row.sources.map((source, index) => <span key={source.url}>{index > 0 && ' · '}<a href={source.url} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.62rem] text-charcoal/55 hover:text-sage-dark transition-colors" aria-label={`${source.kind} source for ${row.buyer} ${row.provider}`}>{compact ? source.label : `${source.label} ↗`}</a></span>)}</>
 }
 
 function loadCachedAnalysis(): string | null {
@@ -45,7 +50,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
     <div className="hidden md:block overflow-x-auto">
       <table className="w-full min-w-[920px] border-collapse">
         <thead><tr>
-          {['Buyer', 'Compute Provider', 'Status', 'Disclosed value', 'Capacity', 'Term', 'Announced', 'Source'].map(h => (
+          {['Buyer', 'Compute Provider', 'Status', 'Value / basis', 'Capacity / basis', 'Term', 'Announced', 'Source'].map(h => (
             <th key={h} className="text-left font-mono text-[0.52rem] tracking-[0.16em] uppercase text-charcoal/55 pb-2.5 pr-3 font-normal">{h}</th>
           ))}
         </tr></thead>
@@ -55,11 +60,11 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
               <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">{row.buyer}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3">{row.provider}</td>
               <td className="py-2 pr-3"><StatusBadge status={row.status} /></td>
-              <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}</td>
-              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.gw}</td>
+              <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}<span className="block text-[0.55rem] font-normal text-charcoal/40">{row.amountBasis}</span></td>
+              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.capacity}<span className="block text-[0.55rem] text-charcoal/40">{row.capacityBasis}</span></td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3">{row.term}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3 whitespace-nowrap">{row.announced}</td>
-              <td className="py-2"><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-[0.65rem] text-charcoal/55 hover:text-sage-dark transition-colors" aria-label={`Source for ${row.buyer} ${row.provider}`}>↗</a></td>
+              <td className="py-2 whitespace-nowrap"><SourceLinks row={row} compact /></td>
             </tr>
           ))}
         </tbody>
@@ -77,10 +82,10 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
             <div><p className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</p><p className="font-mono text-[0.65rem] text-charcoal/55 mt-0.5">{row.provider}</p></div>
             <StatusBadge status={row.status} />
           </div>
-          <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount}</p>
+          <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount} <span className="text-[0.56rem] font-normal text-charcoal/40">· {row.amountBasis}</span></p>
           <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.64rem] text-charcoal/55">
-            <span>{row.gw}</span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
-            <a href={row.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-charcoal/60 hover:text-charcoal/80">↗ source</a>
+            <span>{row.capacity} <span className="text-[0.56rem] text-charcoal/40">({row.capacityBasis})</span></span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
+            <SourceLinks row={row} />
           </div>
         </article>
       ))}
@@ -89,8 +94,8 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
 }
 
 export default function AIComputeCommitments() {
-  const [analysis, setAnalysis] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [analysis, setAnalysis] = useState<string | null>(FALLBACK)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(false)
 
   const statusCounts = useMemo(() => aiComputeData.reduce<Record<string, number>>((counts, row) => {
@@ -110,13 +115,14 @@ export default function AIComputeCommitments() {
     try {
       const response = await fetch('/api/ai-compute-brief', { signal: controller.signal })
       if (!response.ok) throw new Error('AI compute analysis request failed')
-      const json = await response.json()
+      const json = await response.json() as { analysis?: unknown; fallback?: unknown }
       const text = json.analysis as string | null
       setAnalysis(text || FALLBACK)
-      if (text) saveCachedAnalysis(text)
+      if (json.fallback === true) setError(true)
+      if (isCacheableAiComputeResponse(json)) saveCachedAnalysis(json.analysis)
     } catch {
       setError(true)
-      setAnalysis(null)
+      setAnalysis(FALLBACK)
     } finally {
       window.clearTimeout(timeout)
       setLoading(false)
@@ -135,11 +141,11 @@ export default function AIComputeCommitments() {
         <div><p className="font-serif text-2xl text-charcoal">{aiComputeData.length}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">tracked deals</p></div>
         {Object.entries(statusCounts).map(([status, count]) => <div key={status}><p className="font-serif text-2xl text-charcoal">{count}</p><p className="font-mono text-[0.58rem] uppercase tracking-[0.08em] text-charcoal/55">{status}</p></div>)}
       </div>
-      <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {formatUpdatedDate(AI_COMPUTE_LAST_UPDATED)} · Values and capacity are shown as disclosed; no aggregate dollar or GW total is calculated across unlike statuses.</p>
+      <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {formatUpdatedDate(AI_COMPUTE_LAST_UPDATED)} · Values and capacity identify their provenance; only comparable, company-disclosed signed compute/cloud values enter the dollar headline, and no GW total is calculated.</p>
 
       <div className="mb-5 min-h-8">
         {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :
-          error ? <div className="flex flex-wrap items-center gap-3"><p className="font-serif italic text-[0.82rem] text-charcoal/55">Analysis is temporarily unavailable. Tracker data below is still current.</p><button onClick={() => void fetchAnalysis(true)} className="font-mono text-[0.55rem] uppercase tracking-[0.1em] text-charcoal/45 hover:text-charcoal/70">Try again</button></div> :
+          error ? <div className="flex flex-wrap items-center gap-3"><p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p><button onClick={() => void fetchAnalysis(true)} className="font-mono text-[0.55rem] uppercase tracking-[0.1em] text-charcoal/45 hover:text-charcoal/70">Refresh analysis</button></div> :
           <p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p>}
       </div>
 

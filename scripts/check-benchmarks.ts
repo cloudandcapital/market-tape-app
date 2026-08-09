@@ -4,7 +4,7 @@
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
 import { BENCHMARKS } from '../lib/industryBenchmarks'
-import { getStatusSafeAiComputeFallback, isStatusSafeAiComputeBrief } from '../lib/aiCompute'
+import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -32,6 +32,26 @@ let overdueCount = 0
 let dueSoonCount = 0
 
 const safeAiComputeFallback = getStatusSafeAiComputeFallback()
+if (isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: true })) {
+  throw new Error('AI compute deterministic fallback was accepted for the 24-hour Lumen cache')
+}
+if (!isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: false })) {
+  throw new Error('A validated non-fallback AI compute response was rejected from the Lumen cache')
+}
+const provenanceErrors = validateAiComputeProvenance()
+if (provenanceErrors.length) throw new Error(`AI compute provenance errors:\n${provenanceErrors.join('\n')}`)
+const signedSummary = getSignedDollarSummary()
+if (signedSummary.totalBillions !== 127 || signedSummary.totalLabel !== '$127B+' || signedSummary.count !== 3) {
+  throw new Error(`AI compute disclosed signed total is not reproducible: ${JSON.stringify(signedSummary)}`)
+}
+const reportedTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test reported', amountBillions: 999, amountBasis: 'reported' }])
+if (reportedTrap.totalBillions !== 127) throw new Error('A reported amount entered the disclosed signed total')
+const estimatedTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test estimated', amountBillions: 999, amountBasis: 'estimated' }])
+if (estimatedTrap.totalBillions !== 127) throw new Error('An estimated amount entered the disclosed signed total')
+const equityTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test equity', amountBillions: 999, agreementType: 'equity investment' }])
+if (equityTrap.totalBillions !== 127) throw new Error('An equity investment entered the compute total')
+const statusTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test announced', amountBillions: 999, status: 'Announced' }])
+if (statusTrap.totalBillions !== 127) throw new Error('An unlike status entered the disclosed signed total')
 if (!isStatusSafeAiComputeBrief(safeAiComputeFallback)) {
   throw new Error('AI compute fallback violates status-safe aggregation rules')
 }
@@ -39,6 +59,7 @@ for (const unsafeBrief of [
   '$1.5T+ pipeline spans signed, announced, and reported deals.',
   'The combined 35 GW total includes signed agreements and targets.',
   '$500B of announced and signed commitments are now in the pipeline.',
+  'The reported arrangement is now a signed commitment worth $127B+.',
 ]) {
   if (isStatusSafeAiComputeBrief(unsafeBrief)) {
     throw new Error(`AI compute status-safety check accepted an invalid aggregate: ${unsafeBrief}`)

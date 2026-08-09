@@ -36,14 +36,15 @@ If basket composition changes (ticker renamed, delisted, better proxy found), up
 
 ## Static benchmarks (lib/industryBenchmarks.ts)
 
-Four entries remain that require manual quarterly or semi-annual review:
+Five entries remain that require manual quarterly or semi-annual review:
 
 | Benchmark | Current Value | Source | Review Cadence |
 |-----------|---------------|--------|---------------|
-| `gpuSupplyStatus` | H100/H200 sampled cloud price ranges · Blackwell supply-constrained | Thunder Compute (Jul 2026) + NVIDIA Q1 FY2027 | Quarterly |
+| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (Aug 2026) + NVIDIA Q1 FY2027 | Quarterly |
 | `dataCenterConstructionYoY` | Demand +38% / construction -5.6% YoY | CBRE H2 2025 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
 | `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |
+| `nvidiaDcRevenue` | $75.2B Q1 FY2027 | NVIDIA financial results | Quarterly |
 
 ### Where to find updated values
 
