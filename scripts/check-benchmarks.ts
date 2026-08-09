@@ -4,7 +4,7 @@
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
 import { BENCHMARKS } from '../lib/industryBenchmarks'
-import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isStatusSafeAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
+import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -32,6 +32,12 @@ let overdueCount = 0
 let dueSoonCount = 0
 
 const safeAiComputeFallback = getStatusSafeAiComputeFallback()
+if (isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: true })) {
+  throw new Error('AI compute deterministic fallback was accepted for the 24-hour Lumen cache')
+}
+if (!isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: false })) {
+  throw new Error('A validated non-fallback AI compute response was rejected from the Lumen cache')
+}
 const provenanceErrors = validateAiComputeProvenance()
 if (provenanceErrors.length) throw new Error(`AI compute provenance errors:\n${provenanceErrors.join('\n')}`)
 const signedSummary = getSignedDollarSummary()

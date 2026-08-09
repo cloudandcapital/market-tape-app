@@ -6,6 +6,7 @@ import {
   AI_COMPUTE_DATA_VERSION,
   AI_COMPUTE_LAST_UPDATED,
   getStatusSafeAiComputeFallback,
+  isCacheableAiComputeResponse,
   type AiComputeRow,
 } from '@/lib/aiCompute'
 
@@ -49,7 +50,7 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
     <div className="hidden md:block overflow-x-auto">
       <table className="w-full min-w-[920px] border-collapse">
         <thead><tr>
-          {['Buyer', 'Compute Provider', 'Status', 'Disclosed value', 'Capacity', 'Term', 'Announced', 'Source'].map(h => (
+          {['Buyer', 'Compute Provider', 'Status', 'Value / basis', 'Capacity / basis', 'Term', 'Announced', 'Source'].map(h => (
             <th key={h} className="text-left font-mono text-[0.52rem] tracking-[0.16em] uppercase text-charcoal/55 pb-2.5 pr-3 font-normal">{h}</th>
           ))}
         </tr></thead>
@@ -59,8 +60,8 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
               <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">{row.buyer}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3">{row.provider}</td>
               <td className="py-2 pr-3"><StatusBadge status={row.status} /></td>
-              <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}</td>
-              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.capacity}</td>
+              <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}<span className="block text-[0.55rem] font-normal text-charcoal/40">{row.amountBasis}</span></td>
+              <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3 whitespace-nowrap">{row.capacity}<span className="block text-[0.55rem] text-charcoal/40">{row.capacityBasis}</span></td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3">{row.term}</td>
               <td className="font-mono text-[0.68rem] text-charcoal/55 py-2 pr-3 whitespace-nowrap">{row.announced}</td>
               <td className="py-2 whitespace-nowrap"><SourceLinks row={row} compact /></td>
@@ -81,9 +82,9 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
             <div><p className="font-mono text-[0.75rem] font-medium text-charcoal/80">{row.buyer}</p><p className="font-mono text-[0.65rem] text-charcoal/55 mt-0.5">{row.provider}</p></div>
             <StatusBadge status={row.status} />
           </div>
-          <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount}</p>
+          <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount} <span className="text-[0.56rem] font-normal text-charcoal/40">· {row.amountBasis}</span></p>
           <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.64rem] text-charcoal/55">
-            <span>{row.capacity}</span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
+            <span>{row.capacity} <span className="text-[0.56rem] text-charcoal/40">({row.capacityBasis})</span></span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
             <SourceLinks row={row} />
           </div>
         </article>
@@ -114,10 +115,11 @@ export default function AIComputeCommitments() {
     try {
       const response = await fetch('/api/ai-compute-brief', { signal: controller.signal })
       if (!response.ok) throw new Error('AI compute analysis request failed')
-      const json = await response.json()
+      const json = await response.json() as { analysis?: unknown; fallback?: unknown }
       const text = json.analysis as string | null
       setAnalysis(text || FALLBACK)
-      if (text) saveCachedAnalysis(text)
+      if (json.fallback === true) setError(true)
+      if (isCacheableAiComputeResponse(json)) saveCachedAnalysis(json.analysis)
     } catch {
       setError(true)
       setAnalysis(FALLBACK)
