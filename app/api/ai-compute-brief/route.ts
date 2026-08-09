@@ -1,9 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
-import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isStatusSafeAiComputeBrief } from '@/lib/aiCompute'
+import { aiComputeData, getSignedDollarSummary, resolveAiComputeBrief } from '@/lib/aiCompute'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+const SUCCESS_CACHE_CONTROL = 's-maxage=14400, stale-while-revalidate=86400'
+const FALLBACK_CACHE_CONTROL = 's-maxage=300, stale-while-revalidate=3600'
 
 const SYSTEM_PROMPT = `You are Lumen, the AI analyst voice of Diana Molski's tools at Cloud & Capital. You translate complex signal into plain English a busy finance or engineering person can act on in under 30 seconds.
 
@@ -46,12 +48,12 @@ export async function GET() {
       messages: [{ role: 'user', content: buildUserMessage() }],
     }, { signal: AbortSignal.timeout(12_000) })
     const text = message.content[0]?.type === 'text' ? message.content[0].text.trim() : null
-    const analysis = text && isStatusSafeAiComputeBrief(text) ? text : getStatusSafeAiComputeFallback()
+    const result = resolveAiComputeBrief(text)
     const completedAt = performance.now()
     console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(completedAt - requestStartedAt)} totalMs=${Math.round(completedAt - requestStartedAt)}`)
     return NextResponse.json(
-      { analysis },
-      { headers: { 'Cache-Control': 's-maxage=14400, stale-while-revalidate=86400' } },
+      result,
+      { headers: { 'Cache-Control': result.fallback ? FALLBACK_CACHE_CONTROL : SUCCESS_CACHE_CONTROL } },
     )
   } catch (err) {
     console.info(`[ai-compute-brief:timing] claudeMs=${Math.round(performance.now() - requestStartedAt)} totalMs=${Math.round(performance.now() - requestStartedAt)} failed=true`)
@@ -59,8 +61,8 @@ export async function GET() {
     const errorName = err instanceof Error ? err.name : 'UnknownError'
     console.warn(`[ai-compute-brief:fallback] name=${errorName} status=${errorStatus}`)
     return NextResponse.json(
-      { analysis: getStatusSafeAiComputeFallback(), fallback: true },
-      { headers: { 'Cache-Control': 's-maxage=300, stale-while-revalidate=3600' } },
+      resolveAiComputeBrief(null),
+      { headers: { 'Cache-Control': FALLBACK_CACHE_CONTROL } },
     )
   }
 }

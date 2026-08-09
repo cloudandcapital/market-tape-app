@@ -97,3 +97,8 @@ export function isCacheableAiComputeResponse(
 ): response is { analysis: string; fallback?: false } {
   return response.fallback !== true && typeof response.analysis === 'string' && isStatusSafeAiComputeBrief(response.analysis, rows)
 }
+
+export function resolveAiComputeBrief(text: string | null, rows: AiComputeRow[] = aiComputeData): { analysis: string; fallback?: true } {
+  if (text && isStatusSafeAiComputeBrief(text, rows)) return { analysis: text }
+  return { analysis: getStatusSafeAiComputeFallback(rows), fallback: true }
+}
