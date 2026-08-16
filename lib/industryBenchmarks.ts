@@ -25,17 +25,20 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 widely available ($2.19–$11.06/hr) · H200 $3.44–$10.60/hr · B200 extremely limited ($3.50–$27.04/hr); availability remains constrained relative to demand',
-    source: 'Thunder Compute GPU rental market survey (pricing and availability); NVIDIA Q1 FY2027 earnings (NVIDIA-specific supply commentary)',
+    value: 'H100 widely available ($2.19–$11.06/hr) · H200 $3.99–$10.85/hr · B200 extremely limited ($5.91–$16.11/hr); access constrained or waitlisted',
+    source: 'Thunder Compute GPU rental market survey — August 13–14, 2026 (H100, H200, B200 per-GPU research); NVIDIA Q1 FY2027 earnings (NVIDIA-specific supply commentary)',
     sourceUrl: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends',
     sourceLinks: [
-      { label: 'Thunder Compute — GPU rental pricing and availability', url: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends' },
+      { label: 'Thunder Compute — GPU rental market trends (August 2026)', url: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends' },
+      { label: 'Thunder Compute — H100 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
+      { label: 'Thunder Compute — H200 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h200-pricing' },
+      { label: 'Thunder Compute — B200 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-b200-pricing' },
       { label: 'NVIDIA — Q1 FY2027 supply commentary', url: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx' },
     ],
-    lastUpdated: '2026-08-09',
-    nextReviewDue: '2026-11-09',
-    reviewCadence: 'quarterly',
-    notes: 'August 1, 2026 survey: H100 $2.19–$11.06/GPU-hour and widely available; H200 $3.44–$10.60; B200 $3.50–$27.04 and extremely limited/supply-constrained. Provider, commitment, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA is retained separately only for NVIDIA-specific supply commentary. Refresh after each quarterly pricing survey and relevant NVIDIA earnings call.',
+    lastUpdated: '2026-08-16',
+    nextReviewDue: '2026-09-16',
+    reviewCadence: 'monthly',
+    notes: 'August 13–14, 2026 primary research: H100 $2.19–$11.06/GPU-hour and widely available; H200 $3.99–$10.85 (revised from $3.44–$10.60); B200 $5.91–$16.11 and extremely limited/supply-constrained (revised from $3.50–$27.04 in Thunder Compute\'s dedicated August 14 comparison). Provider, commitment, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA is retained separately only for NVIDIA-specific supply commentary. B200 access remains constrained or waitlisted; TSMC CoWoS capacity relief not expected until Q4 2026 at earliest.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
@@ -45,6 +48,10 @@ export const BENCHMARKS = {
     numeric: { absorption_yoy_pct: 38, construction_yoy_pct: -5.6 },
     source: 'CBRE North America Data Center Trends H2 2025 + CBRE Global Data Center Trends 2026 (Q1 update)',
     sourceUrl: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025',
+    sourceLinks: [
+      { label: 'CBRE — North America Data Center Trends H2 2025', url: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025' },
+      { label: 'CBRE — Global Data Center Trends 2026', url: 'https://www.cbre.com/insights/reports/global-data-center-trends-2026' },
+    ],
     lastUpdated: '2026-07-06',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'semi-annual',
@@ -69,7 +76,13 @@ export const BENCHMARKS = {
   hyperscalerCapexTrend: {
     value: 'Expanding',
     source: 'Amazon, Microsoft, Alphabet, and Meta Q2 2026 earnings disclosures',
-    sourceUrl: 'https://ir.aboutamazon.com/events/event-details/default.aspx',
+    sourceUrl: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/',
+    sourceLinks: [
+      { label: 'Amazon — Q2 2026 results', url: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/' },
+      { label: 'Microsoft — FY2026 Q4 earnings', url: 'https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4' },
+      { label: 'Alphabet — Q2 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q2-Earnings-Call-2026-GgTAq7Is0z/default.aspx' },
+      { label: 'Meta — Q2 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx' },
+    ],
     lastUpdated: '2026-08-02',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'quarterly',
