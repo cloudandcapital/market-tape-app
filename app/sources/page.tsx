@@ -147,7 +147,7 @@ export default function SourcesPage() {
           This major-deal tracker is compiled manually from public announcements and press releases.
           Each row is sourced and classified individually: <span className="text-charcoal/75">Signed</span> means an
           executed agreement is confirmed; <span className="text-charcoal/75">Announced</span> means the parties publicly
-          described a deal or partnership without equivalent confirmation of execution; <span className="text-charcoal/75">Target</span>
+          described a deal or partnership without equivalent confirmation of execution; <span className="text-charcoal/75">Target</span>{' '}
           means a planned capacity or investment goal; and <span className="text-charcoal/75">Reported / in talks</span> means
           a negotiation or third-party report that is not a completed commitment. Dollar values and capacity are not aggregated
           across unlike statuses or agreement types. The signed-dollar headline includes only structured, company-disclosed,
