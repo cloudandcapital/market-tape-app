@@ -68,6 +68,19 @@ const equityTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[
 if (equityTrap.totalBillions !== 127) throw new Error('An equity investment entered the compute total')
 const statusTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test announced', amountBillions: 999, status: 'Announced' }])
 if (statusTrap.totalBillions !== 127) throw new Error('An unlike status entered the disclosed signed total')
+const equityRows = aiComputeData.filter(row => row.equityInvestment)
+if (equityRows.length !== 2) throw new Error(`Expected exactly 2 rows with equityInvestment, found ${equityRows.length}`)
+const equityBuyers = equityRows.map(row => `${row.buyer}–${row.provider}`).sort()
+const expectedEquityBuyers = ['Anthropic–AMD (Instinct MI450 / Helios)', 'OpenAI–NVIDIA (Vera Rubin)'].sort()
+if (JSON.stringify(equityBuyers) !== JSON.stringify(expectedEquityBuyers)) {
+  throw new Error(`Equity rows do not match expected entries: ${JSON.stringify(equityBuyers)}`)
+}
+for (const row of equityRows) {
+  if (!row.equityInvestmentBasis) throw new Error(`${row.buyer}–${row.provider}: equityInvestment is set but equityInvestmentBasis is missing`)
+}
+const noEquityRows = aiComputeData.filter(row => !row.equityInvestment)
+if (noEquityRows.some(row => row.equityInvestmentBasis)) throw new Error('A row has equityInvestmentBasis without equityInvestment')
+
 if (!isStatusSafeAiComputeBrief(safeAiComputeFallback)) {
   throw new Error('AI compute fallback violates status-safe aggregation rules')
 }
