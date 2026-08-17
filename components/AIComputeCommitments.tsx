@@ -57,7 +57,10 @@ function DesktopTable({ rows }: { rows: AiComputeRow[] }) {
         <tbody className="rows-subtle">
           {rows.map(row => (
             <tr key={`${row.buyer}-${row.provider}`}>
-              <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">{row.buyer}</td>
+              <td className="font-mono text-[0.72rem] font-medium text-charcoal/80 py-2 pr-3 whitespace-nowrap">
+                {row.buyer}
+                {row.equityInvestment && <span className="block text-[0.55rem] font-normal text-charcoal/40">Separate equity investment: {row.equityInvestment} ({row.equityInvestmentBasis})</span>}
+              </td>
               <td className="font-mono text-[0.68rem] text-charcoal/60 py-2 pr-3">{row.provider}</td>
               <td className="py-2 pr-3"><StatusBadge status={row.status} /></td>
               <td className="font-mono text-[0.68rem] font-medium py-2 pr-3" style={{ color: '#6B8E7F' }}>{row.amount}<span className="block text-[0.55rem] font-normal text-charcoal/40">{row.amountBasis}</span></td>
@@ -83,6 +86,7 @@ function MobileCards({ rows }: { rows: AiComputeRow[] }) {
             <StatusBadge status={row.status} />
           </div>
           <p className="font-mono text-[0.7rem] font-medium mb-1" style={{ color: '#6B8E7F' }}>{row.amount} <span className="text-[0.56rem] font-normal text-charcoal/40">· {row.amountBasis}</span></p>
+          {row.equityInvestment && <p className="font-mono text-[0.6rem] text-charcoal/40 mb-1">Separate equity investment: {row.equityInvestment} ({row.equityInvestmentBasis})</p>}
           <div className="flex flex-wrap gap-x-2 gap-y-1 font-mono text-[0.64rem] text-charcoal/55">
             <span>{row.capacity} <span className="text-[0.56rem] text-charcoal/40">({row.capacityBasis})</span></span><span>·</span><span>{row.term}</span><span>·</span><span>{row.announced}</span>
             <SourceLinks row={row} />
