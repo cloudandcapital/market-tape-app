@@ -10,7 +10,7 @@ export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
 const INTELLIGENT_BRIEF_SYSTEM_PROMPT = 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. Treat market and benchmark signals as strategic decision support. Do not present them as organization-specific operational mandates without workload, utilization, contractual, and business context. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. TEMPORAL ACCURACY RULE: The market data in the user message reflects the latest completed trading session, which may not be the same day this analysis is generated. Do not use the words "today" or "this morning" in any output field. Use "latest session" or "last session" instead. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.'
 
 function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
-  const { marketData: m, sectorData, macroData: mac, leaderboard } = ctx
+  const { marketSessionLabel, marketData: m, sectorData, macroData: mac, leaderboard } = ctx
 
   const topSectors = sectorData.slice(0, 5).map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
   const bottomSectors = sectorData.slice(-5).reverse().map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
@@ -18,7 +18,7 @@ function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; s
 
   // liveMultiples is fetched by the POST handler and threaded in here
   // so Lumen receives genuine market-derived values, never training-data guesses
-  return `MARKET DATA — LATEST SESSION
+  return `MARKET DATA — ${marketSessionLabel}
 
 EXPOSURE: ${m.guidance} (${m.exposureLevel}/100)
 VIX: ${m.vix.toFixed(1)} (${m.vixD1 > 0 ? '+' : ''}${m.vixD1.toFixed(1)}% session)${m.vix > 30 ? ' — ELEVATED FEAR' : m.vix < 15 ? ' — COMPLACENT' : ''}
@@ -39,8 +39,8 @@ MACRO:
 Bonds (TLT): ${mac.tlt ? `${mac.tlt.rs1m > 0 ? '+' : ''}${mac.tlt.rs1m.toFixed(2)}% 1M RS, Grade ${mac.tlt.grade}` : 'N/A'} ${mac.tlt && mac.tlt.rs1m < -2 ? '— BONDS SELLING OFF (rates rising)' : ''}
 Credit (HYG): ${mac.hyg ? `${mac.hyg.rs1m > 0 ? '+' : ''}${mac.hyg.rs1m.toFixed(2)}% 1M RS, Grade ${mac.hyg.grade}` : 'N/A'}
 Dollar (DXY): ${mac.dxy ? `${mac.dxy.last.toFixed(1)} (${mac.dxy.rs1m > 0 ? '+' : ''}${mac.dxy.rs1m.toFixed(2)}% 1M RS)` : 'N/A'}
-Gold (GLD): ${mac.gld ? `$${mac.gld.last.toFixed(0)} (${mac.gld.d1 > 0 ? '+' : ''}${mac.gld.d1.toFixed(1)}% today) [1M RS: ${mac.gld.rs1m > 0 ? '+' : ''}${mac.gld.rs1m.toFixed(2)}% — internal, not user-visible, do not cite]` : 'N/A'}
-Oil (USO): ${mac.uso ? `$${mac.uso.last.toFixed(1)} (${mac.uso.d1 > 0 ? '+' : ''}${mac.uso.d1.toFixed(1)}% today)` : 'N/A'}
+Gold (GLD): ${mac.gld ? `$${mac.gld.last.toFixed(0)} (${mac.gld.d1 > 0 ? '+' : ''}${mac.gld.d1.toFixed(1)}% latest session) [1M RS: ${mac.gld.rs1m > 0 ? '+' : ''}${mac.gld.rs1m.toFixed(2)}% — internal, not user-visible, do not cite]` : 'N/A'}
+Oil (USO): ${mac.uso ? `$${mac.uso.last.toFixed(1)} (${mac.uso.d1 > 0 ? '+' : ''}${mac.uso.d1.toFixed(1)}% latest session)` : 'N/A'}
 Small/Large (IWM vs QQQ): ${mac.iwm && mac.qqq ? `small caps ${mac.iwm.rs1m > mac.qqq.rs1m ? 'outperforming' : 'underperforming'} [individual RS1M — IWM: ${mac.iwm.rs1m.toFixed(2)}, QQQ: ${mac.qqq.rs1m.toFixed(2)} — internal, only direction and spread are user-visible, do not cite individual RS values]` : 'N/A'}
 
 ${buildInfraContextBlock(multiples)}
@@ -160,7 +160,7 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v15', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v16', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )
 

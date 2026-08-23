@@ -23,6 +23,7 @@ function buildContextData(meta: Meta, snapshot: Snapshot): MarketContextData {
   const dxy = r('DXY'), gld = r('GLD'), uso = r('USO'), iwm = r('IWM'), qqq = r('QQQ')
 
   return {
+    marketSessionLabel: formatMarketSessionLabel(meta.generated_at_utc),
     marketData: {
       vix: vix?.last ?? 20,   vixD1: vix?.d1_pct ?? 0,
       spy: spy?.last ?? 0,    spyD1: spy?.d1_pct ?? 0,
