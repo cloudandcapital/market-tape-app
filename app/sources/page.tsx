@@ -47,7 +47,7 @@ export default function SourcesPage() {
 
         <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
           <p>
-            The <span className="text-charcoal/80">tracked universe</span> is the set of instruments published across the
+            The <span className="text-charcoal/80">tracked universe</span>{' '}is the set of instruments published across the
             dashboard&apos;s market, macro, sector, and global views. The broader <span className="text-charcoal/80">screened
             universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.
           </p>
@@ -97,7 +97,7 @@ export default function SourcesPage() {
           >
             github.com/cloudandcapital/market-tape
           </a>
-          . Successful checks intentionally publish no commit when the snapshot is unchanged. The frontend revalidates against the latest published snapshot every 30 minutes.
+          . Pipeline runs may publish a timestamp-only snapshot commit even when market values are unchanged. The frontend revalidates against the latest published snapshot every 30 minutes.
         </p>
 
         <div className="space-y-4">

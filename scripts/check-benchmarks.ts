@@ -81,6 +81,25 @@ for (const row of equityRows) {
 const noEquityRows = aiComputeData.filter(row => !row.equityInvestment)
 if (noEquityRows.some(row => row.equityInvestmentBasis)) throw new Error('A row has equityInvestmentBasis without equityInvestment')
 
+// Row count and status distribution
+if (aiComputeData.length !== 15) throw new Error(`Expected 15 rows in aiComputeData, found ${aiComputeData.length}`)
+const statusCounts = aiComputeData.reduce<Record<string, number>>((acc, row) => { acc[row.status] = (acc[row.status] ?? 0) + 1; return acc }, {})
+if (statusCounts['Signed'] !== 8) throw new Error(`Expected 8 Signed rows, found ${statusCounts['Signed']}`)
+if (statusCounts['Announced'] !== 3) throw new Error(`Expected 3 Announced rows, found ${statusCounts['Announced']}`)
+if (statusCounts['Target'] !== 1) throw new Error(`Expected 1 Target row, found ${statusCounts['Target']}`)
+if (statusCounts['Reported / in talks'] !== 3) throw new Error(`Expected 3 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
+
+// PORTS-Pike row guards: compute value undisclosed; $105B conditional guarantee and $1.5B SB Energy equity must not enter signed totals
+const portsPikeRow = aiComputeData.find(r => r.buyer === 'OpenAI' && r.provider.includes('PORTS-Pike'))
+if (!portsPikeRow) throw new Error('PORTS-Pike row not found in aiComputeData')
+if (portsPikeRow.amountBasis !== 'undisclosed') throw new Error('PORTS-Pike compute value must be undisclosed and cannot enter the signed-dollar total')
+if (portsPikeRow.amountBillions !== undefined) throw new Error('PORTS-Pike must not carry a numeric compute amount')
+if (portsPikeRow.equityInvestment !== undefined) throw new Error('PORTS-Pike must not carry the NVIDIA $1.5B SB Energy investment as an equity field')
+const guaranteeTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test $105B guarantee', amountBillions: 105, amountBasis: 'company-disclosed', agreementType: 'equity investment' }])
+if (guaranteeTrap.totalBillions !== 127) throw new Error('The $105B conditional residual-value guarantee entered the compute total')
+const sbEnergyTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test $1.5B SB Energy equity', amountBillions: 1.5, amountBasis: 'company-disclosed', agreementType: 'equity investment' }])
+if (sbEnergyTrap.totalBillions !== 127) throw new Error('The NVIDIA $1.5B SB Energy equity investment entered the compute total')
+
 if (!isStatusSafeAiComputeBrief(safeAiComputeFallback)) {
   throw new Error('AI compute fallback violates status-safe aggregation rules')
 }

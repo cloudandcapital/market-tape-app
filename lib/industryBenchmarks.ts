@@ -25,20 +25,19 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 widely available ($2.19–$11.06/hr) · H200 $3.99–$10.85/hr · B200 extremely limited ($5.91–$16.11/hr); access constrained or waitlisted',
-    source: 'Thunder Compute GPU rental market survey — August 13–14, 2026 (H100, H200, B200 per-GPU research); NVIDIA Q1 FY2027 earnings (NVIDIA-specific supply commentary)',
-    sourceUrl: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends',
+    value: 'H100 widely available ($2.19–$10.98/hr) · H200 $3.99–$10.85/hr · B200 extremely limited ($5.99–$16.11/hr); access constrained or waitlisted',
+    source: 'Thunder Compute dedicated GPU pricing comparisons — August 21, 2026 (H100, H200, B200); NVIDIA Q1 FY2027 earnings (NVIDIA-specific supply commentary)',
+    sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
     sourceLinks: [
-      { label: 'Thunder Compute — GPU rental market trends (August 2026)', url: 'https://www.thundercompute.com/blog/ai-gpu-rental-market-trends' },
       { label: 'Thunder Compute — H100 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
       { label: 'Thunder Compute — H200 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h200-pricing' },
       { label: 'Thunder Compute — B200 pricing (August 2026)', url: 'https://www.thundercompute.com/blog/nvidia-b200-pricing' },
       { label: 'NVIDIA — Q1 FY2027 supply commentary', url: 'https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-First-Quarter-Fiscal-2027/default.aspx' },
     ],
-    lastUpdated: '2026-08-16',
-    nextReviewDue: '2026-09-16',
+    lastUpdated: '2026-08-23',
+    nextReviewDue: '2026-09-23',
     reviewCadence: 'monthly',
-    notes: 'August 13–14, 2026 primary research: H100 $2.19–$11.06/GPU-hour and widely available; H200 $3.99–$10.85 (revised from $3.44–$10.60); B200 $5.91–$16.11 and extremely limited/supply-constrained (revised from $3.50–$27.04 in Thunder Compute\'s dedicated August 14 comparison). Provider, commitment, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA is retained separately only for NVIDIA-specific supply commentary. B200 access remains constrained or waitlisted; TSMC CoWoS capacity relief not expected until Q4 2026 at earliest.',
+    notes: 'August 21, 2026 dedicated comparisons: H100 $2.19–$10.98/GPU-hour and widely available (upper bound revised from $11.06); H200 $3.99–$10.85 (unchanged); B200 $5.99–$16.11 and extremely limited/supply-constrained (lower bound revised from $5.91). Provider, commitment, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA is retained separately only for NVIDIA-specific supply commentary. B200 access remains constrained or waitlisted; TSMC CoWoS capacity relief not expected until Q4 2026 at earliest.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────

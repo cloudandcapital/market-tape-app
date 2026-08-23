@@ -1,4 +1,5 @@
 export interface MarketContextData {
+  marketSessionLabel: string
   marketData: {
     vix: number
     vixD1: number
