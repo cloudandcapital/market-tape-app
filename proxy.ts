@@ -14,7 +14,7 @@ const RATE_LIMITED_ROUTES = [
 const RATE_LIMIT_MESSAGE =
   "Market Tape is free and always will be — but to keep it that way, there's a limit of 10 requests per hour. Come back soon."
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   if (!RATE_LIMITED_ROUTES.some(r => pathname.startsWith(r))) {
     return NextResponse.next()
