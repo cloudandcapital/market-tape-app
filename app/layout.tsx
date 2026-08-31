@@ -23,6 +23,7 @@ const dmMono = DM_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://market-tape.cloudandcapital.com'),
   title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
   description:
     'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
