@@ -6,6 +6,7 @@ import {
   AI_COMPUTE_DATA_VERSION,
   AI_COMPUTE_LAST_UPDATED,
   getStatusSafeAiComputeFallback,
+  getSignedDollarSummary,
   isCacheableAiComputeResponse,
   type AiComputeRow,
 } from '@/lib/aiCompute'
@@ -106,6 +107,7 @@ export default function AIComputeCommitments() {
     counts[row.status] = (counts[row.status] ?? 0) + 1
     return counts
   }, {}), [])
+  const signedSummary = useMemo(() => getSignedDollarSummary(), [])
 
   const fetchAnalysis = useCallback(async (force = false) => {
     if (!force) {
@@ -148,9 +150,14 @@ export default function AIComputeCommitments() {
       <p className="font-mono text-[0.64rem] text-charcoal/60 mb-4">Last updated {formatUpdatedDate(AI_COMPUTE_LAST_UPDATED)} · Values and capacity identify their provenance; only comparable, company-disclosed signed compute/cloud values enter the dollar headline, and no GW total is calculated.</p>
 
       <div className="mb-5 min-h-8">
-        {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :
-          error ? <div className="flex flex-wrap items-center gap-3"><p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p><button onClick={() => void fetchAnalysis(true)} className="font-mono text-[0.55rem] uppercase tracking-[0.1em] text-charcoal/45 hover:text-charcoal/70">Refresh analysis</button></div> :
-          <p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p>}
+        <p className="font-serif italic text-[0.78rem] leading-relaxed md:hidden" style={{ color: '#6B8E7F' }}>
+          Company-disclosed signed compute and cloud-service contracts total {signedSummary.totalLabel} across {signedSummary.count} qualifying contracts; reported-only and undisclosed values remain excluded.
+        </p>
+        <div className="hidden md:block">
+          {loading ? <div className="flex items-center gap-2" aria-label="Loading AI compute analysis">{[0, 1, 2].map(i => <span key={i} className="block w-1 h-1 rounded-full animate-pulse" style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />)}</div> :
+            error ? <div className="flex flex-wrap items-center gap-3"><p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p><button onClick={() => void fetchAnalysis(true)} className="font-mono text-[0.55rem] uppercase tracking-[0.1em] text-charcoal/45 hover:text-charcoal/70">Refresh analysis</button></div> :
+            <p className="font-serif italic text-[0.82rem] leading-relaxed" style={{ color: '#6B8E7F' }}>{analysis || FALLBACK}</p>}
+        </div>
       </div>
 
       <details className="group rule-subtle-top pt-3">
