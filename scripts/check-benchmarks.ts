@@ -82,12 +82,25 @@ const noEquityRows = aiComputeData.filter(row => !row.equityInvestment)
 if (noEquityRows.some(row => row.equityInvestmentBasis)) throw new Error('A row has equityInvestmentBasis without equityInvestment')
 
 // Row count and status distribution
-if (aiComputeData.length !== 15) throw new Error(`Expected 15 rows in aiComputeData, found ${aiComputeData.length}`)
+if (aiComputeData.length !== 16) throw new Error(`Expected 16 rows in aiComputeData, found ${aiComputeData.length}`)
 const statusCounts = aiComputeData.reduce<Record<string, number>>((acc, row) => { acc[row.status] = (acc[row.status] ?? 0) + 1; return acc }, {})
-if (statusCounts['Signed'] !== 8) throw new Error(`Expected 8 Signed rows, found ${statusCounts['Signed']}`)
+if (statusCounts['Signed'] !== 9) throw new Error(`Expected 9 Signed rows, found ${statusCounts['Signed']}`)
 if (statusCounts['Announced'] !== 3) throw new Error(`Expected 3 Announced rows, found ${statusCounts['Announced']}`)
 if (statusCounts['Target'] !== 1) throw new Error(`Expected 1 Target row, found ${statusCounts['Target']}`)
 if (statusCounts['Reported / in talks'] !== 3) throw new Error(`Expected 3 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
+
+const anthropicSpaceX = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Colossus 1'))
+if (!anthropicSpaceX || anthropicSpaceX.status !== 'Signed' || anthropicSpaceX.capacityBasis !== 'company-disclosed') {
+  throw new Error('Anthropic–SpaceX must be Signed with company-disclosed capacity')
+}
+if (anthropicSpaceX.amountBasis !== 'reported' || anthropicSpaceX.term !== '3 years reported') {
+  throw new Error('Anthropic–SpaceX value and term must remain reported')
+}
+const anthropicNscale = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Nscale'))
+if (!anthropicNscale || anthropicNscale.status !== 'Reported / in talks') throw new Error('Anthropic–Nscale must remain reported')
+if (anthropicNscale.amountBasis !== 'reported' || anthropicNscale.capacityBasis !== 'reported' || anthropicNscale.term !== '6 years reported') {
+  throw new Error('Anthropic–Nscale value, capacity, and term must all remain reported')
+}
 
 // PORTS-Pike row guards: compute value undisclosed; $105B conditional guarantee and $1.5B SB Energy equity must not enter signed totals
 const portsPikeRow = aiComputeData.find(r => r.buyer === 'OpenAI' && r.provider.includes('PORTS-Pike'))
