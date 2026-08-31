@@ -43,18 +43,14 @@ export const BENCHMARKS = {
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
 
   dataCenterConstructionYoY: {
-    value: 'Demand +38% / construction -5.6% YoY',
-    numeric: { absorption_yoy_pct: 38, construction_yoy_pct: -5.6 },
-    source: 'CBRE North America Data Center Trends H2 2025 + CBRE Global Data Center Trends 2026 (Q1 update)',
-    sourceUrl: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025',
-    sourceLinks: [
-      { label: 'CBRE — North America Data Center Trends H2 2025', url: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h2-2025' },
-      { label: 'CBRE — Global Data Center Trends 2026', url: 'https://www.cbre.com/insights/reports/global-data-center-trends-2026' },
-    ],
-    lastUpdated: '2026-07-06',
-    nextReviewDue: '2026-11-01',
+    value: 'Absorption +11.7% / construction +24.8% YoY · vacancy 1.4%',
+    numeric: { absorption_yoy_pct: 11.7, construction_yoy_pct: 24.8, supply_yoy_pct: 33.7, vacancy_pct: 1.4, construction_preleased_pct: 80.4 },
+    source: 'CBRE North America Data Center Trends H1 2026',
+    sourceUrl: 'https://www.cbre.com/insights/books/north-america-data-center-trends-h1-2026',
+    lastUpdated: '2026-08-31',
+    nextReviewDue: '2027-02-28',
     reviewCadence: 'semi-annual',
-    notes: 'CBRE H2 2025 reported absorption of 2,497.6 MW vs 1,809.5 MW in 2024 (+38%) and construction pipeline of 5,994.4 MW vs 6,350.1 MW in 2024 (-5.6%, first decline since 2020). Story = demand outpacing supply, not construction boom. Q1 2026 supplement (CBRE Global Data Center Trends 2026): Northern Virginia absorbed 1,148.3 MW in Q1 alone — largest single quarter since CBRE began this report in 2023 — with vacancy at an all-time low of 0.3%. Dallas-Ft. Worth is now the 3rd-largest US market (+43.7% inventory growth in Q1). Power availability flagged as the #1 industry challenge for the third consecutive year. Value/numeric fields retain the H2 2025 YoY baseline; next full refresh after H1 2026 CBRE report (est. Nov 2026).',
+    notes: 'CBRE H1 2026 primary-market figures: net absorption 1,456.2 MW (+11.7% YoY), under construction 7,481.1 MW (+24.8%), and total supply 10,903 MW (+33.7%). Capacity remains tight despite construction growth: vacancy reached a record-low 1.4%, 80.4% of construction was preleased, and less than 1,500 MW remained available. The prior construction-decline explanation is no longer current.',
   } satisfies Benchmark,
 
   // ─── Historical reference (stable — infrequent review) ────────────────────
@@ -81,24 +77,25 @@ export const BENCHMARKS = {
       { label: 'Microsoft — FY2026 Q4 earnings', url: 'https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4' },
       { label: 'Alphabet — Q2 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q2-Earnings-Call-2026-GgTAq7Is0z/default.aspx' },
       { label: 'Meta — Q2 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx' },
+      { label: 'AWS & NVIDIA — 2 million additional GPUs', url: 'https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai' },
     ],
-    lastUpdated: '2026-08-02',
+    lastUpdated: '2026-08-31',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'quarterly',
-    notes: 'Full-year 2026 guidance after Q2 earnings: Amazon approximately $220B, raised from approximately $200B; Microsoft approximately $175B, nominally reduced from approximately $190B because more data center leases are classified as operating leases, while management said underlying investment expectations are unchanged; Alphabet $195–205B, raised from $180–190B; Meta $130–145B, narrowed from $125–145B. Primary references: Amazon Q2 2026 earnings call (Amazon IR); Microsoft FY26 Q4 earnings call (Microsoft Investor Relations); Alphabet Q2 2026 earnings call (Alphabet Investor Relations); Meta Q2 2026 results (Meta Investor Relations). Values: Expanding / Stable / Contracting. Recheck after the Q3 earnings cycle around November 2026.',
+    notes: 'Full-year 2026 guidance after Q2 earnings: Amazon approximately $220B, raised from approximately $200B; Microsoft approximately $175B, nominally reduced from approximately $190B because more data center leases are classified as operating leases, while management said underlying investment expectations are unchanged; Alphabet $195–205B, raised from $180–190B; Meta $130–145B, narrowed from $125–145B. AWS and NVIDIA additionally plan to deploy 2 million NVIDIA GPUs across AWS infrastructure in 2027–2028. This is hyperscaler infrastructure capacity, not a customer compute contract. Values: Expanding / Stable / Contracting. Recheck after the Q3 earnings cycle around November 2026.',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────
 
   nvidiaDcRevenue: {
-    value: '$75.2B Q1 FY2027 (+92% YoY, +21% QoQ) · networking $14.8B (+199% YoY) · Q2 guidance ~$91B',
-    numeric: { q1_dc_revenue_b: 75.2, q1_total_revenue_b: 81.6, q2_guidance_b: 91 },
-    source: 'NVIDIA Q1 FY2027 earnings (reported May 2026)',
-    sourceUrl: 'https://investor.nvidia.com/financial-information/financial-results/',
-    lastUpdated: '2026-05-25',
-    nextReviewDue: '2026-08-26',
+    value: '$89.0B Q2 FY2027 (+117% YoY, +18% QoQ) · Q3 guidance $108.0B ±2%',
+    numeric: { q2_dc_revenue_b: 89, q2_total_revenue_b: 96.2, q3_guidance_b: 108 },
+    source: 'NVIDIA Q2 FY2027 earnings (reported August 26, 2026)',
+    sourceUrl: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027',
+    lastUpdated: '2026-08-31',
+    nextReviewDue: '2026-11-25',
     reviewCadence: 'quarterly',
-    notes: 'NVIDIA Q1 FY2027 (quarter ended April 2026, reported May 20–22 2026). Total revenue $81.6B (+85% YoY). Data center segment $75.2B (+92% YoY, +21% QoQ) — the primary demand signal for hyperscaler AI CapEx flowing through to silicon. Data center networking (InfiniBand + Ethernet for AI) $14.8B (+199% YoY). Q2 FY2027 guidance ~$91B total. Refresh after each NVIDIA earnings call (next: ~Aug 2026).',
+    notes: 'NVIDIA Q2 FY2027 (quarter ended July 26, 2026). Total revenue was $96.2B (+106% YoY, +18% QoQ); Data Center revenue was $89.0B (+117% YoY, +18% QoQ). Q3 FY2027 total-revenue guidance is $108.0B ±2%. Vera Rubin is in full production. NVIDIA did not disclose a directly comparable standalone networking figure under the new presentation, so none is shown.',
   } satisfies Benchmark,
 
 } satisfies { [key: string]: Benchmark }
@@ -125,7 +122,7 @@ export function buildInfraContextBlock(liveMultiples: {
 - AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
 - GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
-- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; demand is outpacing supply (first time since 2020) [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]
+- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; capacity remains tight because vacancy is at a record low and most construction is preleased [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]
 - NVIDIA Data Center Revenue: ${b.nvidiaDcRevenue.value} [source: ${b.nvidiaDcRevenue.source}]`
 }
 
