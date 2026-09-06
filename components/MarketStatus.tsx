@@ -153,8 +153,8 @@ export function MarketInternals({ snapshot }: { snapshot: Snapshot }) {
         {vix && <InternalRow label={vix.last > 30 ? 'VIX elevated' : 'VIX'} value={vix.last.toFixed(1)} change={vix.d1_pct} invertColor arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'} />}
         {tnx && <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} />}
         {dxy && <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} />}
-        {gld && <InternalRow label="Gold (GLD)" value={`$${gld.last.toFixed(0)}`} change={gld.d1_pct} />}
-        {uso && <InternalRow label="Oil (USO)" value={`$${uso.last.toFixed(1)}`} change={uso.d1_pct} />}
+        {gld && <InternalRow label="GLD gold ETF" value={`$${gld.last.toFixed(0)}`} change={gld.d1_pct} />}
+        {uso && <InternalRow label="USO oil ETF" value={`$${uso.last.toFixed(1)}`} change={uso.d1_pct} />}
       </div>
     </section>
   )
