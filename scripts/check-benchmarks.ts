@@ -5,6 +5,7 @@
 
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
+import { readFileSync } from 'node:fs'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -16,6 +17,25 @@ const RESET  = '\x1b[0m'
 const WARN_DAYS = 14
 const today = new Date()
 today.setHours(0, 0, 0, 0)
+
+const intelligentBriefRoute = readFileSync(new URL('../app/api/intelligent-brief/route.ts', import.meta.url), 'utf8')
+const intelligentProvider = readFileSync(new URL('../components/IntelligentProvider.tsx', import.meta.url), 'utf8')
+for (const contract of [
+  'COMMODITY ETF PROXY RULE',
+  'GLD gold ETF proxy:',
+  'USO oil ETF proxy:',
+  'ETF share price',
+  'dollars-per-ounce',
+  'dollars-per-barrel',
+  'MARKET DATA — ${marketSessionLabel}',
+  '"generatedAt": "${new Date().toISOString()}"',
+  "['intelligent-brief-v18', INTELLIGENT_BRIEF_MODEL]",
+]) {
+  if (!intelligentBriefRoute.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
+}
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v15'")) {
+  throw new Error('Intelligent-brief browser cache version was not bumped')
+}
 
 function daysUntilDue(dueDateStr: string): number {
   const due = new Date(dueDateStr)
@@ -82,12 +102,12 @@ const noEquityRows = aiComputeData.filter(row => !row.equityInvestment)
 if (noEquityRows.some(row => row.equityInvestmentBasis)) throw new Error('A row has equityInvestmentBasis without equityInvestment')
 
 // Row count and status distribution
-if (aiComputeData.length !== 16) throw new Error(`Expected 16 rows in aiComputeData, found ${aiComputeData.length}`)
+if (aiComputeData.length !== 17) throw new Error(`Expected 17 rows in aiComputeData, found ${aiComputeData.length}`)
 const statusCounts = aiComputeData.reduce<Record<string, number>>((acc, row) => { acc[row.status] = (acc[row.status] ?? 0) + 1; return acc }, {})
 if (statusCounts['Signed'] !== 9) throw new Error(`Expected 9 Signed rows, found ${statusCounts['Signed']}`)
 if (statusCounts['Announced'] !== 3) throw new Error(`Expected 3 Announced rows, found ${statusCounts['Announced']}`)
 if (statusCounts['Target'] !== 1) throw new Error(`Expected 1 Target row, found ${statusCounts['Target']}`)
-if (statusCounts['Reported / in talks'] !== 3) throw new Error(`Expected 3 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
+if (statusCounts['Reported / in talks'] !== 4) throw new Error(`Expected 4 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
 
 const anthropicSpaceX = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Colossus 1'))
 if (!anthropicSpaceX || anthropicSpaceX.status !== 'Signed' || anthropicSpaceX.capacityBasis !== 'company-disclosed') {
@@ -100,6 +120,26 @@ const anthropicNscale = aiComputeData.find(row => row.buyer === 'Anthropic' && r
 if (!anthropicNscale || anthropicNscale.status !== 'Reported / in talks') throw new Error('Anthropic–Nscale must remain reported')
 if (anthropicNscale.amountBasis !== 'reported' || anthropicNscale.capacityBasis !== 'reported' || anthropicNscale.term !== '6 years reported') {
   throw new Error('Anthropic–Nscale value, capacity, and term must all remain reported')
+}
+const anthropicLambda = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Lambda'))
+if (!anthropicLambda || anthropicLambda.status !== 'Reported / in talks') throw new Error('Anthropic–Lambda must remain reported')
+if (anthropicLambda.amount !== '~$35B reported' || anthropicLambda.amountBillions !== 35 || anthropicLambda.amountBasis !== 'reported') {
+  throw new Error('Anthropic–Lambda value must remain explicitly reported')
+}
+if (anthropicLambda.capacity !== '~350 MW reported' || anthropicLambda.capacityBasis !== 'reported') {
+  throw new Error('Anthropic–Lambda capacity must remain explicitly reported')
+}
+if (anthropicLambda.sources.length !== 1 || anthropicLambda.sources[0].label !== 'Reuters' || anthropicLambda.sources[0].kind !== 'supplemental reported') {
+  throw new Error('Anthropic–Lambda must use Reuters as its reported canonical source')
+}
+if (getSignedDollarSummary(aiComputeData.filter(row => row !== anthropicLambda)).totalBillions !== signedSummary.totalBillions) {
+  throw new Error('Anthropic–Lambda entered the company-disclosed signed-dollar total')
+}
+const qualifyingRows = aiComputeData.filter(row => row.status === 'Signed' && row.amountBasis === 'company-disclosed' && row.agreementType === 'compute/cloud service' && typeof row.amountBillions === 'number')
+const qualifyingIds = qualifyingRows.map(row => `${row.buyer}–${row.provider}`).sort()
+const expectedQualifyingIds = ['Anthropic–AWS (Trainium / Inferentia)', 'Jane Street–CoreWeave', 'Meta–CoreWeave (Vera Rubin)'].sort()
+if (JSON.stringify(qualifyingIds) !== JSON.stringify(expectedQualifyingIds)) {
+  throw new Error(`Unexpected $127B+ qualifying rows: ${JSON.stringify(qualifyingIds)}`)
 }
 
 // PORTS-Pike row guards: compute value undisclosed; $105B conditional guarantee and $1.5B SB Energy equity must not enter signed totals
