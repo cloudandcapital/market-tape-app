@@ -70,7 +70,7 @@ export const BENCHMARKS = {
 
   hyperscalerCapexTrend: {
     value: 'Expanding',
-    source: 'Amazon, Microsoft, Alphabet, and Meta Q2 2026 earnings disclosures',
+    source: 'Amazon, Microsoft, Alphabet, and Meta Q2 2026 earnings; Oracle Q1 FY2027 results',
     sourceUrl: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/',
     sourceLinks: [
       { label: 'Amazon — Q2 2026 results', url: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/' },
@@ -78,11 +78,13 @@ export const BENCHMARKS = {
       { label: 'Alphabet — Q2 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q2-Earnings-Call-2026-GgTAq7Is0z/default.aspx' },
       { label: 'Meta — Q2 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx' },
       { label: 'AWS & NVIDIA — 2 million additional GPUs', url: 'https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai' },
+      { label: 'Oracle — Q1 FY2027 results', url: 'https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Q1-Results-Driven-by-Triple-Digit-Growth-in-Cloud-Infrastructure-Revenues/default.aspx' },
+      { label: 'Google — Finland AI infrastructure', url: 'https://www.googlecloudpresscorner.com/2026-09-09-Google-Deepens-Commitment-to-Finland-with-Two-Year-EUR13-Billion-investment-in-AI-Infrastructure' },
     ],
-    lastUpdated: '2026-08-31',
+    lastUpdated: '2026-09-13',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'quarterly',
-    notes: 'Full-year 2026 guidance after Q2 earnings: Amazon approximately $220B, raised from approximately $200B; Microsoft approximately $175B, nominally reduced from approximately $190B because more data center leases are classified as operating leases, while management said underlying investment expectations are unchanged; Alphabet $195–205B, raised from $180–190B; Meta $130–145B, narrowed from $125–145B. AWS and NVIDIA additionally plan to deploy 2 million NVIDIA GPUs across AWS infrastructure in 2027–2028. This is hyperscaler infrastructure capacity, not a customer compute contract. Values: Expanding / Stable / Contracting. Recheck after the Q3 earnings cycle around November 2026.',
+    notes: 'Full-year 2026 guidance after Q2 earnings: Amazon approximately $220B; Microsoft approximately $175B (lease classification shifted); Alphabet $195–205B; Meta $130–145B. Oracle Q1 FY2027 cloud infrastructure revenue was $7.4B (+121% YoY); RPO $664B, with more than $30B of new AI cloud bookings, 850 MW of added data-center capacity and over 300,000 GPUs delivered since Q4. Those Oracle aggregates are not individual customer compute contract values. Google plans at least €13B of Finland digital-infrastructure investment during 2027–28, with a 22-year nuclear PPA and other energy support. AWS and NVIDIA plan 2 million additional NVIDIA GPUs in 2027–28. All are capex/capacity or earnings context, not signed customer-deal totals. Values: Expanding / Stable / Contracting. Recheck after the next earnings cycle.',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────
@@ -110,16 +112,17 @@ export function buildInfraContextBlock(liveMultiples: {
   saas: string
   aiInfra: string
   source?: 'live' | 'fallback'
+  baskets?: Record<string, { source: 'live' | 'fallback'; dataAsOf: string }>
 }): string {
   const b = BENCHMARKS
-  const sourceNote = liveMultiples.source === 'live'
-    ? 'Yahoo Finance, approx. NTM P/S, basket median'
-    : 'Quarterly earnings comps (Q1 2026, basket median — refreshed each earnings cycle)'
+  const sourceNote = (basket: string) => liveMultiples.baskets?.[basket]?.source === 'live'
+    ? `Yahoo Finance basket median, fetched ${liveMultiples.baskets[basket].dataAsOf}`
+    : `UNAVAILABLE; archived fallback dated 2026-04-24 is suppressed, do not quote a multiple`
 
   return `CLOUD INFRASTRUCTURE CONTEXT (source-attributed — use only what is listed here; do not extrapolate or cite additional statistics):
-- Public Cloud NTM P/S (est.): ${liveMultiples.publicCloud} [source: ${sourceNote}]
-- SaaS Average NTM P/S (est.): ${liveMultiples.saas} (compressed from ${b.saas2021PeakMultiple.value} in 2021) [source: ${sourceNote}]
-- AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote}]
+- Public Cloud NTM P/S (est.): ${liveMultiples.publicCloud} [source: ${sourceNote('publicCloud')}]
+- SaaS Average NTM P/S (est.): ${liveMultiples.saas} (historical peak ${b.saas2021PeakMultiple.value} in 2021; do not infer present compression when current multiple is unavailable) [source: ${sourceNote('saas')}]
+- AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote('aiInfra')}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
 - GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
 - Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; capacity remains tight because vacancy is at a record low and most construction is preleased [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]

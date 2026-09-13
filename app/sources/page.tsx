@@ -117,11 +117,11 @@ export default function SourcesPage() {
           </div>
 
           <div>
-            <p className="font-mono text-[0.62rem] tracking-[0.1em] uppercase text-charcoal/35 mb-1.5">Valuation Multiples (live approximations)</p>
+            <p className="font-mono text-[0.62rem] tracking-[0.1em] uppercase text-charcoal/35 mb-1.5">Valuation Multiples (availability varies)</p>
             <p className="font-mono text-[0.68rem] text-charcoal/60 mb-2">
               Approximate NTM P/S computed as: TTM P/S ÷ (1 + trailing revenue growth).
               Equal-weighted median across each basket. Labeled with ~ to communicate approximation.
-              Sourced from Yahoo Finance with the same 30-minute cache as the rest of the pipeline.
+              Yahoo Finance basket requests are cached for 30 minutes. If a basket cannot be fetched, its current multiple is shown as Unavailable; the archived April 24, 2026 quarterly fallback is not presented as current market data. The valuation API reports source and data date separately for each basket.
             </p>
             <div className="space-y-2 pl-3" style={{ borderLeft: '2px solid rgba(0,0,0,0.08)' }}>
               {Object.entries(BASKETS).map(([key, basket]) => (

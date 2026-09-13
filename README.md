@@ -19,7 +19,7 @@ There's no shortage of market data. There's a shortage of translation between ma
 | **Market Status** | Exposure guidance (Risk-On / Neutral / Defensive), trend, breadth, momentum |
 | **Commitment Windows** | Spot / 1-Year / 3-Year guidance, each anchored to specific market signals |
 | **Macro Context** | Rates (TLT), gold (GLD), small caps (IWM), Nasdaq (QQQ), dollar (DXY) — relative strength readings tied to commitment math |
-| **Cloud Valuations** | Live SaaS, AI infrastructure, and Public Cloud P/S multiples (BVP Cloud Index basket) via yFinance |
+| **Cloud Valuations** | Yahoo Finance basket approximations when available; stale quarterly fallbacks are suppressed and separately dated |
 | **Hyperscaler CapEx** | AWS / Azure / Google Cloud / Meta / Oracle quarterly CapEx trend |
 | **Tech Concentration** | SMH, SOXX, IGV, SKYY, AIQ, PAVE — prices, % change, sparklines |
 | **Sector Rotation & Leaders** | Top performers by 1-month relative strength across sectors and countries |
@@ -27,17 +27,17 @@ There's no shortage of market data. There's a shortage of translation between ma
 
 ## Stack
 
-- **Framework:** Next.js 16.2.4 (App Router) + React 19.2.4
+- **Framework:** Next.js 16.3.3 (App Router) + React 19.2.8
 - **Styling:** Tailwind CSS v4
-- **AI:** Anthropic Claude API (`@anthropic-ai/sdk` 0.91.0) — Haiku for AI Compute analysis line, Sonnet for the heavier intelligent brief
-- **Live multiples:** yFinance via API route (BVP Cloud Index basket + AI infra + public cloud baskets)
+- **AI:** Anthropic Claude API (`@anthropic-ai/sdk` ^0.91.1) — Haiku for AI Compute analysis line, Sonnet for the heavier intelligent brief
+- **Valuation multiples:** Yahoo Finance via API route (representative SaaS, AI infrastructure, and public-cloud baskets); per-basket source/date reported, unavailable values suppressed
 - **Static market data:** Checked on a 30-minute weekday schedule by the Python pipeline at [cloudandcapital/market-tape](https://github.com/cloudandcapital/market-tape), fetched via GitHub raw URLs with 30-minute ISR revalidation
 - **Hosting:** Vercel
 
 ## Verification discipline
 
 Market Tape ships under a "trust first, real receipts" rule. Every numeric claim on the dashboard either:
-1. Is a live market value pulled at request time
+1. Is a market value with a stated source and underlying data date
 2. Has a primary source citation visible via tooltip + listed on the [/sources](https://market-tape.cloudandcapital.com/sources) page
 3. Is a Lumen interpretation explicitly framed as such
 
