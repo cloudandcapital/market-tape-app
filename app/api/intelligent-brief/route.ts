@@ -53,6 +53,8 @@ FINOPS SIGNALS:
 • cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): review or defer non-critical expansion and raise the approval threshold for discretionary expansion. Neutral (40-60): review utilization and optimize existing capacity. Risk-On (>60): review planned expansion against workload and business needs. Cite exposure level.
 • saasRenewals → primary: SaaS NTM multiple + HYG RS1M. If SaaS is materially compressed from peak and HYG is negative, benchmark renewal pricing and test for concessions. If SaaS is recovering or HYG is positive, monitor pricing before extending commitment duration. Cite the actual visible multiple and HYG grade; do not reference any specific threshold number.
 • infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. Describe the constraint as: "Blackwell availability remains constrained relative to demand in the current benchmark." If the source says demand is supply-constrained, protect existing Blackwell access when workloads depend on it while treating broadly available models as standard procurement. Cite only the supplied status and price ranges; do not infer urgency or a booking horizon.
+• Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels. Constrained or waitlisted availability is not proof of impossibility.
+• If any current valuation multiple is Unavailable, output Unavailable for that field; do not substitute archived fallback values, invent a trend, or imply the request timestamp is the data date.
 
 RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
 • "GPU Capacity Tightening" (warning): if the GPU benchmark explicitly describes any current product generation as supply-constrained
@@ -147,7 +149,13 @@ export async function generateIntelligentBrief(
   }, { signal: AbortSignal.timeout(65_000) })
 
   const text = message.content[0]?.type === 'text' ? message.content[0].text : ''
-  return parseResponse(text)
+  const result = parseResponse(text)
+  // A model response must not revive the archived April 2026 multiples when a
+  // current Yahoo basket failed. Keep the UI unavailable until a fresh fetch.
+  if (multiples.publicCloud === 'Unavailable') result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'
+  if (multiples.saas === 'Unavailable') result.cloudValuations.saasAverage = 'Unavailable — current basket data not available'
+  if (multiples.aiInfra === 'Unavailable') result.cloudValuations.aiInfrastructure = 'Unavailable — current basket data not available'
+  return result
 }
 
 // Shared Data Cache entry: one generation per unique 30-minute market snapshot.
@@ -160,7 +168,7 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v18', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v19', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )
 

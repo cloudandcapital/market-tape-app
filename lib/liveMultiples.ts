@@ -10,8 +10,9 @@ export interface LiveMultiples {
   publicCloud: string   // formatted, e.g. "~8.3×"
   saas: string
   aiInfra: string
-  asOf: string          // ISO timestamp
+  asOf: string          // oldest underlying data date; never a request timestamp for fallback data
   source: 'live' | 'fallback'
+  baskets: Record<keyof typeof BASKETS, { source: 'live' | 'fallback'; dataAsOf: string; lastKnownValue?: string }>
 }
 
 // ─── Basket definitions ────────────────────────────────────────────────────
@@ -48,9 +49,9 @@ export const QUARTERLY_MULTIPLES = {
 }
 
 const FALLBACKS: Pick<LiveMultiples, 'publicCloud' | 'saas' | 'aiInfra'> = {
-  publicCloud: QUARTERLY_MULTIPLES.publicCloud.value,
-  saas:        QUARTERLY_MULTIPLES.saas.value,
-  aiInfra:     QUARTERLY_MULTIPLES.aiInfra.value,
+  publicCloud: 'Unavailable',
+  saas:        'Unavailable',
+  aiInfra:     'Unavailable',
 }
 
 const YAHOO_REQUEST_TIMEOUT_MS = 2_500
@@ -122,7 +123,7 @@ export function multiplesSourceLabel(source: 'live' | 'fallback', basket: keyof 
   if (source === 'live') {
     return `Yahoo Finance live · ${BASKETS[basket].tickers.join(', ')}`
   }
-  return `${QUARTERLY_MULTIPLES[basket].source} · ${BASKETS[basket].tickers.join(', ')}`
+  return `Unavailable; archived ${QUARTERLY_MULTIPLES[basket].source} dated ${QUARTERLY_MULTIPLES[basket].lastUpdated} (not current) · ${BASKETS[basket].tickers.join(', ')}`
 }
 
 // ─── Public API ────────────────────────────────────────────────────────────
@@ -138,18 +139,29 @@ export async function fetchLiveMultiples(): Promise<LiveMultiples> {
       computeBasket(BASKETS.aiInfra.tickers),
     ])
 
+    const fetchedAt = new Date().toISOString()
     return {
       publicCloud: publicCloud ?? FALLBACKS.publicCloud,
       saas:        saas        ?? FALLBACKS.saas,
       aiInfra:     aiInfra     ?? FALLBACKS.aiInfra,
-      asOf:   new Date().toISOString(),
+      asOf:   (publicCloud && saas && aiInfra) ? fetchedAt : QUARTERLY_MULTIPLES.publicCloud.lastUpdated,
       source: (publicCloud && saas && aiInfra) ? 'live' : 'fallback',
+      baskets: {
+        publicCloud: publicCloud ? { source: 'live', dataAsOf: fetchedAt } : { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.publicCloud.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.publicCloud.value },
+        saas: saas ? { source: 'live', dataAsOf: fetchedAt } : { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.saas.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.saas.value },
+        aiInfra: aiInfra ? { source: 'live', dataAsOf: fetchedAt } : { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.aiInfra.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.aiInfra.value },
+      },
     }
   } catch {
     return {
       ...FALLBACKS,
-      asOf:   new Date().toISOString(),
+      asOf:   QUARTERLY_MULTIPLES.publicCloud.lastUpdated,
       source: 'fallback',
+      baskets: {
+        publicCloud: { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.publicCloud.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.publicCloud.value },
+        saas: { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.saas.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.saas.value },
+        aiInfra: { source: 'fallback', dataAsOf: QUARTERLY_MULTIPLES.aiInfra.lastUpdated, lastKnownValue: QUARTERLY_MULTIPLES.aiInfra.value },
+      },
     }
   }
 }

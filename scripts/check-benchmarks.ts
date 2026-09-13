@@ -6,6 +6,7 @@
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 import { readFileSync } from 'node:fs'
+import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -27,13 +28,15 @@ for (const contract of [
   'ETF share price',
   'dollars-per-ounce',
   'dollars-per-barrel',
+  'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels',
+  "result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'",
   'MARKET DATA — ${marketSessionLabel}',
   '"generatedAt": "${new Date().toISOString()}"',
-  "['intelligent-brief-v18', INTELLIGENT_BRIEF_MODEL]",
+  "['intelligent-brief-v19', INTELLIGENT_BRIEF_MODEL]",
 ]) {
   if (!intelligentBriefRoute.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
 }
-if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v15'")) {
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v16'")) {
   throw new Error('Intelligent-brief browser cache version was not bumped')
 }
 
@@ -76,18 +79,34 @@ if (!isCacheableAiComputeResponse({ analysis: safeAiComputeFallback, fallback: f
 }
 const provenanceErrors = validateAiComputeProvenance()
 if (provenanceErrors.length) throw new Error(`AI compute provenance errors:\n${provenanceErrors.join('\n')}`)
+for (const [basket, fallback] of Object.entries(QUARTERLY_MULTIPLES)) {
+  if (fallback.lastUpdated !== '2026-04-24') throw new Error(`${basket} fallback provenance date changed without review`)
+  if (daysUntilDue('2026-07-24') < 0) console.warn(`${basket}: archived ${fallback.value} fallback dated ${fallback.lastUpdated} is overdue for review and suppressed from current valuations`)
+}
+const originalFetch = globalThis.fetch
+globalThis.fetch = async () => new Response(null, { status: 503 })
+fetchLiveMultiples().then(unavailable => {
+  if (unavailable.asOf !== '2026-04-24' || unavailable.source !== 'fallback') throw new Error('Fallback data was stamped with the request date')
+  for (const basket of ['publicCloud', 'saas', 'aiInfra'] as const) {
+    if (unavailable[basket] !== 'Unavailable' || unavailable.baskets[basket].dataAsOf !== '2026-04-24' || unavailable.baskets[basket].source !== 'fallback') {
+      throw new Error(`${basket} stale fallback was presented as current`)
+    }
+  }
+}).finally(() => {
+  globalThis.fetch = originalFetch
+})
 const signedSummary = getSignedDollarSummary()
-if (signedSummary.totalBillions !== 127 || signedSummary.totalLabel !== '$127B+' || signedSummary.count !== 3) {
+if (signedSummary.totalBillions !== 265 || signedSummary.totalLabel !== '$265B+' || signedSummary.count !== 4) {
   throw new Error(`AI compute disclosed signed total is not reproducible: ${JSON.stringify(signedSummary)}`)
 }
 const reportedTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test reported', amountBillions: 999, amountBasis: 'reported' }])
-if (reportedTrap.totalBillions !== 127) throw new Error('A reported amount entered the disclosed signed total')
+if (reportedTrap.totalBillions !== 265) throw new Error('A reported amount entered the disclosed signed total')
 const estimatedTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test estimated', amountBillions: 999, amountBasis: 'estimated' }])
-if (estimatedTrap.totalBillions !== 127) throw new Error('An estimated amount entered the disclosed signed total')
+if (estimatedTrap.totalBillions !== 265) throw new Error('An estimated amount entered the disclosed signed total')
 const equityTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test equity', amountBillions: 999, agreementType: 'equity investment' }])
-if (equityTrap.totalBillions !== 127) throw new Error('An equity investment entered the compute total')
+if (equityTrap.totalBillions !== 265) throw new Error('An equity investment entered the compute total')
 const statusTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test announced', amountBillions: 999, status: 'Announced' }])
-if (statusTrap.totalBillions !== 127) throw new Error('An unlike status entered the disclosed signed total')
+if (statusTrap.totalBillions !== 265) throw new Error('An unlike status entered the disclosed signed total')
 const equityRows = aiComputeData.filter(row => row.equityInvestment)
 if (equityRows.length !== 2) throw new Error(`Expected exactly 2 rows with equityInvestment, found ${equityRows.length}`)
 const equityBuyers = equityRows.map(row => `${row.buyer}–${row.provider}`).sort()
@@ -102,12 +121,12 @@ const noEquityRows = aiComputeData.filter(row => !row.equityInvestment)
 if (noEquityRows.some(row => row.equityInvestmentBasis)) throw new Error('A row has equityInvestmentBasis without equityInvestment')
 
 // Row count and status distribution
-if (aiComputeData.length !== 17) throw new Error(`Expected 17 rows in aiComputeData, found ${aiComputeData.length}`)
+if (aiComputeData.length !== 22) throw new Error(`Expected 22 rows in aiComputeData, found ${aiComputeData.length}`)
 const statusCounts = aiComputeData.reduce<Record<string, number>>((acc, row) => { acc[row.status] = (acc[row.status] ?? 0) + 1; return acc }, {})
-if (statusCounts['Signed'] !== 9) throw new Error(`Expected 9 Signed rows, found ${statusCounts['Signed']}`)
-if (statusCounts['Announced'] !== 3) throw new Error(`Expected 3 Announced rows, found ${statusCounts['Announced']}`)
-if (statusCounts['Target'] !== 1) throw new Error(`Expected 1 Target row, found ${statusCounts['Target']}`)
-if (statusCounts['Reported / in talks'] !== 4) throw new Error(`Expected 4 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
+if (statusCounts['Signed'] !== 11) throw new Error(`Expected 11 Signed rows, found ${statusCounts['Signed']}`)
+if (statusCounts['Announced'] !== 4) throw new Error(`Expected 4 Announced rows, found ${statusCounts['Announced']}`)
+if (statusCounts['Target'] !== 2) throw new Error(`Expected 2 Target rows, found ${statusCounts['Target']}`)
+if (statusCounts['Reported / in talks'] !== 5) throw new Error(`Expected 5 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
 
 const anthropicSpaceX = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Colossus 1'))
 if (!anthropicSpaceX || anthropicSpaceX.status !== 'Signed' || anthropicSpaceX.capacityBasis !== 'company-disclosed') {
@@ -137,10 +156,20 @@ if (getSignedDollarSummary(aiComputeData.filter(row => row !== anthropicLambda))
 }
 const qualifyingRows = aiComputeData.filter(row => row.status === 'Signed' && row.amountBasis === 'company-disclosed' && row.agreementType === 'compute/cloud service' && typeof row.amountBillions === 'number')
 const qualifyingIds = qualifyingRows.map(row => `${row.buyer}–${row.provider}`).sort()
-const expectedQualifyingIds = ['Anthropic–AWS (Trainium / Inferentia)', 'Jane Street–CoreWeave', 'Meta–CoreWeave (Vera Rubin)'].sort()
+const expectedQualifyingIds = ['Anthropic–AWS (Trainium / Inferentia)', 'Jane Street–CoreWeave', 'Meta–CoreWeave (Vera Rubin)', 'OpenAI–AWS (Trainium)'].sort()
 if (JSON.stringify(qualifyingIds) !== JSON.stringify(expectedQualifyingIds)) {
-  throw new Error(`Unexpected $127B+ qualifying rows: ${JSON.stringify(qualifyingIds)}`)
+  throw new Error(`Unexpected $265B+ qualifying rows: ${JSON.stringify(qualifyingIds)}`)
 }
+const openAiAws = aiComputeData.find(row => row.buyer === 'OpenAI' && row.provider === 'AWS (Trainium)')
+if (!openAiAws || openAiAws.amountBillions !== 138 || openAiAws.sources.length !== 2) throw new Error('OpenAI–AWS original $38B and incremental $100B must be counted once')
+const firmus = aiComputeData.find(row => row.provider.includes('Firmus'))
+if (!firmus || firmus.capacityBasis !== 'undisclosed' || /900/.test(firmus.capacity)) throw new Error('Firmus portfolio capacity was attributed to OpenAI')
+const qualcomm = aiComputeData.find(row => row.provider.includes('Qualcomm'))
+if (!qualcomm || qualcomm.amountBillions !== undefined || qualcomm.agreementType !== 'hardware/chip partnership') throw new Error('Qualcomm warrant ceiling entered compute value')
+const australia = aiComputeData.find(row => row.buyer === 'Australian AI ecosystem')
+if (!australia || australia.status !== 'Target' || australia.amountBillions !== undefined) throw new Error('Australian 2 GW target entered signed value')
+const mysterySpaceX = aiComputeData.find(row => row.buyer === 'Unidentified customer')
+if (!mysterySpaceX || mysterySpaceX.status !== 'Reported / in talks' || mysterySpaceX.amountBillions !== undefined) throw new Error('SpaceX monthly reported rate entered total value')
 
 // PORTS-Pike row guards: compute value undisclosed; $105B conditional guarantee and $1.5B SB Energy equity must not enter signed totals
 const portsPikeRow = aiComputeData.find(r => r.buyer === 'OpenAI' && r.provider.includes('PORTS-Pike'))
@@ -149,9 +178,9 @@ if (portsPikeRow.amountBasis !== 'undisclosed') throw new Error('PORTS-Pike comp
 if (portsPikeRow.amountBillions !== undefined) throw new Error('PORTS-Pike must not carry a numeric compute amount')
 if (portsPikeRow.equityInvestment !== undefined) throw new Error('PORTS-Pike must not carry the NVIDIA $1.5B SB Energy investment as an equity field')
 const guaranteeTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test $105B guarantee', amountBillions: 105, amountBasis: 'company-disclosed', agreementType: 'equity investment' }])
-if (guaranteeTrap.totalBillions !== 127) throw new Error('The $105B conditional residual-value guarantee entered the compute total')
+if (guaranteeTrap.totalBillions !== 265) throw new Error('The $105B conditional residual-value guarantee entered the compute total')
 const sbEnergyTrap = getSignedDollarSummary([...aiComputeData, { ...aiComputeData[0], buyer: 'Test $1.5B SB Energy equity', amountBillions: 1.5, amountBasis: 'company-disclosed', agreementType: 'equity investment' }])
-if (sbEnergyTrap.totalBillions !== 127) throw new Error('The NVIDIA $1.5B SB Energy equity investment entered the compute total')
+if (sbEnergyTrap.totalBillions !== 265) throw new Error('The NVIDIA $1.5B SB Energy equity investment entered the compute total')
 
 if (!isStatusSafeAiComputeBrief(safeAiComputeFallback)) {
   throw new Error('AI compute fallback violates status-safe aggregation rules')

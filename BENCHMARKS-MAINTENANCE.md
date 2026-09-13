@@ -6,29 +6,29 @@ Market Tape separates its external data into two distinct layers:
 
 | Layer | File | Cadence | Who updates |
 |-------|------|---------|-------------|
-| **Live market data** | `lib/liveMultiples.ts` | Every 30 min (Yahoo Finance) | Automatic |
+| **Valuation baskets** | `lib/liveMultiples.ts` | Yahoo request every 30 min; archived quarterly values reviewed separately | Automatic fetch, manual fallback review |
 | **Static benchmarks** | `lib/industryBenchmarks.ts` | Quarterly / semi-annual | You, manually |
 
-**What moved to the live layer (2026-05-01):** Cloud valuation multiples (Public Cloud, SaaS, AI Infrastructure NTM P/S) are now computed live from Yahoo Finance stock baskets. They auto-refresh every 30 minutes and no longer require manual maintenance.
+**Valuation caveat:** Cloud valuation multiples (Public Cloud, SaaS, AI Infrastructure NTM P/S) are attempted from Yahoo Finance stock baskets every 30 minutes. If a basket is unavailable, the current multiple is suppressed. The archived April 24, 2026 quarterly values require manual review and must not be described as live.
 
 **What stays in the static layer:** Supply chain data, construction statistics, qualitative trends — things that update with research reports and earnings calls, not with daily stock prices.
 
 ---
 
-## Live multiples (lib/liveMultiples.ts)
+## Valuation baskets (lib/liveMultiples.ts)
 
-These three baskets compute approximate NTM P/S automatically. No manual maintenance needed.
+These three baskets attempt approximate NTM P/S automatically. Check source and `dataAsOf` per basket in `/api/live-multiples`; request time is not the valuation data date. Archived fallback values need manual quarterly review.
 
 | Basket | Tickers | Source |
 |--------|---------|--------|
 | Public Cloud | AMZN, MSFT, GOOGL, ORCL | Yahoo Finance |
 | SaaS Average | CRM, NOW, SNOW, DDOG, ZS, HUBS, WDAY, VEEV | Yahoo Finance |
-| AI Infrastructure | NVDA, AVGO, AMD, MU, MRVL | Yahoo Finance |
+| AI Infrastructure | NVDA, AVGO, AMD, MU, MRVL, CBRS | Yahoo Finance |
 
 Method: `TTM P/S ÷ (1 + trailing revenue growth)` = approx NTM P/S. Equal-weighted median per basket.
 Labeled `~` on the dashboard to communicate approximation.
 
-If Yahoo Finance is unavailable, the system falls back to the last known values defined in `lib/liveMultiples.ts` as `FALLBACKS`.
+If Yahoo Finance is unavailable, the affected basket displays `Unavailable`. Archived Q1 2026 fallback values and their April 24 date remain in `lib/liveMultiples.ts` as provenance only; they are not shown as fresh values. The pre-deploy checker flags their overdue review.
 
 If basket composition changes (ticker renamed, delisted, better proxy found), update the `BASKETS` constant in `lib/liveMultiples.ts`.
 
@@ -52,7 +52,7 @@ Five entries remain that require manual quarterly or semi-annual review:
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
-**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, and Meta earnings calls (quarterly). Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current Q2 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $130–145B. Update after each earnings cycle.
+**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, Meta, and Oracle earnings calls (quarterly), plus material regional infrastructure commitments. Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current Q2 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $130–145B. Oracle Q1 FY2027 reported $7.4B cloud-infrastructure revenue and $664B RPO; neither is an individual compute-deal value. Update after each earnings cycle.
 
 **SaaS 2021 peak multiple** — Historical reference. Only review to confirm the narrative framing ("compressed from 2021 peaks") is still accurate context. Rarely needs updating.
 

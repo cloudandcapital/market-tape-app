@@ -176,7 +176,7 @@ export function HyperscalerCapex() {
     <div>
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
-        <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, and Meta 2026 investment direction."
+        <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, Meta, and Oracle investment direction; Google Finland infrastructure context."
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
         <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
