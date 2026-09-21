@@ -1,7 +1,7 @@
 import { fetchMeta, fetchSnapshot, formatMarketSessionLabel, getRow, getSectorRows } from '@/lib/data'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
-import { getCachedIntelligentBrief } from '@/app/api/intelligent-brief/route'
+import { getCachedIntelligentBrief } from '@/lib/intelligentBrief'
 import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
 import { CountriesGlobal, Sectors } from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
