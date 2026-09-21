@@ -33,7 +33,7 @@ for (const contract of [
   "result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'",
   'MARKET DATA — ${marketSessionLabel}',
   '"generatedAt": "${new Date().toISOString()}"',
-  "['intelligent-brief-v19', INTELLIGENT_BRIEF_MODEL]",
+  "['intelligent-brief-v20', INTELLIGENT_BRIEF_MODEL]",
 ]) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
 }
