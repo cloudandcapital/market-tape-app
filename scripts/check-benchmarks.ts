@@ -16,11 +16,12 @@ const DIM    = '\x1b[2m'
 const RESET  = '\x1b[0m'
 
 const WARN_DAYS = 14
-const today = new Date()
-today.setHours(0, 0, 0, 0)
+const now = new Date()
+const todayStr = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-')
 
-const intelligentBriefRoute = readFileSync(new URL('../app/api/intelligent-brief/route.ts', import.meta.url), 'utf8')
+const intelligentBriefModule = readFileSync(new URL('../lib/intelligentBrief.ts', import.meta.url), 'utf8')
 const intelligentProvider = readFileSync(new URL('../components/IntelligentProvider.tsx', import.meta.url), 'utf8')
+const intelligentSignals = readFileSync(new URL('../components/IntelligentSignals.tsx', import.meta.url), 'utf8')
 for (const contract of [
   'COMMODITY ETF PROXY RULE',
   'GLD gold ETF proxy:',
@@ -34,17 +35,34 @@ for (const contract of [
   '"generatedAt": "${new Date().toISOString()}"',
   "['intelligent-brief-v19', INTELLIGENT_BRIEF_MODEL]",
 ]) {
-  if (!intelligentBriefRoute.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
+  if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
 }
 if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v16'")) {
   throw new Error('Intelligent-brief browser cache version was not bumped')
 }
-
-function daysUntilDue(dueDateStr: string): number {
-  const due = new Date(dueDateStr)
-  due.setHours(0, 0, 0, 0)
-  return Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+for (const forbidden of ['review or defer non-critical expansion', 'raise the approval threshold']) {
+  if (intelligentBriefModule.includes(forbidden)) throw new Error(`Prescriptive Lumen language remains: ${forbidden}`)
 }
+if (!intelligentBriefModule.includes('could warrant a review of non-critical expansion')) {
+  throw new Error('Conditional Lumen cloud-expansion guardrail is missing')
+}
+if (!intelligentSignals.includes('Live multiple unavailable · Archived')) {
+  throw new Error('Unavailable live valuations are not labeled with archived historical context')
+}
+
+function calendarDayNumber(dateStr: string): number {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr)
+  if (!match) throw new Error(`Invalid calendar date: ${dateStr}`)
+  return Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])) / (1000 * 60 * 60 * 24)
+}
+
+function daysUntilDue(dueDateStr: string, fromDateStr = todayStr): number {
+  return calendarDayNumber(dueDateStr) - calendarDayNumber(fromDateStr)
+}
+
+if (daysUntilDue('2026-09-23', '2026-09-20') !== 3) throw new Error('Calendar-date check failed: Sep 20 to Sep 23 must be 3 days')
+if (daysUntilDue('2026-09-23', '2026-09-23') !== 0) throw new Error('Calendar-date check failed: review date must be 0 days remaining')
+if (daysUntilDue('2026-09-23', '2026-09-24') !== -1) throw new Error('Calendar-date check failed: Sep 23 must be 1 day overdue on Sep 24')
 
 function formatDate(str: string): string {
   return new Date(`${str}T12:00:00`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -196,7 +214,6 @@ for (const unsafeBrief of [
   }
 }
 
-const todayStr = today.toISOString().split('T')[0]
 console.log(`\n${BOLD}Industry Benchmarks — Freshness Report${RESET}`)
 console.log(`${DIM}Run date: ${todayStr} · ${entries.length} benchmarks · warn threshold: ${WARN_DAYS} days${RESET}\n`)
 

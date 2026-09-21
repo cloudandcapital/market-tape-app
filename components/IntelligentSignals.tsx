@@ -23,6 +23,12 @@ interface RowTooltip {
 }
 
 function valuationTooltip(value: string, basket: keyof typeof BASKETS): RowTooltip {
+  if (/^Unavailable\b/i.test(value)) {
+    return {
+      source: `${QUARTERLY_MULTIPLES[basket].source} · archived historical context`,
+      lastUpdated: QUARTERLY_MULTIPLES[basket].lastUpdated,
+    }
+  }
   if (/Q[1-4]\s+20\d{2}/.test(value)) {
     return {
       source: `${QUARTERLY_MULTIPLES[basket].source} · ${BASKETS[basket].tickers.join(', ')}`,
@@ -36,9 +42,10 @@ function valuationTooltip(value: string, basket: keyof typeof BASKETS): RowToolt
   }
 }
 
-function ValuationRow({ label, value, tooltip }: { label: string; value: string; tooltip: RowTooltip }) {
+function ValuationRow({ label, value, tooltip, basket }: { label: string; value: string; tooltip: RowTooltip; basket: keyof typeof BASKETS }) {
   const multiple = value.match(/~?\d+(?:\.\d+)?×/)?.[0] ?? value
   const periodMatch = value.match(/Q[1-4]\s+20\d{2}/)?.[0]
+  const unavailable = /^Unavailable\b/i.test(value)
   const interpretation = value.split(/\s+—\s+/).slice(1).join(' — ').trim()
 
   return (
@@ -46,11 +53,13 @@ function ValuationRow({ label, value, tooltip }: { label: string; value: string;
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
         <div className="flex items-center gap-1.5">
-          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{multiple} <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span></p>
+          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{unavailable ? 'Unavailable' : multiple} {!unavailable && <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span>}</p>
           <BenchmarkTooltip {...tooltip} />
         </div>
       </div>
-      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-0.5">{periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
+      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-0.5">{unavailable
+        ? `Live multiple unavailable · Archived ${QUARTERLY_MULTIPLES[basket].value} as of ${QUARTERLY_MULTIPLES[basket].lastUpdated}`
+        : periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
       {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
     </div>
   )
@@ -154,11 +163,11 @@ export function CloudValuations() {
     <div>
       <SectionLabel>Cloud Valuations</SectionLabel>
       <div className="rows-subtle">
-        <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud}
+        <ValuationRow label="Public Cloud" value={cloudValuations.publicCloud} basket="publicCloud"
           tooltip={valuationTooltip(cloudValuations.publicCloud, 'publicCloud')} />
-        <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage}
+        <ValuationRow label="SaaS Average" value={cloudValuations.saasAverage} basket="saas"
           tooltip={valuationTooltip(cloudValuations.saasAverage, 'saas')} />
-        <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure}
+        <ValuationRow label="AI Infrastructure" value={cloudValuations.aiInfrastructure} basket="aiInfra"
           tooltip={valuationTooltip(cloudValuations.aiInfrastructure, 'aiInfra')} />
       </div>
     </div>
@@ -179,7 +188,7 @@ export function HyperscalerCapex() {
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, Meta, and Oracle investment direction; Google Finland infrastructure context."
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <CapexRow label="GPU supply" value="Blackwell constrained" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
+        <CapexRow label="GPU supply" value="Access varies" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
         <CapexRow label="Data-center capacity" value="Tightening" detail={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
