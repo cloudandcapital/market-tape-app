@@ -57,6 +57,7 @@ export default async function Page() {
   checkServerStaleness()
 
   const [meta, snapshot, multiples] = await Promise.all([fetchMeta(), fetchSnapshot(), fetchLiveMultiples()])
+  const trackedInstrumentCount = new Set(snapshot.groups.flatMap(group => group.rows.map(row => row.ticker))).size
   const contextData = buildContextData(meta, snapshot)
   const initialBrief = await getCachedIntelligentBrief(contextData, multiples)
     .then(result => result.data)
@@ -79,7 +80,7 @@ export default async function Page() {
             </div>
             <div className="text-left sm:text-right">
               <p className="text-[0.62rem] font-mono uppercase tracking-[0.08em] text-charcoal/55">{formatMarketSessionLabel(meta.generated_at_utc)}</p>
-              <p className="text-[0.58rem] font-mono text-charcoal/50 mt-1">Tracked: {meta.instrument_count} · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
+              <p className="text-[0.58rem] font-mono text-charcoal/50 mt-1">Tracked: {trackedInstrumentCount} unique · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
           <hr className="rule-major-bottom border-0 mt-4" />

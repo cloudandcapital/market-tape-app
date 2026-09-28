@@ -7,6 +7,7 @@ import { BENCHMARKS } from '../lib/industryBenchmarks'
 import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 import { readFileSync } from 'node:fs'
 import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
+import { enforceDecisionGuardrail, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -33,11 +34,11 @@ for (const contract of [
   "result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'",
   'MARKET DATA — ${marketSessionLabel}',
   '"generatedAt": "${new Date().toISOString()}"',
-  "['intelligent-brief-v20', INTELLIGENT_BRIEF_MODEL]",
+  "['intelligent-brief-v21', INTELLIGENT_BRIEF_MODEL]",
 ]) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
 }
-if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v16'")) {
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v17'")) {
   throw new Error('Intelligent-brief browser cache version was not bumped')
 }
 for (const forbidden of ['review or defer non-critical expansion', 'raise the approval threshold']) {
@@ -45,6 +46,20 @@ for (const forbidden of ['review or defer non-critical expansion', 'raise the ap
 }
 if (!intelligentBriefModule.includes('could warrant a review of non-critical expansion')) {
   throw new Error('Conditional Lumen cloud-expansion guardrail is missing')
+}
+for (const unsafeOutput of [
+  'Defensive exposure guidance at 33/100 suggests the macro backdrop does not yet reward aggressive cloud commitment expansion.',
+  'Review non-critical cloud expansion against workload demand and utilization given the Defensive exposure signal at 33/100; monitor breadth improvement before extending commitment duration.',
+  'The Defensive signal alone suggests non-critical one-year commitments merit a pause pending clearer workload demand, utilization data, and business-priority review.',
+]) {
+  const guarded = enforceDecisionGuardrail(unsafeOutput)
+  if (!guarded.includes(ORGANIZATION_DECISION_CONTEXT)) {
+    throw new Error(`Lumen post-generation guardrail missed unsafe decision language: ${unsafeOutput}`)
+  }
+}
+const alreadyQualified = 'Review cloud expansion only after evaluating workload demand, utilization, contract terms, budget, and business priorities.'
+if (enforceDecisionGuardrail(alreadyQualified) !== alreadyQualified) {
+  throw new Error('Lumen post-generation guardrail duplicated complete decision context')
 }
 if (!intelligentSignals.includes('Live multiple unavailable · Archived')) {
   throw new Error('Unavailable live valuations are not labeled with archived historical context')
