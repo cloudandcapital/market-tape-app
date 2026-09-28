@@ -48,7 +48,8 @@ export default function SourcesPage() {
         <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
           <p>
             The <span className="text-charcoal/80">tracked universe</span>{' '}is the set of instruments published across the
-            dashboard&apos;s market, macro, sector, and global views. The broader <span className="text-charcoal/80">screened
+            dashboard&apos;s market, macro, sector, and global views. A ticker shown in more than one useful category is counted
+            once in status calculations and in the tracked-instrument total. The broader <span className="text-charcoal/80">screened
             universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.
           </p>
           <p>
@@ -56,9 +57,10 @@ export default function SourcesPage() {
             completed US trading session—not the page view, build, or deployment time.
           </p>
           <p>
-            The 0–100 exposure score combines trend, breadth, momentum, volatility, and risk inputs from the upstream pipeline.
-            Lower readings are Defensive, 40–60 is Hold/Neutral, and higher readings are Risk-On. These bands frame review
-            priorities; they do not prescribe a portfolio allocation or cloud purchase.
+            The 0–100 exposure score is the share of unique tracked instruments with positive one-month relative strength versus
+            SPY. Lower readings are Defensive, 40–60 is Hold/Neutral, and higher readings are Risk-On. These bands frame review
+            priorities; they do not prescribe a portfolio allocation or cloud purchase. Organization-specific decisions still
+            depend on workload demand, utilization, contract terms, budget, and business priorities.
           </p>
         </div>
 
@@ -246,8 +248,8 @@ export default function SourcesPage() {
           </p>
           <p>
             Market Tape provides strategic context, not individualized investment, financial, tax, procurement, or workload
-            advice. Organization-specific decisions still require workload demand, utilization, contract terms, risk tolerance,
-            and business priorities. Data may be delayed, revised, approximate, or temporarily unavailable; follow the linked
+            advice. Organization-specific decisions still require workload demand, utilization, contract terms, budget, risk
+            tolerance, and business priorities. Data may be delayed, revised, approximate, or temporarily unavailable; follow the linked
             primary sources before acting on a benchmark or announcement.
           </p>
         </div>

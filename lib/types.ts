@@ -47,6 +47,7 @@ export interface Meta {
   benchmark: string
   group_count: number
   instrument_count: number
+  display_row_count?: number
   status: {
     exposure: { level: number; guidance: 'Risk-On' | 'Hold' | 'Defensive' }
     trend: { long_term: string; intermediate_term: string; short_term: string }
