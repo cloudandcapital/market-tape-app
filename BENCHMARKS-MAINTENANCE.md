@@ -7,7 +7,7 @@ Market Tape separates its external data into two distinct layers:
 | Layer | File | Cadence | Who updates |
 |-------|------|---------|-------------|
 | **Valuation baskets** | `lib/liveMultiples.ts` | Yahoo request every 30 min; archived quarterly values reviewed separately | Automatic fetch, manual fallback review |
-| **Static benchmarks** | `lib/industryBenchmarks.ts` | Quarterly / semi-annual | You, manually |
+| **Static benchmarks** | `lib/industryBenchmarks.ts` | Monthly / quarterly / semi-annual | You, manually |
 
 **Valuation caveat:** Cloud valuation multiples (Public Cloud, SaaS, AI Infrastructure NTM P/S) are attempted from Yahoo Finance stock baskets every 30 minutes. If a basket is unavailable, the current multiple is suppressed. The archived April 24, 2026 quarterly values require manual review and must not be described as live.
 
@@ -36,11 +36,11 @@ If basket composition changes (ticker renamed, delisted, better proxy found), up
 
 ## Static benchmarks (lib/industryBenchmarks.ts)
 
-Five entries remain that require manual quarterly or semi-annual review:
+Five entries remain that require manual monthly, quarterly, or semi-annual review:
 
 | Benchmark | Current Value | Source | Review Cadence |
 |-----------|---------------|--------|---------------|
-| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (Sep 2026) + NVIDIA earnings | Quarterly |
+| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (October 2026; reviewed October 1) + NVIDIA earnings | Monthly |
 | `dataCenterConstructionYoY` | Absorption +11.7% / construction +24.8% YoY · vacancy 1.4% | CBRE H1 2026 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
 | `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |
@@ -48,7 +48,7 @@ Five entries remain that require manual quarterly or semi-annual review:
 
 ### Where to find updated values
 
-**GPU supply status** — Use NVIDIA earnings disclosures for supply commentary and a dated, transparent cloud-market survey for rental availability and pricing. Keep rental prices separate from hardware procurement and do not publish backlog or lead-time estimates unless the linked source states them directly. Refresh after each NVIDIA earnings call and quarterly pricing survey.
+**GPU supply status** — Use NVIDIA earnings disclosures for supply commentary and a dated, transparent cloud-market survey for rental availability and pricing. Keep rental prices separate from hardware procurement and do not publish backlog or lead-time estimates unless the linked source states them directly. Review pricing and availability monthly, and refresh NVIDIA-specific commentary after each NVIDIA earnings call.
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
@@ -63,7 +63,7 @@ Five entries remain that require manual quarterly or semi-annual review:
 1. Find the new value from the source above
 2. Open `lib/industryBenchmarks.ts`
 3. Update: `value`, `numeric`, `source`, `sourceUrl`, `lastUpdated`, `nextReviewDue`
-   - Set `nextReviewDue` based on cadence: quarterly = +90 days, semi-annual = +180 days
+   - Set `nextReviewDue` based on cadence: monthly = one calendar month after review, quarterly = +90 days, semi-annual = +180 days
 4. Run `npm run check-benchmarks` — confirm the entry turns 🟢 green
 5. Commit with a claim-specific message, for example: `Update GPU supply benchmark after NVIDIA earnings`
 6. Push and deploy
