@@ -1,6 +1,7 @@
 'use client'
 
 import { useIntelligent } from './IntelligentProvider'
+import { riskAlertSource, validateRiskAlerts } from '@/lib/intelligentGuardrails'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
 import { BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
@@ -198,21 +199,33 @@ export function HyperscalerCapex() {
 }
 
 export function RiskAlerts() {
-  const { data, loading } = useIntelligent()
+  const { data, loading, contextData } = useIntelligent()
 
   if (loading) return (
     <div><SectionLabel>Risk &amp; Opportunity</SectionLabel><Skeleton count={2} /></div>
   )
 
   if (!data) return null
-  const { riskAlerts, cloudValuations } = data
+  const { cloudValuations } = data
+  const riskAlerts = contextData ? validateRiskAlerts(data.riskAlerts, {
+    market: contextData, multiples: { saas: cloudValuations.saasAverage }, benchmarks: BENCHMARKS,
+  }) : []
 
   const sourceForAlert = (title: string): RowTooltip => {
-    if (/GPU/i.test(title)) {
+    const source = riskAlertSource(title)
+    if (source === 'TLT' || source === 'DXY') {
+      return {
+        source: `Yahoo Finance via yFinance · ${source} · 1M relative strength versus SPY`,
+        sourceUrl: `https://finance.yahoo.com/quote/${source === 'DXY' ? 'DX-Y.NYB' : 'TLT'}/`,
+        lastUpdated: contextData?.marketSessionLabel ?? 'Market price date unavailable',
+      }
+    }
+    if (source === 'gpuSupplyStatus') {
       return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
     }
-    if (/SaaS/i.test(title)) return valuationTooltip(cloudValuations.saasAverage, 'saas')
-    return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }
+    if (source === 'saas') return valuationTooltip(cloudValuations.saasAverage, 'saas')
+    if (source === 'dataCenterConstructionYoY') return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }
+    return { source: 'Unsupported alert', lastUpdated: 'Unavailable' }
   }
 
   return (
