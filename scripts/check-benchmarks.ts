@@ -7,7 +7,8 @@ import { BENCHMARKS } from '../lib/industryBenchmarks'
 import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 import { readFileSync } from 'node:fs'
 import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
-import { enforceDecisionGuardrail, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
+import type { RiskAlertInputs } from '../lib/intelligentGuardrails'
+import { enforceDecisionGuardrail, enforceInterpretationGuardrails, validateRiskAlerts, riskAlertSource, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -34,11 +35,11 @@ for (const contract of [
   "result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'",
   'MARKET DATA — ${marketSessionLabel}',
   '"generatedAt": "${new Date().toISOString()}"',
-  "['intelligent-brief-v21', INTELLIGENT_BRIEF_MODEL]",
+  "['intelligent-brief-v22', INTELLIGENT_BRIEF_MODEL]",
 ]) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief prompt contract missing: ${contract}`)
 }
-if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v17'")) {
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v18'")) {
   throw new Error('Intelligent-brief browser cache version was not bumped')
 }
 for (const forbidden of ['review or defer non-critical expansion', 'raise the approval threshold']) {
@@ -63,6 +64,49 @@ if (enforceDecisionGuardrail(alreadyQualified) !== alreadyQualified) {
 }
 if (!intelligentSignals.includes('Live multiple unavailable · Archived')) {
   throw new Error('Unavailable live valuations are not labeled with archived historical context')
+}
+
+// Integrity checks use raw inputs, independently of generated prose.
+const alert = (title: string) => ({ type: 'warning' as const, title, message: 'Review cloud capacity contracts.' })
+const alertInputs = {
+  market: { macroData: { tlt: { rs1m: -1.875, grade: 'C', d1: 0 }, dxy: { rs1m: -4, last: 100 }, hyg: null, gld: null, uso: null, iwm: null, qqq: null } },
+  multiples: { saas: '6.5×' },
+  benchmarks: BENCHMARKS,
+}
+const accepts = (title: string, inputs: RiskAlertInputs = alertInputs) => validateRiskAlerts([alert(title)], inputs).length === 1
+if (accepts('Rates Rising')) throw new Error('October 9 TLT -1.875 incorrectly supports Rates Rising')
+for (const rs1m of [-2, NaN, Infinity]) {
+  if (accepts('Rates Rising', { ...alertInputs, market: { macroData: { ...alertInputs.market.macroData, tlt: { rs1m, grade: 'C', d1: 0 } } } })) throw new Error('Invalid or boundary TLT accepted')
+}
+const qualifying = { ...alertInputs, market: { macroData: { ...alertInputs.market.macroData, tlt: { rs1m: -2.01, grade: 'C', d1: 0 }, dxy: { rs1m: -5.01, last: 100 } } } }
+if (!accepts('Rates Rising', qualifying) || !accepts('Dollar Weakening', qualifying)) throw new Error('Qualifying macro alert rejected')
+for (const title of ['Dollar Weakening', 'GPU Capacity Tightening', 'Invented Alert', 'GPU invented alert']) {
+  if (accepts(title)) throw new Error(`Unsupported alert accepted: ${title}`)
+}
+for (const saas of ['Unavailable', '20×', '10×', '0×', 'Q1 2026 6.5×']) {
+  if (accepts('SaaS Discount Window', { ...alertInputs, multiples: { saas } })) throw new Error(`Unsupported SaaS alert accepted: ${saas}`)
+}
+if (!accepts('SaaS Discount Window') || !accepts('Data Center Capacity Tightness')) throw new Error('Supported current benchmark alert rejected')
+const supportedGpu = { ...alertInputs, benchmarks: { ...BENCHMARKS, gpuSupplyStatus: { ...BENCHMARKS.gpuSupplyStatus, value: 'B200 is supply-constrained' } } }
+if (!accepts('GPU Capacity Tightening', supportedGpu)) throw new Error('Explicit GPU supply constraint rejected')
+if (accepts('GPU Capacity Tightening', { ...supportedGpu, benchmarks: { ...supportedGpu.benchmarks, gpuSupplyStatus: { ...supportedGpu.benchmarks.gpuSupplyStatus, value: 'B200 is not supply-constrained' } } })) throw new Error('Negated GPU constraint accepted')
+if (accepts('Data Center Capacity Tightness', { ...alertInputs, benchmarks: { ...BENCHMARKS, dataCenterConstructionYoY: { ...BENCHMARKS.dataCenterConstructionYoY, numeric: { vacancy_pct: 10, construction_preleased_pct: 20 } } } })) throw new Error('Unsupported data-center alert accepted')
+for (const [title, instrument] of [['Rates Rising', 'TLT'], ['Dollar Weakening', 'DXY']]) {
+  if (riskAlertSource(title) !== instrument) throw new Error(`${title} maps to incorrect provenance`)
+}
+if (riskAlertSource('Unknown') !== null || !intelligentSignals.includes("source === 'TLT' || source === 'DXY'") || !intelligentSignals.includes('contextData?.marketSessionLabel') || !intelligentSignals.includes("if (source === 'dataCenterConstructionYoY')")) throw new Error('Market alerts can fall through to CBRE provenance')
+const briefFixture = {
+  morningBrief: { headline: 'Test', marketRead: 'Test', whatChanged: [], cloudFinanceImplications: ['Review cloud expansion.'], action: 'Review cloud expansion.' },
+  finopsSignals: { cloudSpend: 'Review cloud expansion.', saasRenewals: 'Review cloud contracts.', infrastructure: 'Review GPU capacity.' },
+  commitmentWindows: { oneYear: { status: 'HOLD', reason: 'Review cloud commitments.' }, threeYear: { status: 'HOLD', reason: alreadyQualified }, spot: { status: 'SAFE', reason: 'Review compute contracts.' } },
+  riskAlerts: [alert('Rates Rising'), alert('SaaS Discount Window'), alert('Invented Alert')], sectorInsights: 'Review cloud budget.',
+  cloudValuations: { publicCloud: 'Unavailable', saasAverage: '6.5×', aiInfrastructure: 'Unavailable' },
+  hyperscalerCapex: { trend: 'Expanding', gpuSupplyStatus: BENCHMARKS.gpuSupplyStatus.value, dataCenterGrowth: BENCHMARKS.dataCenterConstructionYoY.value }, generatedAt: '2026-10-11T12:00:00Z',
+}
+const guardedBrief = enforceInterpretationGuardrails(briefFixture, qualifying)
+if (guardedBrief.riskAlerts.length !== 2 || guardedBrief.cloudValuations !== briefFixture.cloudValuations || guardedBrief.commitmentWindows.threeYear.reason !== alreadyQualified) throw new Error('Valid alerts or existing behavior changed')
+for (const text of [guardedBrief.morningBrief.action, ...guardedBrief.morningBrief.cloudFinanceImplications, ...Object.values(guardedBrief.finopsSignals), guardedBrief.commitmentWindows.oneYear.reason, guardedBrief.commitmentWindows.spot.reason, guardedBrief.sectorInsights, ...guardedBrief.riskAlerts.map(a => a.message)]) {
+  if (!text.includes(ORGANIZATION_DECISION_CONTEXT)) throw new Error('Organizational-context guardrail lost')
 }
 
 function calendarDayNumber(dateStr: string): number {

@@ -1,7 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { unstable_cache } from 'next/cache'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
-import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
+import { BENCHMARKS, buildInfraContextBlock } from '@/lib/industryBenchmarks'
 import { enforceInterpretationGuardrails } from '@/lib/intelligentGuardrails'
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -58,8 +58,8 @@ FINOPS SIGNALS:
 RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
 • "GPU Capacity Tightening" (warning): if the GPU benchmark explicitly describes any current product generation as supply-constrained
 • "Rates Rising" (warning): if TLT RS1M is below −2%
-• "SaaS Discount Window" (opportunity): if SaaS average NTM multiple is materially compressed from peak (well below 2021 highs, indicating buyer leverage on renewals)
-• "Data Center Capacity Tightness" (warning): if the supplied benchmark shows record-low vacancy and high construction preleasing, even when construction is expanding
+• "SaaS Discount Window" (opportunity): if SaaS average NTM multiple is materially compressed from peak (less than half the supplied 2021 peak multiple, indicating buyer leverage on renewals)
+• "Data Center Capacity Tightness" (warning): if the supplied benchmark shows vacancy at or below 2% and construction preleasing at or above 80%, even when construction is expanding
 • "Dollar Weakening" (warning): if DXY RS1M is below −5%
 
 PROSE ANCHORS:
@@ -148,7 +148,7 @@ export async function generateIntelligentBrief(
   }, { signal: AbortSignal.timeout(65_000) })
 
   const text = message.content[0]?.type === 'text' ? message.content[0].text : ''
-  const result = enforceInterpretationGuardrails(parseResponse(text))
+  const result = enforceInterpretationGuardrails(parseResponse(text), { market: context, multiples, benchmarks: BENCHMARKS })
   // A model response must not revive the archived April 2026 multiples when a
   // current Yahoo basket failed. Keep the UI unavailable until a fresh fetch.
   if (multiples.publicCloud === 'Unavailable') result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'
@@ -167,6 +167,6 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v21', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v22', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )

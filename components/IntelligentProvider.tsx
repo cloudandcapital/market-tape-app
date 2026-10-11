@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
 
-const CACHE_KEY = 'intelligent-brief-v17'
+const CACHE_KEY = 'intelligent-brief-v18'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
 const REQUEST_TIMEOUT_MS = 75_000
 
@@ -12,17 +12,18 @@ interface IntelligentState {
   loading: boolean
   error: boolean
   cachedAt: string | null
+  contextData: MarketContextData | null
   refresh: () => void
 }
 
 export const IntelligentCtx = createContext<IntelligentState>({
-  data: null, loading: true, error: false, cachedAt: null, refresh: () => {},
+  data: null, loading: true, error: false, cachedAt: null, contextData: null, refresh: () => {},
 })
 
 export function useIntelligent() { return useContext(IntelligentCtx) }
 
 function hashContext(ctx: MarketContextData): string {
-  return `${ctx.marketData.guidance}-${ctx.marketData.exposureLevel}-${ctx.marketData.vix.toFixed(0)}-${ctx.marketData.trends.long}-${ctx.marketData.trends.short}`
+  return JSON.stringify(ctx)
 }
 
 function loadCache(hash: string): BriefResponse | null {
@@ -94,18 +95,13 @@ export function IntelligentProvider({ contextData, initialData = null, children 
         saveCache(json.data, hash)
       } else {
         setError(true)
-        // Try loading stale cache as fallback
-        try {
-          const raw = localStorage.getItem(CACHE_KEY)
-          if (raw) { const c: CachedBrief = JSON.parse(raw); setData(c.data) }
-        } catch {}
+        const cached = loadCache(hash)
+        if (cached) setData(cached)
       }
     } catch {
       setError(true)
-      try {
-        const raw = localStorage.getItem(CACHE_KEY)
-        if (raw) { const c: CachedBrief = JSON.parse(raw); setData(c.data) }
-      } catch {}
+      const cached = loadCache(hash)
+      if (cached) setData(cached)
     } finally {
       window.clearTimeout(timeout)
       setLoading(false)
@@ -124,7 +120,7 @@ export function IntelligentProvider({ contextData, initialData = null, children 
   const cachedAt = data ? formatCachedAt(data) : null
 
   return (
-    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, refresh: () => fetchBrief(true) }}>
+    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
       <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
         <BriefSection />

@@ -47,7 +47,7 @@ export default function SourcesPage() {
 
         <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
           <p>
-            The <span className="text-charcoal/80">tracked universe</span>{' '}is the set of instruments published across the
+            The <span className="text-charcoal/80">tracked universe</span>{' '}contains 48 unique instruments displayed as 52 rows across the
             dashboard&apos;s market, macro, sector, and global views. A ticker shown in more than one useful category is counted
             once in status calculations and in the tracked-instrument total. The broader <span className="text-charcoal/80">screened
             universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.

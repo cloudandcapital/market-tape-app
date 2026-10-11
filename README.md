@@ -6,7 +6,7 @@ Live at [market-tape.cloudandcapital.com](https://market-tape.cloudandcapital.co
 
 ## What it does
 
-52 instruments across 7 groups. The upstream pipeline is scheduled to check every 30 minutes during weekday market hours; unchanged snapshots are intentional no-ops. Lumen reads the latest published snapshot and translates moves into plain-English FinOps actions.
+48 unique tracked instruments displayed as 52 rows across seven groups. The upstream pipeline is scheduled to check every 30 minutes during weekday market hours; unchanged snapshots are intentional no-ops. Lumen reads the latest published snapshot and translates moves into plain-English FinOps actions.
 
 There's no shortage of market data. There's a shortage of translation between markets and infrastructure decisions. That's the gap Market Tape fills.
 
