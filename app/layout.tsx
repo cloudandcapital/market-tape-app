@@ -26,16 +26,16 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://market-tape.cloudandcapital.com'),
   title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
   description:
-    'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
+    'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
   openGraph: {
     title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
-    description: 'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
+    description: 'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
     url: 'https://market-tape.cloudandcapital.com',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    description: 'Market intelligence for FinOps teams. 52 instruments, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
+    description: 'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen translating the latest published snapshot into FinOps decisions in plain English.',
     title: 'Market Tape — Morning Intelligence for FinOps Teams | Cloud & Capital',
     images: ['/og-image.png'],
   },
