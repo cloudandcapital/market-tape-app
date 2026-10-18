@@ -3,6 +3,9 @@
 // Reads lib/industryBenchmarks.ts and reports freshness of every benchmark.
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
+import assert from 'node:assert/strict'
+import { APIError } from '@anthropic-ai/sdk'
+import { sanitizeProviderMessage, summarizeProviderError } from '../lib/providerError'
 import { createElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { IntelligentCtx } from '../components/IntelligentProvider'
@@ -14,6 +17,28 @@ import { readFileSync } from 'node:fs'
 import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
 import type { RiskAlertInputs } from '../lib/intelligentGuardrails'
 import { enforceDecisionGuardrail, enforceInterpretationGuardrails, validateRiskAlerts, riskAlertSource, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
+
+// Use synthetic credentials only. No environment values enter diagnostic tests.
+const diagnosticError = new APIError(400, {
+  type: 'error', error: { type: 'invalid_request_error', code: 'invalid_model', message: 'Model unavailable. x-api-key: sk-ant-synthetic-secret; Authorization: Bearer synthetic-token\ncontext: PRIVATE_MARKET_INPUT' },
+  request_id: 'req_body', prompt: 'PRIVATE_PROMPT',
+}, undefined, new Headers({ 'request-id': 'req_header', authorization: 'PRIVATE_HEADER' }))
+const diagnostic = summarizeProviderError(diagnosticError)
+assert.deepEqual(diagnostic, {
+  name: 'Error', status: 400, type: 'invalid_request_error', code: 'invalid_model', requestId: 'req_header',
+  message: 'Model unavailable. [REDACTED]; [REDACTED] [REDACTED INPUT]',
+})
+assert.equal(summarizeProviderError(new APIError(429, { error: { type: 'rate_limit_error', message: 'Rate limited' }, request_id: 'req_body' }, undefined, new Headers())).requestId, 'req_body')
+assert.equal(summarizeProviderError(new Error('PRIVATE_PROMPT')).message, 'Upstream error details unavailable')
+assert.equal(summarizeProviderError(null).status, null)
+assert.equal(summarizeProviderError(new APIError(400, { message: { prompt: 'PRIVATE_PROMPT' } }, undefined, new Headers())).message, 'Upstream error details unavailable')
+for (const secret of ['sk-ant-synthetic-secret', 'Bearer synthetic-token', '"authorization": "Basic synthetic-secret"', 'api_key=synthetic-secret', 'eyJsynthetic.payload.signature']) {
+  assert.ok(!sanitizeProviderMessage(secret).includes('synthetic'))
+  assert.ok(!sanitizeProviderMessage('x'.repeat(489) + ' ' + secret).includes('synthetic'))
+}
+assert.equal(sanitizeProviderMessage('x'.repeat(600)).length, 500)
+assert.ok(!JSON.stringify(diagnostic).includes('PRIVATE_'))
+console.log('Sanitized provider diagnostic extraction checks passed.')
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'

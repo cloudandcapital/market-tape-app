@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { MarketContextData } from '@/lib/intelligentTypes'
 import { getCachedIntelligentBrief } from '@/lib/intelligentBrief'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
+import { summarizeProviderError } from '@/lib/providerError'
 
 export async function POST(req: Request) {
   const requestStartedAt = performance.now()
@@ -36,9 +37,7 @@ export async function POST(req: Request) {
       `[intelligent-brief:timing] marketDataMs=${Math.round((marketDataFailed ? failedAt : marketDataCompletedAt) - requestStartedAt)} ` +
       `claudeMs=${marketDataFailed ? 0 : Math.round(failedAt - claudeStartedAt)} totalMs=${Math.round(failedAt - requestStartedAt)} failed=true`,
     )
-    const errorStatus = typeof err === 'object' && err !== null && 'status' in err ? String(err.status) : 'unknown'
-    const errorName = err instanceof Error ? err.name : 'UnknownError'
-    console.error(`[intelligent-brief:error] name=${errorName} status=${errorStatus}`)
+    console.error(`[intelligent-brief:error] ${JSON.stringify(summarizeProviderError(err))}`)
     return NextResponse.json({ success: false, error: 'Analysis is temporarily unavailable.' }, { status: 500 })
   }
 }
