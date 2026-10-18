@@ -25,8 +25,8 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 $2.99–$10.98/hr · H200 $3.99–$10.85/hr · B200 $5.99–$16.11/hr; availability varies by provider and access model',
-    source: 'Thunder Compute dedicated GPU pricing comparisons — October 1, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
+    value: 'H100 $2.99–$10.98/hr · H200 $3.99–$10.85/hr · B200 $5.99–$16.11/hr; availability varies materially by generation, provider, region, commitment, and access model',
+    source: 'Thunder Compute dedicated GPU pricing comparisons — October 16, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
     sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
     sourceLinks: [
       { label: 'Thunder Compute — H100 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
@@ -34,10 +34,10 @@ export const BENCHMARKS = {
       { label: 'Thunder Compute — B200 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-b200-pricing' },
       { label: 'NVIDIA — Q2 FY2027 earnings', url: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027' },
     ],
-    lastUpdated: '2026-10-01',
-    nextReviewDue: '2026-11-01',
+    lastUpdated: '2026-10-16',
+    nextReviewDue: '2026-11-16',
     reviewCadence: 'monthly',
-    notes: 'October 1, 2026 dedicated comparisons: H100 $2.99–$10.98/GPU-hour; H200 $3.99–$10.85; B200 $5.99–$16.11. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary.',
+    notes: 'October 16, 2026 dedicated comparisons: H100 $2.99–$10.98/GPU-hour; H200 $3.99–$10.85; B200 $5.99–$16.11. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
