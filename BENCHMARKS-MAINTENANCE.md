@@ -40,7 +40,7 @@ Five entries remain that require manual monthly, quarterly, or semi-annual revie
 
 | Benchmark | Current Value | Source | Review Cadence |
 |-----------|---------------|--------|---------------|
-| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (October 2026; reviewed October 1) + NVIDIA earnings | Monthly |
+| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (October 2026; reviewed October 16; next review November 16) + NVIDIA earnings | Monthly |
 | `dataCenterConstructionYoY` | Absorption +11.7% / construction +24.8% YoY · vacancy 1.4% | CBRE H1 2026 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
 | `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |

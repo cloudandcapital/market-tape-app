@@ -3,12 +3,42 @@
 // Reads lib/industryBenchmarks.ts and reports freshness of every benchmark.
 // Exits with code 1 if any benchmark is overdue (useful in pre-deploy CI checks).
 
+import assert from 'node:assert/strict'
+import { APIError } from '@anthropic-ai/sdk'
+import { sanitizeProviderMessage, summarizeProviderError } from '../lib/providerError'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { IntelligentCtx } from '../components/IntelligentProvider'
+import { CloudValuations, HyperscalerCapex, FinOpsSignals, CommitmentWindows, RiskAlerts } from '../components/IntelligentSignals'
+import type { LiveMultiples } from '../lib/liveMultiples'
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, isCacheableAiComputeResponse, isStatusSafeAiComputeBrief, resolveAiComputeBrief, validateAiComputeProvenance } from '../lib/aiCompute'
 import { readFileSync } from 'node:fs'
 import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
 import type { RiskAlertInputs } from '../lib/intelligentGuardrails'
 import { enforceDecisionGuardrail, enforceInterpretationGuardrails, validateRiskAlerts, riskAlertSource, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
+
+// Use synthetic credentials only. No environment values enter diagnostic tests.
+const diagnosticError = new APIError(400, {
+  type: 'error', error: { type: 'invalid_request_error', code: 'invalid_model', message: 'Model unavailable. x-api-key: sk-ant-synthetic-secret; Authorization: Bearer synthetic-token\ncontext: PRIVATE_MARKET_INPUT' },
+  request_id: 'req_body', prompt: 'PRIVATE_PROMPT',
+}, undefined, new Headers({ 'request-id': 'req_header', authorization: 'PRIVATE_HEADER' }))
+const diagnostic = summarizeProviderError(diagnosticError)
+assert.deepEqual(diagnostic, {
+  name: 'Error', status: 400, type: 'invalid_request_error', code: 'invalid_model', requestId: 'req_header',
+  message: 'Model unavailable. [REDACTED]; [REDACTED] [REDACTED INPUT]',
+})
+assert.equal(summarizeProviderError(new APIError(429, { error: { type: 'rate_limit_error', message: 'Rate limited' }, request_id: 'req_body' }, undefined, new Headers())).requestId, 'req_body')
+assert.equal(summarizeProviderError(new Error('PRIVATE_PROMPT')).message, 'Upstream error details unavailable')
+assert.equal(summarizeProviderError(null).status, null)
+assert.equal(summarizeProviderError(new APIError(400, { message: { prompt: 'PRIVATE_PROMPT' } }, undefined, new Headers())).message, 'Upstream error details unavailable')
+for (const secret of ['sk-ant-synthetic-secret', 'Bearer synthetic-token', '"authorization": "Basic synthetic-secret"', 'api_key=synthetic-secret', 'eyJsynthetic.payload.signature']) {
+  assert.ok(!sanitizeProviderMessage(secret).includes('synthetic'))
+  assert.ok(!sanitizeProviderMessage('x'.repeat(489) + ' ' + secret).includes('synthetic'))
+}
+assert.equal(sanitizeProviderMessage('x'.repeat(600)).length, 500)
+assert.ok(!JSON.stringify(diagnostic).includes('PRIVATE_'))
+console.log('Sanitized provider diagnostic extraction checks passed.')
 
 const RED    = '\x1b[31m'
 const YELLOW = '\x1b[33m'
@@ -66,6 +96,40 @@ if (!intelligentSignals.includes('Live multiple unavailable · Archived')) {
   throw new Error('Unavailable live valuations are not labeled with archived historical context')
 }
 
+// Render the real components with no BriefResponse, both while loading and after failure.
+// A live basket and two unavailable baskets exercise mixed source availability.
+const degradedMultiples: LiveMultiples = {
+  publicCloud: '~9.1×', saas: 'Unavailable', aiInfra: 'Unavailable',
+  asOf: '2026-10-16', source: 'fallback',
+  baskets: {
+    publicCloud: { source: 'live', dataAsOf: '2026-10-16' },
+    saas: { source: 'fallback', dataAsOf: '2026-04-24' },
+    aiInfra: { source: 'fallback', dataAsOf: '2026-04-24' },
+  },
+}
+for (const loading of [true, false]) {
+  const render = (child: React.ReactNode) => renderToStaticMarkup(createElement(IntelligentCtx.Provider, {
+    value: { data: null, loading, error: !loading, cachedAt: null, contextData: null, refresh: () => {} },
+  }, child))
+  const valuations = render(createElement(CloudValuations, { multiples: degradedMultiples }))
+  for (const text of ['Cloud Valuations', '~9.1×', 'Live multiple unavailable · Archived 6.5× as of 2026-04-24', 'Live multiple unavailable · Archived 12.3× as of 2026-04-24']) {
+    if (!valuations.includes(text)) throw new Error(`Degraded valuations missing: ${text}`)
+  }
+  const capex = render(createElement(HyperscalerCapex))
+  for (const text of ['Hyperscaler CapEx', BENCHMARKS.hyperscalerCapexTrend.value, BENCHMARKS.gpuSupplyStatus.value, BENCHMARKS.dataCenterConstructionYoY.value]) {
+    if (!capex.includes(text)) throw new Error(`Degraded CapEx missing: ${text}`)
+  }
+  if (!loading) {
+    for (const Component of [FinOpsSignals, CommitmentWindows, RiskAlerts]) {
+      if (!render(createElement(Component)).includes('Lumen analysis is temporarily unavailable.')) throw new Error('Analysis section silently disappears without a brief')
+    }
+  }
+}
+const pageSource = readFileSync(new URL('../app/page.tsx', import.meta.url), 'utf8')
+if (!pageSource.includes('<CloudValuations multiples={multiples} />') || !pageSource.includes('key={JSON.stringify(contextData)}')) throw new Error('Page lost source valuations or snapshot isolation')
+if (!intelligentProvider.includes('if (cached.contextHash !== hash) return null')) throw new Error('Cross-snapshot cache isolation lost')
+console.log('Degraded Lumen rendering and snapshot-isolation checks passed.')
+
 // Integrity checks use raw inputs, independently of generated prose.
 const alert = (title: string) => ({ type: 'warning' as const, title, message: 'Review cloud capacity contracts.' })
 const alertInputs = {
@@ -108,6 +172,15 @@ if (guardedBrief.riskAlerts.length !== 2 || guardedBrief.cloudValuations !== bri
 for (const text of [guardedBrief.morningBrief.action, ...guardedBrief.morningBrief.cloudFinanceImplications, ...Object.values(guardedBrief.finopsSignals), guardedBrief.commitmentWindows.oneYear.reason, guardedBrief.commitmentWindows.spot.reason, guardedBrief.sectorInsights, ...guardedBrief.riskAlerts.map(a => a.message)]) {
   if (!text.includes(ORGANIZATION_DECISION_CONTEXT)) throw new Error('Organizational-context guardrail lost')
 }
+
+const successMarkup = renderToStaticMarkup(createElement(IntelligentCtx.Provider, {
+  value: { data: guardedBrief, loading: false, error: false, cachedAt: null, contextData: null, refresh: () => {} },
+}, createElement('div', null,
+  createElement(FinOpsSignals), createElement(CommitmentWindows),
+  createElement(CloudValuations, { multiples: degradedMultiples }), createElement(HyperscalerCapex),
+)))
+if (!successMarkup.includes('Cloud Spend') || !successMarkup.includes('1-Year Commitment') || successMarkup.includes('Lumen analysis is temporarily unavailable.')) throw new Error('Successful analysis rendering changed')
+if (!successMarkup.includes('Live multiple unavailable · Archived 6.5× as of 2026-04-24')) throw new Error('Cached analysis revived an unavailable valuation basket')
 
 function calendarDayNumber(dateStr: string): number {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateStr)

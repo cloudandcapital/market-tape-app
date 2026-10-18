@@ -87,7 +87,7 @@ export default async function Page() {
         </header>
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
-        <IntelligentProvider contextData={contextData} initialData={initialBrief}>
+        <IntelligentProvider key={JSON.stringify(contextData)} contextData={contextData} initialData={initialBrief}>
 
           <div className="space-y-10 md:space-y-12">
             {/* Band 2 */}
@@ -128,7 +128,7 @@ export default async function Page() {
               <div>
                 <CountriesGlobal meta={meta} />
                 <hr className="rule-subtle-bottom border-0 my-7" />
-                <CloudValuations />
+                <CloudValuations multiples={multiples} />
               </div>
             </section>
 

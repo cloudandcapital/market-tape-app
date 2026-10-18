@@ -3,7 +3,7 @@
 import { useIntelligent } from './IntelligentProvider'
 import { riskAlertSource, validateRiskAlerts } from '@/lib/intelligentGuardrails'
 import { BENCHMARKS } from '@/lib/industryBenchmarks'
-import { BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
+import { type LiveMultiples, BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
 import DashboardIcon from './DashboardIcon'
 
@@ -98,10 +98,14 @@ function Skeleton({ count = 3 }: { count?: number }) {
   )
 }
 
+function UnavailableAnalysis({ title }: { title: string }) {
+  return <div><SectionLabel>{title}</SectionLabel><p className="font-mono text-[0.68rem] text-charcoal/55 leading-relaxed">Lumen analysis is temporarily unavailable.</p></div>
+}
+
 export function FinOpsSignals() {
   const { data, loading } = useIntelligent()
   if (loading) return <div><SectionLabel>FinOps Signals</SectionLabel><Skeleton /></div>
-  if (!data) return null
+  if (!data) return <UnavailableAnalysis title="FinOps Signals" />
   const { finopsSignals } = data
 
   return (
@@ -129,7 +133,7 @@ export function FinOpsSignals() {
 export function CommitmentWindows() {
   const { data, loading } = useIntelligent()
   if (loading) return <div><SectionLabel>Commitment Windows</SectionLabel><Skeleton /></div>
-  if (!data) return null
+  if (!data) return <UnavailableAnalysis title="Commitment Windows" />
   const { commitmentWindows } = data
 
   return (
@@ -155,11 +159,14 @@ export function CommitmentWindows() {
   )
 }
 
-export function CloudValuations() {
-  const { data, loading } = useIntelligent()
-  if (loading) return <div><SectionLabel>Cloud Valuations</SectionLabel><Skeleton /></div>
-  if (!data) return null
-  const { cloudValuations } = data
+export function CloudValuations({ multiples }: { multiples: LiveMultiples }) {
+  const { data } = useIntelligent()
+  // Current source values remain visible even when analysis is loading or unavailable.
+  const cloudValuations = {
+    publicCloud: multiples.publicCloud === 'Unavailable' ? multiples.publicCloud : data?.cloudValuations.publicCloud ?? multiples.publicCloud,
+    saasAverage: multiples.saas === 'Unavailable' ? multiples.saas : data?.cloudValuations.saasAverage ?? multiples.saas,
+    aiInfrastructure: multiples.aiInfra === 'Unavailable' ? multiples.aiInfra : data?.cloudValuations.aiInfrastructure ?? multiples.aiInfra,
+  }
   return (
     <div>
       <SectionLabel>Cloud Valuations</SectionLabel>
@@ -176,12 +183,7 @@ export function CloudValuations() {
 }
 
 export function HyperscalerCapex() {
-  const { data, loading } = useIntelligent()
-  if (loading) return <div><SectionLabel>Hyperscaler CapEx</SectionLabel><Skeleton /></div>
-  if (!data) return null
-  const { hyperscalerCapex } = data
-  const capexMatch = hyperscalerCapex.trend.match(/\b(?:Expanding|Stable|Contracting)\b/i)?.[0]
-  const capexDirection = capexMatch ? capexMatch.charAt(0).toUpperCase() + capexMatch.slice(1).toLowerCase() : hyperscalerCapex.trend
+  const capexDirection = BENCHMARKS.hyperscalerCapexTrend.value
   return (
     <div>
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
@@ -189,9 +191,9 @@ export function HyperscalerCapex() {
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, Meta, and Oracle investment direction; Google Finland infrastructure context."
           color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <CapexRow label="GPU supply" value="Access varies" detail={hyperscalerCapex.gpuSupplyStatus} color="#9A762A"
+        <CapexRow label="GPU supply" value="Access varies" detail={BENCHMARKS.gpuSupplyStatus.value} color="#9A762A"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
-        <CapexRow label="Data-center capacity" value="Tightening" detail={hyperscalerCapex.dataCenterGrowth} color="#6B8E7F"
+        <CapexRow label="Data-center capacity" value="Tightening" detail={BENCHMARKS.dataCenterConstructionYoY.value} color="#6B8E7F"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
     </div>
@@ -205,7 +207,7 @@ export function RiskAlerts() {
     <div><SectionLabel>Risk &amp; Opportunity</SectionLabel><Skeleton count={2} /></div>
   )
 
-  if (!data) return null
+  if (!data) return <UnavailableAnalysis title="Risk & Opportunity" />
   const { cloudValuations } = data
   const riskAlerts = contextData ? validateRiskAlerts(data.riskAlerts, {
     market: contextData, multiples: { saas: cloudValuations.saasAverage }, benchmarks: BENCHMARKS,
@@ -254,6 +256,6 @@ export function RiskAlerts() {
 }
 
 /** Default: everything (legacy, unused in current layout) */
-export default function IntelligentSignals() {
-  return <><FinOpsSignals /><CommitmentWindows /><CloudValuations /><HyperscalerCapex /><RiskAlerts /></>
+export default function IntelligentSignals({ multiples }: { multiples: LiveMultiples }) {
+  return <><FinOpsSignals /><CommitmentWindows /><CloudValuations multiples={multiples} /><HyperscalerCapex /><RiskAlerts /></>
 }
