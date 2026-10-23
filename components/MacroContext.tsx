@@ -5,11 +5,11 @@ function MacroRow({
   label, value, sub, color,
 }: { label: string; value: string; sub?: string; color?: string }) {
   return (
-    <div className="flex items-baseline justify-between py-[0.35rem] rule-subtle-bottom">
-      <span className="text-[0.72rem] font-mono text-charcoal/65">{label}</span>
-      <div className="text-right">
-        <span className="text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
-        {sub && <span className="text-[0.72rem] font-mono text-charcoal/65 ml-1">{sub}</span>}
+    <div className="flex items-start justify-between gap-3 py-2 rule-subtle-bottom">
+      <span className="max-w-[52%] text-[0.72rem] leading-relaxed font-mono text-charcoal/65">{label}</span>
+      <div className="shrink-0 text-right">
+        <span className="block text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
+        {sub && <span className="block mt-0.5 text-[0.72rem] font-mono text-charcoal/65">{sub}</span>}
       </div>
     </div>
   )
