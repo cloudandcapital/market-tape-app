@@ -7,8 +7,8 @@ export function Sectors({ snapshot }: { snapshot: Snapshot }) {
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
-        Sectors · RS1M vs SPY
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
+        Sectors · RS1M score vs SPY
       </h2>
 
       <div className="space-y-[0.55rem]">
@@ -19,7 +19,7 @@ export function Sectors({ snapshot }: { snapshot: Snapshot }) {
             <div key={s.ticker}>
               <div className="flex justify-between items-baseline mb-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[9px] font-mono text-charcoal/50 w-3">{i + 1}</span>
+                  <span className="text-[9px] font-mono text-charcoal/65 w-3">{i + 1}</span>
                   <span className="text-[11px] font-mono font-semibold text-charcoal">{s.ticker}</span>
                 </div>
                 <span className={`text-[11px] font-mono font-medium ${isPos ? 'text-sage' : 'text-loss'}`}>
@@ -46,7 +46,7 @@ export function CountriesGlobal({ meta }: { meta: Meta }) {
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">Countries / Global</h2>
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">Global ETF leaders · RS1M score</h2>
       <div className="space-y-3">
         {countries.map((c, i) => {
           const isPos = c.rs1m >= 0
@@ -55,7 +55,7 @@ export function CountriesGlobal({ meta }: { meta: Meta }) {
             <div key={c.ticker}>
               <div className="flex justify-between items-baseline mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono text-charcoal/50">{i + 1}</span>
+                  <span className="text-[10px] font-mono text-charcoal/65">{i + 1}</span>
                   <span className="text-sm font-mono font-medium text-charcoal">{c.ticker}</span>
                 </div>
                 <span className={`text-sm font-mono ${isPos ? 'text-sage' : 'text-loss'}`}>

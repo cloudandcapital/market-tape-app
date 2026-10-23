@@ -1,121 +1,87 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { unstable_cache } from 'next/cache'
+import Anthropic from '@anthropic-ai/sdk'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { BENCHMARKS, buildInfraContextBlock } from '@/lib/industryBenchmarks'
 import { enforceInterpretationGuardrails } from '@/lib/intelligentGuardrails'
-
+import { assertBriefResponse } from '@/lib/briefValidation'
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
-const INTELLIGENT_BRIEF_SYSTEM_PROMPT = 'You are a senior FinOps market analyst writing for Bloomberg terminal users. Your style: lead with the story, support it with verifiable numbers, and keep each field concise. Write "Infrastructure is hot, software is not" not "SaaS cohort at 6-8x NTM P/S reflects compression." Be direct but distinguish measured data, sourced benchmarks, estimates, and your interpretation. Treat market and benchmark signals as strategic decision support. Do not present them as organization-specific operational mandates. Any organization-specific decision must remain conditional on workload demand, utilization, contract terms, budget, and business priorities. GROUNDING RULE: Use ONLY the data and estimates provided in the user message. Do not invent percentages, industry benchmarks, or statistics not present in that context. If a specific number is not in the data you were given, use qualitative language instead ("compressed," "elevated," "tightening"). Do not cite named industry reports, analysts, or vendor data sources unless explicitly provided in the context. VERIFIABILITY RULE: This applies to every output field. Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments, FinOps Signals captions, Risk Alerts captions). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page. TEMPORAL ACCURACY RULE: The market data in the user message reflects the latest completed trading session, which may not be the same day this analysis is generated. Do not use the words "today" or "this morning" in any output field. Use "latest session" or "last session" instead. RELATIVE-STRENGTH TIMEFRAME RULE: RS1M is one-month relative performance versus SPY. Describe RS1M rankings and sector leadership as one-month performance, never as a latest-session move, surge, decline, or rotation. Reserve latest-session language for fields explicitly labeled latest session. COMMODITY ETF PROXY RULE: GLD and USO are exchange-traded fund proxies, not commodity spot or futures quotes. Prefer their percentage movements when an absolute share price is unnecessary. If citing an absolute value, explicitly call it the GLD or USO ETF share price. Never describe either share price as the price of gold or oil, and never attach dollars-per-ounce or dollars-per-barrel meaning to it. You MUST respond with ONLY valid JSON — no markdown, no code blocks, no preamble.'
-
-function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
-  const { marketSessionLabel, marketData: m, sectorData, macroData: mac, leaderboard } = ctx
-
-  const topSectors = sectorData.slice(0, 5).map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
-  const bottomSectors = sectorData.slice(-5).reverse().map(s => `${s.ticker} ${s.rs1m > 0 ? '+' : ''}${s.rs1m.toFixed(2)}`).join(' | ')
-  const topStocks = leaderboard.leaders.slice(0, 5).map(s => `${s.ticker} (${s.rs1m.toFixed(1)}% RS, ${s.intra_pct > 0 ? '+' : ''}${s.intra_pct.toFixed(1)}% latest session)`).join(', ')
-
-  // liveMultiples is fetched by the POST handler and threaded in here
-  // so Lumen receives genuine market-derived values, never training-data guesses
-  return `MARKET DATA — ${marketSessionLabel}
-
-EXPOSURE: ${m.guidance} (${m.exposureLevel}/100)
-VIX: ${m.vix.toFixed(1)} (${m.vixD1 > 0 ? '+' : ''}${m.vixD1.toFixed(1)}% session)${m.vix > 30 ? ' — ELEVATED FEAR' : m.vix < 15 ? ' — COMPLACENT' : ''}
-SPY: $${m.spy.toFixed(0)} (${m.spyD1 > 0 ? '+' : ''}${m.spyD1.toFixed(1)}% session)
-
-TRENDS: Long-term ${m.trends.long} | Intermediate ${m.trends.intermediate} | Short-term ${m.trends.short}
-BREADTH: ${m.breadth.label} — ${m.breadth.above20d.toFixed(0)}% above 20d MA, ${m.breadth.above50d.toFixed(0)}% above 50d MA
-MOMENTUM: ${m.momentum.label} [internal score ${m.momentum.score}/100 — not user-visible, do not cite this number]
-RISK: Volatility ${m.risk.volatility} | Sentiment ${m.risk.sentiment} | Momentum ${m.risk.momentum}
-
-SECTOR LEADERS (1M RS vs SPY):
-Strong: ${topSectors}
-Weak: ${bottomSectors}
-
-MOMENTUM LEADERS: ${topStocks}
-
-MACRO:
-Bonds (TLT): ${mac.tlt ? `${mac.tlt.rs1m > 0 ? '+' : ''}${mac.tlt.rs1m.toFixed(2)}% 1M RS, Grade ${mac.tlt.grade}` : 'N/A'} ${mac.tlt && mac.tlt.rs1m < -2 ? '— BONDS SELLING OFF (rates rising)' : ''}
-Credit (HYG): ${mac.hyg ? `${mac.hyg.rs1m > 0 ? '+' : ''}${mac.hyg.rs1m.toFixed(2)}% 1M RS, Grade ${mac.hyg.grade}` : 'N/A'}
-Dollar (DXY): ${mac.dxy ? `${mac.dxy.last.toFixed(1)} (${mac.dxy.rs1m > 0 ? '+' : ''}${mac.dxy.rs1m.toFixed(2)}% 1M RS)` : 'N/A'}
-GLD gold ETF proxy: ${mac.gld ? `${mac.gld.d1 > 0 ? '+' : ''}${mac.gld.d1.toFixed(1)}% latest session (ETF share price $${mac.gld.last.toFixed(0)}) [1M RS: ${mac.gld.rs1m > 0 ? '+' : ''}${mac.gld.rs1m.toFixed(2)}% — internal, not user-visible, do not cite]` : 'N/A'}
-USO oil ETF proxy: ${mac.uso ? `${mac.uso.d1 > 0 ? '+' : ''}${mac.uso.d1.toFixed(1)}% latest session (ETF share price $${mac.uso.last.toFixed(1)})` : 'N/A'}
-Small/Large (IWM vs QQQ): ${mac.iwm && mac.qqq ? `small caps ${mac.iwm.rs1m > mac.qqq.rs1m ? 'outperforming' : 'underperforming'} [individual RS1M — IWM: ${mac.iwm.rs1m.toFixed(2)}, QQQ: ${mac.qqq.rs1m.toFixed(2)} — internal, only direction and spread are user-visible, do not cite individual RS values]` : 'N/A'}
-
-${buildInfraContextBlock(multiples)}
-
-Based on ALL of the above, generate a comprehensive FinOps intelligence report.
-
-SIGNAL ANCHORS — apply these rules to produce deterministic verdicts on consistent data:
-
-FINOPS SIGNALS:
-• cloudSpend → primary: EXPOSURE GUIDANCE. Defensive (<40): state that current evidence could warrant a review of non-critical expansion, contingent on workload demand, utilization, contract terms, budget, and business priorities. Neutral (40-60): describe utilization and existing-capacity review as considerations, not directives. Risk-On (>60): note that planned expansion still depends on workload and business needs. Cite exposure level.
-• saasRenewals → primary: SaaS NTM multiple + HYG RS1M. If SaaS is materially compressed from peak and HYG is negative, benchmark renewal pricing and test for concessions. If SaaS is recovering or HYG is positive, monitor pricing before extending commitment duration. Cite the actual visible multiple and HYG grade; do not reference any specific threshold number.
-• infrastructure → primary: GPU supply status from CLOUD INFRASTRUCTURE CONTEXT. Summarize the supplied availability and price ranges without generalizing across providers or access models. Only if the source explicitly says demand is supply-constrained, note that existing access may merit review when workloads depend on it. Do not infer urgency or a booking horizon.
-• Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels. Constrained or waitlisted availability is not proof of impossibility.
-• If any current valuation multiple is Unavailable, output Unavailable for that field; do not substitute archived fallback values, invent a trend, or imply the request timestamp is the data date.
-
-RISK ALERTS — generate one entry per condition that is TRUE in the current data. These are the only permitted alert types; do not generate others:
-• "GPU Capacity Tightening" (warning): if the GPU benchmark explicitly describes any current product generation as supply-constrained
-• "Rates Rising" (warning): if TLT RS1M is below −2%
-• "SaaS Discount Window" (opportunity): if SaaS average NTM multiple is materially compressed from peak (less than half the supplied 2021 peak multiple, indicating buyer leverage on renewals)
-• "Data Center Capacity Tightness" (warning): if the supplied benchmark shows vacancy at or below 2% and construction preleasing at or above 80%, even when construction is expanding
-• "Dollar Weakening" (warning): if DXY RS1M is below −5%
-
-PROSE ANCHORS:
-• morningBrief headline: priority — (1) if Defensive AND VIX > 20 → risk-off framing; (2) if TLT RS1M below −3% AND DXY RS1M below −5% → macro dislocation framing; (3) else → lead with the dominant sector rotation (strongest sector vs weakest)
-• morningBrief is interpretation and synthesis only: target 180–220 words and never exceed 230 words across all its fields. Keep marketRead under 75 words, each bullet under 18 words, and action under 25 words. Do not repeat whole Market Status, FinOps Signals, Risk Alerts, Sector Insights, Commitment Windows, valuation, CapEx, or AI-deal sections.
-• distinguish measured market data from benchmark claims and interpretation; use cautious language for estimates, targets, and reported claims
-• action: lead with an EXPOSURE GUIDANCE review priority; mention protecting GPU access only when the supplied benchmark supports it and workload dependence would justify it
-• sectorInsights: describe the highest and lowest RS1M sectors explicitly as one-month relative performance versus SPY; never present them as latest-session moves; connect to cloud budget implications
-
-Return ONLY valid JSON with no markdown, no code blocks, no explanation text:
-
-{
+const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
+export const INTELLIGENT_BRIEF_SYSTEM_PROMPT = "Explain markets to a curious reader and a technology-finance team. Use plain English and only supplied data. Separate measurements, source-dated benchmarks, and interpretation. RS1M is a dimensionless volatility-adjusted score: (20-session asset return minus SPY return) divided by the asset’s 20-session realized volatility. Never append % to a score or infer absolute price direction, interest-rate direction, credit spreads, or vendor discounts from it. Daily and 20-session percentage price changes are labeled separately. Market prices do not establish cloud commitment duration, Spot safety, capacity availability, or vendor willingness to discount. Do not issue purchasing verdicts or imply a tested causal relationship. COMMODITY ETF PROXY RULE: GLD and USO are ETF share prices, not commodity spot quotes; never attach dollars-per-ounce or dollars-per-barrel meaning. Use the supplied price date, not today or this morning. Daily bars may still change during a session. Use 20-session language for score rankings. Missing values stay Unavailable. Cite only numbers visible in the dashboard or source tooltips. Never invent forecasts, savings, quotes, benchmarks, or sources. Return only JSON."
+export const BRIEF_INSTRUCTIONS = [
+  "RS1M rankings use score units, not percent. A higher score does not establish a higher raw return across assets with different volatility.",
+  "cloudSpend: ask what usage, budget, or contract data is needed; breadth does not justify expanding or pausing a workload.",
+  "saasRenewals: a valuation or HYG score cannot establish a discount window. Ask about the quote, seats used, notice deadline, or alternatives.",
+  "infrastructure: summarize the source-dated GPU comparison without urgency or a booking horizon.",
+  "Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels.",
+  "Copy valuations exactly. Do not infer trends from a single snapshot or revive archived fallbacks.",
+  "Only permitted alerts: Bond ETF Weakness if TLT d20 < -2%; Dollar Weakening if DXY d20 < -5%; GPU Capacity Tightening if a source explicitly calls a named generation supply-constrained; Data Center Capacity Tightness if vacancy <=2% and construction preleased >=80%. These are review flags, not calibrated forecasts.",
+  "Do not generate Rates Rising from a TLT score or SaaS Discount Window from a multiple.",
+  "Keep morningBrief below 180 words. whatChanged describes measured session movements, not differences between stored snapshots. cloudFinanceImplications asks questions, without inventing corporate budget behavior.",
+  "Do not repeat a long qualification in every field. Frame decisions as questions to check against actual usage and terms.",
+  "Do not describe mixed-asset basket breadth as stock-market-wide breadth or HYG price as a credit spread.",
+  "All commitmentWindows statuses must be REVIEW. Reasons identify missing workload and contract evidence. Never call Spot safe based on markets."
+]
+const RESPONSE_SHAPE = {
   "morningBrief": {
-    "headline": "single market story, 10-12 words",
-    "marketRead": "2-3 concise sentences synthesizing the dominant measured market signal without listing the dashboard",
-    "whatChanged": ["up to three short bullets; measured changes only"],
-    "cloudFinanceImplications": ["one or two short bullets; interpretation, not repeated raw panels"],
-    "action": "one clear action or decision to monitor"
+    "headline": "8–12 word market story",
+    "marketRead": "two short grounded sentences",
+    "whatChanged": [
+      "up to three measured session observations"
+    ],
+    "cloudFinanceImplications": [
+      "one or two questions for a technology cost review"
+    ],
+    "action": "one research question or source to check"
   },
   "finopsSignals": {
-    "cloudSpend": "one strategic decision-support sentence; do not repeat Lumen",
-    "saasRenewals": "one strategic decision-support sentence; do not repeat Lumen",
-    "infrastructure": "one strategic decision-support sentence; do not repeat Lumen"
+    "cloudSpend": "one review question",
+    "saasRenewals": "one review question",
+    "infrastructure": "one source-dated observation"
   },
   "commitmentWindows": {
     "oneYear": {
-      "status": "Use EXPOSURE GUIDANCE as the primary signal — if guidance is Risk-On: FAVORABLE; if Neutral: HOLD; if Defensive: HOLD. Upgrade to CAUTION only if VIX is above 28 AND breadth is below 40%. Cite exposure guidance level and VIX.",
-      "reason": "1-2 analytical sentences citing exposure guidance, VIX, and breadth. Example: 'A Defensive signal at 21/100 with VIX at 17 could warrant reviewing non-critical expansion, subject to workload, utilization, contract, budget, and business-priority context.'"
+      "status": "REVIEW",
+      "reason": "Needs usage and terms"
     },
     "threeYear": {
-      "status": "Use TLT 1M RS direction as the primary signal — if TLT is negative (rates rising, bonds selling off): CAUTION; if TLT is modestly negative and DXY is also negative by more than 5%: CAUTION; if TLT is rising and macro stable: FAVORABLE; otherwise HOLD. Cite TLT RS1M and DXY RS1M.",
-      "reason": "1-2 sentences citing bond direction and dollar trend. Example: 'TLT down 6.23% in a month with the dollar falling 9.47% — monitor for rate stabilization before extending commitment duration.'"
+      "status": "REVIEW",
+      "reason": "Needs long-term usage and terms"
     },
     "spot": {
-      "status": "Evaluate general cloud workloads ONLY (compute, storage, network, batch jobs) — NOT GPU or accelerated compute. GPU supply is covered in riskAlerts, do not let it influence this verdict. Use VIX and breadth as the sole signals: VIX below 20 AND breadth above 55% = SAFE; VIX above 28 OR breadth below 40% = RISKY; in between use judgment but lean SAFE if VIX is below 22. Cite VIX and breadth only.",
-      "reason": "1 sentence citing VIX and breadth for general cloud workloads only. Example: 'VIX at 17 and 73% of names above their 50-day MA support reviewing spot use for tactical workloads and batch jobs.'"
+      "status": "REVIEW",
+      "reason": "Needs interruption tolerance and fallback capacity"
     }
   },
   "riskAlerts": [
-    { "type": "warning or opportunity", "title": "3-5 word title", "message": "1-2 sentences citing the specific data value that triggered this alert" }
+    {
+      "type": "warning",
+      "title": "one permitted title",
+      "message": "one source-backed observation with actual units"
+    }
   ],
-  "sectorInsights": "maximum two short sentences: strongest rotation, weakest rotation, and only the direct budget implication",
+  "sectorInsights": "one sentence on highest and lowest 20-session scores; no inferred corporate budget behavior",
   "cloudValuations": {
-    "publicCloud": "Use the Public Cloud NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
-    "saasAverage": "Use the SaaS Average NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note",
-    "aiInfrastructure": "Use the AI Infrastructure NTM multiple from CLOUD INFRASTRUCTURE CONTEXT above — add a brief trend note"
+    "publicCloud": "copy value",
+    "saasAverage": "copy value",
+    "aiInfrastructure": "copy value"
   },
   "hyperscalerCapex": {
-    "trend": "Use the Hyperscaler CapEx Trend from CLOUD INFRASTRUCTURE CONTEXT above",
-    "gpuSupplyStatus": "Use the GPU Supply Status value from CLOUD INFRASTRUCTURE CONTEXT above",
-    "dataCenterGrowth": "Use the Data Center Construction value from CLOUD INFRASTRUCTURE CONTEXT above"
+    "trend": "copy benchmark",
+    "gpuSupplyStatus": "copy benchmark",
+    "dataCenterGrowth": "copy benchmark"
   },
-  "generatedAt": "${new Date().toISOString()}"
-}`
+  "generatedAt": "use generationTime"
 }
 
+export function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' }): string {
+  return JSON.stringify({
+    marketSessionLabel: ctx.marketSessionLabel, marketData: ctx.marketData, sectorData: ctx.sectorData,
+    leaderboard: { leaders: ctx.leaderboard.leaders.slice(0, 5), laggards: ctx.leaderboard.laggards.slice(0, 5) },
+    macroData: ctx.macroData,
+    units: { rs1m: 'dimensionless volatility-adjusted score', d1: 'daily percentage price change', d20: '20-session percentage price change' },
+    infrastructure: buildInfraContextBlock(multiples), instructions: BRIEF_INSTRUCTIONS, responseShape: RESPONSE_SHAPE, generationTime: new Date().toISOString(),
+  })
+}
 function parseResponse(text: string): BriefResponse {
   // Try direct parse first
   try { return JSON.parse(text) } catch {}
@@ -148,12 +114,12 @@ export async function generateIntelligentBrief(
   }, { signal: AbortSignal.timeout(65_000) })
 
   const text = message.content[0]?.type === 'text' ? message.content[0].text : ''
-  const result = enforceInterpretationGuardrails(parseResponse(text), { market: context, multiples, benchmarks: BENCHMARKS })
-  // A model response must not revive the archived April 2026 multiples when a
-  // current Yahoo basket failed. Keep the UI unavailable until a fresh fetch.
-  if (multiples.publicCloud === 'Unavailable') result.cloudValuations.publicCloud = 'Unavailable — current basket data not available'
-  if (multiples.saas === 'Unavailable') result.cloudValuations.saasAverage = 'Unavailable — current basket data not available'
-  if (multiples.aiInfra === 'Unavailable') result.cloudValuations.aiInfrastructure = 'Unavailable — current basket data not available'
+  const parsed = parseResponse(text)
+  assertBriefResponse(parsed)
+  const result = enforceInterpretationGuardrails(parsed, { market: context, multiples, benchmarks: BENCHMARKS })
+  // Source values and generation time are server-controlled.
+  result.cloudValuations = { publicCloud: multiples.publicCloud, saasAverage: multiples.saas, aiInfrastructure: multiples.aiInfra }
+  result.generatedAt = new Date().toISOString()
   return result
 }
 
@@ -167,6 +133,6 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v22', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v23', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )

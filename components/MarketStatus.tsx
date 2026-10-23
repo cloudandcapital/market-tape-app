@@ -1,9 +1,10 @@
 import type { Meta, Snapshot } from '@/lib/types'
 import { guidanceColor, getRow } from '@/lib/data'
+import { yieldChangeBasisPoints } from '@/lib/marketIntegrity'
 
 function InternalRow({
-  label, value, change, invertColor = false, arrow,
-}: { label: string; value: string; change: number; invertColor?: boolean; arrow?: string }) {
+  label, value, change, invertColor = false, arrow, period = '1D', changeLabel,
+}: { label: string; value: string; change: number; invertColor?: boolean; arrow?: string; period?: string; changeLabel?: string }) {
   const positive = invertColor ? change < 0 : change > 0
   const changeColor = Math.abs(change) < 0.05 ? '#888' : positive ? '#6B8E7F' : '#C0443A'
   const arrowColor = invertColor
@@ -13,13 +14,13 @@ function InternalRow({
   return (
     <div className="flex items-baseline justify-between py-[0.28rem]">
       <div className="flex items-baseline gap-1">
-        <span className="text-[10px] font-mono text-charcoal/55">{label}</span>
+        <span className="text-[10px] font-mono text-charcoal/65">{label}</span>
         {arrow && <span className="text-[10px] font-mono font-medium" style={{ color: arrowColor }}>{arrow}</span>}
       </div>
       <div className="flex items-baseline gap-1.5">
         <span className="text-xs font-mono font-medium text-charcoal">{value}</span>
         <span className="text-[10px] font-mono" style={{ color: changeColor }}>
-          {sign}{change.toFixed(1)}%
+          {changeLabel ?? `${sign}${change.toFixed(1)}%`} · {period}
         </span>
       </div>
     </div>
@@ -32,14 +33,14 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
         Market Status
       </h2>
 
       {/* Exposure */}
       <div className="mb-6">
         <div className="flex items-baseline justify-between mb-2">
-          <span className="text-sm font-mono text-charcoal/60">Exposure</span>
+          <span className="text-sm font-mono text-charcoal/65">Relative-strength breadth</span>
           <span className={`text-xl font-serif font-semibold ${guidanceColor(exposure.guidance)}`}>
             {exposure.guidance}
           </span>
@@ -55,26 +56,27 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
           />
         </div>
         <div className="flex items-baseline justify-between mt-1">
-          <span className="text-xs font-mono text-charcoal/55">{exposure.level}/100</span>
-          <span className="text-[9px] font-mono text-charcoal/50">0 = max defensive · 100 = max risk-on</span>
+          <span className="text-xs font-mono text-charcoal/65">{exposure.level}/100</span>
+          <span className="text-[10px] font-mono text-charcoal/65">Share with a positive RS1M score</span>
         </div>
+        <p className="text-[0.68rem] font-mono text-charcoal/65 mt-2 leading-relaxed">A summary of this mixed-asset basket, not a target portfolio allocation or a reading of all US stocks.</p>
       </div>
 
       <hr className="rule-subtle-bottom border-0 mb-6" />
 
       {/* Trend */}
       <div className="mb-6">
-        <p className="text-sm font-mono text-charcoal/60 mb-3">Trend</p>
+        <p className="text-sm font-mono text-charcoal/65 mb-3">Trend</p>
         <div className="space-y-2">
           {[
-            { label: 'Long-term',    val: trend.long_term },
-            { label: 'Intermediate', val: trend.intermediate_term },
-            { label: 'Short-term',   val: trend.short_term },
+            { label: '20-session median', val: trend.long_term },
+            { label: '5-session median', val: trend.intermediate_term },
+            { label: '1-session median', val: trend.short_term },
           ].map(({ label, val }) => (
             <div key={label} className="flex justify-between items-center">
-              <span className="text-xs font-mono text-charcoal/55">{label}</span>
+              <span className="text-xs font-mono text-charcoal/65">{label}</span>
               <span className={`text-xs font-mono font-medium ${
-                val === 'Up' ? 'text-sage' : val === 'Down' ? 'text-loss' : 'text-charcoal/50'
+                val === 'Up' ? 'text-sage' : val === 'Down' ? 'text-loss' : 'text-charcoal/65'
               }`}>{val}</span>
             </div>
           ))}
@@ -86,20 +88,20 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
       {/* Breadth */}
       <div className="mb-6">
         <div className="flex justify-between mb-3">
-          <p className="text-sm font-mono text-charcoal/60">Breadth</p>
+          <p className="text-sm font-mono text-charcoal/65">Breadth</p>
           <span className={`text-xs font-mono ${
             breadth.breadth_label === 'Strong' ? 'text-sage'
             : breadth.breadth_label === 'Weak' ? 'text-loss'
-            : 'text-charcoal/50'
+            : 'text-charcoal/65'
           }`}>{breadth.breadth_label}</span>
         </div>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-xs font-mono text-charcoal/55">Above 20d MA</span>
+            <span className="text-xs font-mono text-charcoal/65">Above 20d MA</span>
             <span className="text-xs font-mono font-medium">{breadth.above_20d_pct.toFixed(0)}%</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-xs font-mono text-charcoal/55">Above 50d MA</span>
+            <span className="text-xs font-mono text-charcoal/65">Above 50d MA</span>
             <span className="text-xs font-mono font-medium">{breadth.above_50d_pct.toFixed(0)}%</span>
           </div>
         </div>
@@ -109,7 +111,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
 
       {/* Risk */}
       <div className="mb-6">
-        <p className="text-sm font-mono text-charcoal/60 mb-3">Risk Environment</p>
+        <p className="text-sm font-mono text-charcoal/65 mb-3">Risk Environment</p>
         <div className="space-y-2">
           {[
             { label: 'Volatility', val: risk.volatility },
@@ -117,14 +119,14 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
             { label: 'Momentum',   val: risk.momentum },
           ].map(({ label, val }) => (
             <div key={label} className="flex justify-between">
-              <span className="text-xs font-mono text-charcoal/55">{label}</span>
+              <span className="text-xs font-mono text-charcoal/65">{label}</span>
               <span className="text-xs font-mono font-medium text-charcoal">{val}</span>
             </div>
           ))}
         </div>
         <div className="mt-4 pt-4 rule-subtle-top">
           <div className="flex justify-between items-baseline">
-            <span className="text-xs font-mono text-charcoal/55">Momentum Env</span>
+            <span className="text-xs font-mono text-charcoal/65">Momentum Env</span>
             <span className="text-sm font-serif font-semibold text-charcoal">{momentum_env.label}</span>
           </div>
           <div className="h-1 bg-charcoal/10 rounded-full overflow-hidden mt-2">
@@ -143,16 +145,17 @@ export function MarketInternals({ snapshot }: { snapshot: Snapshot }) {
   const uso = getRow(snapshot, 'USO')
   const gld = getRow(snapshot, 'GLD')
   const tnx = getRow(snapshot, '^TNX')
+  const yieldChange = tnx ? yieldChangeBasisPoints(tnx.last, tnx.d1_pct) : null
 
   return (
     <section aria-labelledby="market-internals-heading">
-      <h2 id="market-internals-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-3">
+      <h2 id="market-internals-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-3">
         Market Internals
       </h2>
       <div className="rows-subtle">
         {vix && <InternalRow label={vix.last > 30 ? 'VIX elevated' : 'VIX'} value={vix.last.toFixed(1)} change={vix.d1_pct} invertColor arrow={vix.d1_pct < -0.5 ? '↓' : vix.d1_pct > 0.5 ? '↑' : '→'} />}
-        {tnx && <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} />}
-        {dxy && <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} />}
+        {tnx && <InternalRow label="10Y Yield" value={`${tnx.last.toFixed(2)}%`} change={tnx.d1_pct} changeLabel={yieldChange === null ? 'Unavailable' : `~${Math.round(yieldChange)} bp`} />}
+        {dxy && <InternalRow label="Dollar (DXY)" value={dxy.last.toFixed(1)} change={dxy.d20_pct} period="20D" />}
         {gld && <InternalRow label="GLD gold ETF" value={`$${gld.last.toFixed(0)}`} change={gld.d1_pct} />}
         {uso && <InternalRow label="USO oil ETF" value={`$${uso.last.toFixed(1)}`} change={uso.d1_pct} />}
       </div>

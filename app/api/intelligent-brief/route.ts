@@ -3,17 +3,27 @@ import type { MarketContextData } from '@/lib/intelligentTypes'
 import { getCachedIntelligentBrief } from '@/lib/intelligentBrief'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
 import { summarizeProviderError } from '@/lib/providerError'
+import { fetchMarketData } from '@/lib/data'
+import { buildContextData } from '@/lib/marketContext'
+import { snapshotIsOld } from '@/lib/marketIntegrity'
 
 export async function POST(req: Request) {
   const requestStartedAt = performance.now()
   let marketDataCompletedAt = requestStartedAt
   let claudeStartedAt = requestStartedAt
   try {
-    const { context }: { context: MarketContextData } = await req.json()
+    const { context: requestedContext }: { context: MarketContextData } = await req.json()
 
     // Fetch live multiples in parallel with no extra latency — Next.js cache
     // serves subsequent calls within the 30-min window from memory.
-    const multiples = await fetchLiveMultiples()
+    const [market, multiples] = await Promise.all([fetchMarketData(), fetchLiveMultiples()])
+    const context = buildContextData(market.meta, market.snapshot)
+    if (snapshotIsOld(market.snapshot.generated_at_utc)) {
+      return NextResponse.json({ success: false, error: 'The market snapshot is too old for new analysis.' }, { status: 409 })
+    }
+    if (JSON.stringify(requestedContext) !== JSON.stringify(context)) {
+      return NextResponse.json({ success: false, error: 'The market snapshot changed. Reload the page before refreshing analysis.' }, { status: 409 })
+    }
     marketDataCompletedAt = performance.now()
     claudeStartedAt = marketDataCompletedAt
 

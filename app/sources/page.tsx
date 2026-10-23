@@ -15,7 +15,7 @@ function formatDate(isoDate: string): string {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="font-mono text-[0.6rem] tracking-[0.22em] uppercase text-charcoal/40 mb-4 mt-10 first:mt-0">
+    <h2 className="font-mono text-[0.6rem] tracking-[0.22em] uppercase text-charcoal/65 mb-4 mt-10 first:mt-0">
       {children}
     </h2>
   )
@@ -32,11 +32,11 @@ export default function SourcesPage() {
 
         {/* Header */}
         <header className="mb-10">
-          <p className="font-mono text-[0.55rem] tracking-[0.22em] uppercase text-charcoal/35 mb-1">Cloud &amp; Capital · Market Tape</p>
+          <p className="font-mono text-[0.68rem] tracking-[0.22em] uppercase text-charcoal/65 mb-1">Cloud &amp; Capital · Market Tape</p>
           <h1 className="font-serif font-medium" style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', color: '#191714', lineHeight: 1.15 }}>
             Methodology &amp; Sources
           </h1>
-          <p className="font-mono text-[0.72rem] text-charcoal/50 mt-2 leading-relaxed">
+          <p className="font-mono text-[0.72rem] text-charcoal/65 mt-2 leading-relaxed">
             Market Tape is strategic decision support for technology-finance review. It connects public-market conditions,
             cloud benchmarks, and major AI infrastructure announcements without turning them into individualized investment
             advice or workload-level operating mandates.
@@ -45,7 +45,7 @@ export default function SourcesPage() {
 
         <SectionTitle>Methodology at a Glance</SectionTitle>
 
-        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
+        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/65 leading-relaxed">
           <p>
             The <span className="text-charcoal/80">tracked universe</span>{' '}contains 48 unique instruments displayed as 52 rows across the
             dashboard&apos;s market, macro, sector, and global views. A ticker shown in more than one useful category is counted
@@ -53,12 +53,11 @@ export default function SourcesPage() {
             universe</span> supplies the momentum leaderboard; only its five leaders and five laggards are displayed.
           </p>
           <p>
-            The upstream pipeline is scheduled to check for new data every 30 minutes during its weekday window, though GitHub Actions may delay or skip scheduled runs. On weekends and market holidays, the timestamp identifies the latest
-            completed US trading session—not the page view, build, or deployment time.
+            The upstream pipeline is scheduled to check for new data every 30 minutes during its weekday window, though GitHub Actions may delay or skip scheduled runs. On weekends and market holidays, the timestamp identifies the price date recorded on the underlying daily bars. The page shows that date separately from the pipeline publication time. Daily bars can still change during a trading session; a scheduled run is not a live quote feed.
           </p>
           <p>
             The 0–100 exposure score is the share of unique tracked instruments with positive one-month relative strength versus
-            SPY. Lower readings are Defensive, 40–60 is Hold/Neutral, and higher readings are Risk-On. These bands frame review
+            SPY. Readings below 40 are Defensive, 40–69 are Hold, and 70 or above are Risk-On. These bands frame review
             priorities; they do not prescribe a portfolio allocation or cloud purchase. Organization-specific decisions still
             depend on workload demand, utilization, contract terms, budget, and business priorities.
           </p>
@@ -68,34 +67,34 @@ export default function SourcesPage() {
 
         <dl className="space-y-4 font-mono text-[0.68rem] leading-relaxed">
           <div>
-            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Trends</dt>
-            <dd className="text-charcoal/60">Long-, intermediate-, and short-term directional regimes calculated by the upstream market pipeline; they describe observed price direction, not forecasts.</dd>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/65">Trends</dt>
+            <dd className="text-charcoal/65">The median 20-, 5-, and 1-session price return across unique tracked instruments. Up requires a return above 2%, 1%, and 0.5%, respectively; Down requires a return below −1%, −0.5%, and −0.5%. Values on or between those boundaries are Sideways. These are dashboard rules, not calibrated forecasts.</dd>
           </div>
           <div>
-            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Breadth</dt>
-            <dd className="text-charcoal/60">The share of tracked instruments trading above their 20-day and 50-day moving averages.</dd>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/65">Breadth</dt>
+            <dd className="text-charcoal/65">The share of unique tracked instruments above their 20- and 50-session simple moving averages. This is a mixed basket of ETFs and indices, not the share of all US stocks. A 50-session share of at least 60% is Strong, 40%–59.99% is Mixed, and below 40% is Weak.</dd>
           </div>
           <div>
-            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Relative strength</dt>
-            <dd className="text-charcoal/60">One-month performance relative to SPY. Positive values indicate outperformance; negative values indicate underperformance.</dd>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/65">Relative strength</dt>
+            <dd className="text-charcoal/65">RS1M is a dimensionless, volatility-adjusted score: (the instrument’s 20-session price return minus SPY’s 20-session price return) divided by the instrument’s standard deviation of daily returns over those sessions, multiplied by the square root of 20. The division is by that entire volatility term. Positive scores mean outperformance versus SPY; negative scores mean underperformance. A score of +1.2 does not mean +1.2%. Rankings compare scores, not raw percentage returns. Prices use unadjusted Close, so these are price-return measures, not dividend-reinvested total returns.</dd>
           </div>
           <div>
-            <dt className="tracking-[0.08em] uppercase text-charcoal/45">Grades</dt>
-            <dd className="text-charcoal/60">A, B, and C summarize relative trend strength in the source pipeline: A is strongest, B is intermediate, and C is weakest.</dd>
+            <dt className="tracking-[0.08em] uppercase text-charcoal/65">Grades</dt>
+            <dd className="text-charcoal/65">A: the 10-session exponential moving average is above the 20-session exponential average, both are above the 50-session simple average, and price is above the 50-session average. C: the 10-session exponential average is below the 20-session exponential average and price is below the 50-session average. Otherwise B. These summarize price trends, not business quality or a buy/sell rating.</dd>
           </div>
         </dl>
 
         {/* ── LIVE MARKET DATA ─────────────────────────────────────────── */}
-        <SectionTitle>Live Market Data</SectionTitle>
+        <SectionTitle>Scheduled market snapshots</SectionTitle>
 
-        <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
+        <p className="font-mono text-[0.7rem] text-charcoal/65 leading-relaxed mb-5">
           Prices, momentum scores, sector rotation, and macro indicators are fetched from{' '}
           <span className="text-charcoal/80">yFinance</span> via a data pipeline scheduled to check every 30 minutes during weekday market hours
           and publishes to{' '}
           <a
             href="https://github.com/cloudandcapital/market-tape"
             target="_blank" rel="noopener noreferrer"
-            className="underline text-charcoal/60 hover:text-charcoal transition-colors"
+            className="underline text-charcoal/65 hover:text-charcoal transition-colors"
           >
             github.com/cloudandcapital/market-tape
           </a>
@@ -105,22 +104,22 @@ export default function SourcesPage() {
         <div className="space-y-4">
 
           <div>
-            <p className="font-mono text-[0.62rem] tracking-[0.1em] uppercase text-charcoal/35 mb-1.5">Macro &amp; Market Internals</p>
-            <p className="font-mono text-[0.68rem] text-charcoal/60">
-              SPY, ^VIX, TLT, HYG, GLD, USO, IWM, QQQ, DXY — prices, 1M relative strength, trend grades, breadth metrics
+            <p className="font-mono text-[0.68rem] tracking-[0.1em] uppercase text-charcoal/65 mb-1.5">Macro &amp; Market Internals</p>
+            <p className="font-mono text-[0.68rem] text-charcoal/65">
+              SPY, ^VIX, ^VIX9D, ^TNX, TLT, HYG, GLD, USO, IWM, QQQ, DXY — prices, 1M relative strength, trend grades, breadth metrics
             </p>
           </div>
 
           <div>
-            <p className="font-mono text-[0.62rem] tracking-[0.1em] uppercase text-charcoal/35 mb-1.5">US Sector ETFs</p>
-            <p className="font-mono text-[0.68rem] text-charcoal/60">
+            <p className="font-mono text-[0.68rem] tracking-[0.1em] uppercase text-charcoal/65 mb-1.5">US Sector ETFs</p>
+            <p className="font-mono text-[0.68rem] text-charcoal/65">
               XLK, XLF, XLV, XLE, XLI, XLY, XLP, XLU, XLB, XLRE, XLC — ranked by 1-month relative strength vs SPY
             </p>
           </div>
 
           <div>
-            <p className="font-mono text-[0.62rem] tracking-[0.1em] uppercase text-charcoal/35 mb-1.5">Valuation Multiples (availability varies)</p>
-            <p className="font-mono text-[0.68rem] text-charcoal/60 mb-2">
+            <p className="font-mono text-[0.68rem] tracking-[0.1em] uppercase text-charcoal/65 mb-1.5">Valuation Multiples (availability varies)</p>
+            <p className="font-mono text-[0.68rem] text-charcoal/65 mb-2">
               Approximate NTM P/S computed as: TTM P/S ÷ (1 + trailing revenue growth).
               Equal-weighted median across each basket. Labeled with ~ to communicate approximation.
               Yahoo Finance basket requests are cached for 30 minutes. If a basket cannot be fetched, its current multiple is shown as Unavailable; the archived April 24, 2026 quarterly fallback is not presented as current market data. The valuation API reports source and data date separately for each basket.
@@ -128,11 +127,11 @@ export default function SourcesPage() {
             <div className="space-y-2 pl-3" style={{ borderLeft: '2px solid rgba(0,0,0,0.08)' }}>
               {Object.entries(BASKETS).map(([key, basket]) => (
                 <div key={key}>
-                  <p className="font-mono text-[0.62rem] font-medium text-charcoal/70">{basket.label}</p>
-                  <p className="font-mono text-[0.62rem] text-charcoal/45">
+                  <p className="font-mono text-[0.68rem] font-medium text-charcoal/70">{basket.label}</p>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65">
                     {basket.tickers.join(' · ')}
                   </p>
-                  <p className="font-mono text-[0.58rem] text-charcoal/35 italic">{basket.note}</p>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65 italic">{basket.note}</p>
                 </div>
               ))}
             </div>
@@ -145,7 +144,7 @@ export default function SourcesPage() {
         {/* ── AI COMPUTE COMMITMENTS ───────────────────────────────────── */}
         <SectionTitle>AI Compute Commitments</SectionTitle>
 
-        <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
+        <p className="font-mono text-[0.7rem] text-charcoal/65 leading-relaxed mb-5">
           This major-deal tracker is compiled manually from public announcements and press releases.
           Each row is sourced and classified individually: <span className="text-charcoal/75">Signed</span> means an
           executed agreement is confirmed; <span className="text-charcoal/75">Announced</span> means the parties publicly
@@ -158,7 +157,7 @@ export default function SourcesPage() {
           <a
             href="https://github.com/cloudandcapital/market-tape-app/blob/main/lib/aiCompute.ts"
             target="_blank" rel="noopener noreferrer"
-            className="underline text-charcoal/60 hover:text-charcoal transition-colors"
+            className="underline text-charcoal/65 hover:text-charcoal transition-colors"
           >
             lib/aiCompute.ts
           </a>
@@ -172,17 +171,17 @@ export default function SourcesPage() {
                 <p className="font-mono text-[0.68rem] font-medium text-charcoal/80">
                   {row.buyer} — {row.provider}
                 </p>
-                <p className="font-mono text-[0.6rem] text-charcoal/45">
+                <p className="font-mono text-[0.6rem] text-charcoal/65">
                   {row.status} · {row.agreementType} · value: {row.amount} ({row.amountBasis}) · capacity: {row.capacity} ({row.capacityBasis}) · {row.term} · announced {row.announced}
                 </p>
                 {row.notes && (
-                  <p className="font-mono text-[0.58rem] text-charcoal/35 italic mt-0.5 leading-relaxed">
+                  <p className="font-mono text-[0.68rem] text-charcoal/65 italic mt-0.5 leading-relaxed">
                     {row.notes}
                   </p>
                 )}
               </div>
               <div className="flex min-w-0 max-w-full flex-col items-start mt-0.5 sm:flex-shrink-0 sm:items-end">
-                {row.sources.map(source => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="max-w-full break-words font-mono text-[0.58rem] tracking-[0.08em] uppercase transition-colors text-charcoal/30 hover:text-charcoal/60 sm:text-right [overflow-wrap:anywhere]">{source.label} · {source.kind} ↗</a>)}
+                {row.sources.map(source => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="max-w-full break-words font-mono text-[0.68rem] tracking-[0.08em] uppercase transition-colors text-charcoal/65 hover:text-charcoal/65 sm:text-right [overflow-wrap:anywhere]">{source.label} · {source.kind} ↗</a>)}
               </div>
             </div>
           ))}
@@ -193,12 +192,12 @@ export default function SourcesPage() {
         {/* ── INDUSTRY BENCHMARKS ──────────────────────────────────────── */}
         <SectionTitle>Industry Benchmarks</SectionTitle>
 
-        <p className="font-mono text-[0.7rem] text-charcoal/55 leading-relaxed mb-5">
+        <p className="font-mono text-[0.7rem] text-charcoal/65 leading-relaxed mb-5">
           Slow-moving external statistics maintained manually in{' '}
           <a
             href="https://github.com/cloudandcapital/market-tape-app/blob/main/lib/industryBenchmarks.ts"
             target="_blank" rel="noopener noreferrer"
-            className="underline text-charcoal/60 hover:text-charcoal transition-colors"
+            className="underline text-charcoal/65 hover:text-charcoal transition-colors"
           >
             lib/industryBenchmarks.ts
           </a>
@@ -212,27 +211,27 @@ export default function SourcesPage() {
           {Object.entries(BENCHMARKS).map(([key, bm]) => (
             <div key={key} className="py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
               <div className="flex items-baseline justify-between gap-3 mb-1">
-                <span className="font-mono text-[0.62rem] tracking-[0.08em] text-charcoal/40">{key}</span>
+                <span className="font-mono text-[0.68rem] tracking-[0.08em] text-charcoal/65">{key}</span>
                 <span className="font-mono text-[0.72rem] font-medium text-charcoal/85">{bm.value}</span>
               </div>
               <div className="space-y-0.5">
                 {'sourceLinks' in bm && bm.sourceLinks ? (
-                  <div>{bm.sourceLinks.map((source: { label: string; url: string }) => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="block font-mono text-[0.62rem] text-charcoal/50 hover:text-charcoal/75 underline transition-colors">{source.label}</a>)}</div>
+                  <div>{bm.sourceLinks.map((source: { label: string; url: string }) => <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" className="block font-mono text-[0.68rem] text-charcoal/65 hover:text-charcoal/75 underline transition-colors">{source.label}</a>)}</div>
                 ) : bm.sourceUrl ? (
                   <a
                     href={bm.sourceUrl}
                     target="_blank" rel="noopener noreferrer"
-                    className="block font-mono text-[0.62rem] text-charcoal/50 hover:text-charcoal/75 underline transition-colors"
+                    className="block font-mono text-[0.68rem] text-charcoal/65 hover:text-charcoal/75 underline transition-colors"
                   >
                     {bm.source}
                   </a>
                 ) : (
-                  <p className="font-mono text-[0.62rem] text-charcoal/50">{bm.source}</p>
+                  <p className="font-mono text-[0.68rem] text-charcoal/65">{bm.source}</p>
                 )}
-                <p className="font-mono text-[0.58rem] text-charcoal/35">
+                <p className="font-mono text-[0.68rem] text-charcoal/65">
                   Updated {formatDate(bm.lastUpdated)} · Next review {formatDate(bm.nextReviewDue)} · {bm.reviewCadence}
                 </p>
-                <p className="font-mono text-[0.6rem] text-charcoal/40 italic leading-relaxed">{bm.notes}</p>
+                <p className="font-mono text-[0.6rem] text-charcoal/65 italic leading-relaxed">{bm.notes}</p>
               </div>
             </div>
           ))}
@@ -240,29 +239,29 @@ export default function SourcesPage() {
 
         <SectionTitle>Lumen Synthesis &amp; Limitations</SectionTitle>
 
-        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/60 leading-relaxed">
+        <div className="space-y-4 font-mono text-[0.7rem] text-charcoal/65 leading-relaxed">
           <p>
             Lumen is an AI-generated synthesis of the market data and sourced benchmarks displayed on Market Tape. Its role is
             to surface relationships and review priorities, not to create new facts. Completed analysis is shared within the
-            market-data refresh window so visitors see a consistent reading of the same snapshot.
+            market-data refresh window so visitors see a consistent reading of the same snapshot. Analysis refreshes use verified server data and refuse a different snapshot from the one displayed. An unavailable or inconsistent feed gets an explicit message; prices and scores are not filled with invented defaults. Lumen pauses when a snapshot is more than four days old. That age rule is a conservative backstop, not an exchange-calendar freshness check.
           </p>
           <p>
             Market Tape provides strategic context, not individualized investment, financial, tax, procurement, or workload
             advice. Organization-specific decisions still require workload demand, utilization, contract terms, budget, risk
-            tolerance, and business priorities. Data may be delayed, revised, approximate, or temporarily unavailable; follow the linked
+            tolerance, and business priorities. VIX is expected equity-market volatility, not a cloud-interruption forecast. TLT is a bond ETF, not a direct yield series. HYG price trends do not measure credit spreads, and a SaaS equity multiple does not establish a vendor discount. The cloud commitment questions are fixed review prompts, not AI purchasing recommendations. Data may be delayed, revised, approximate, or temporarily unavailable; follow the linked
             primary sources before acting on a benchmark or announcement.
           </p>
         </div>
 
         {/* Footer */}
         <div className="mt-14 pt-5 border-t border-charcoal/8">
-          <p className="font-mono text-[0.58rem] text-charcoal/30">
-            <Link href="/" className="hover:text-charcoal/55 transition-colors">← Back to Market Tape</Link>
+          <p className="font-mono text-[0.68rem] text-charcoal/65">
+            <Link href="/" className="hover:text-charcoal/65 transition-colors">← Back to Market Tape</Link>
             {' · '}
             <a
               href="https://github.com/cloudandcapital/market-tape-app"
               target="_blank" rel="noopener noreferrer"
-              className="hover:text-charcoal/55 transition-colors"
+              className="hover:text-charcoal/65 transition-colors"
             >
               View source on GitHub ↗
             </a>

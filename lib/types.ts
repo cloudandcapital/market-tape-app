@@ -3,6 +3,9 @@ export interface SnapshotRow {
   name: string
   short_name: string
   last: number
+  price_date: string
+  price_source: string
+  price_status: 'current' | 'stale' | 'unavailable'
   intra_pct: number
   d1_pct: number
   d5_pct: number
@@ -35,6 +38,9 @@ export interface LeaderboardEntry {
   short_name: string
   name: string
   price: number
+  price_date: string
+  price_source: string
+  price_status: 'current' | 'stale' | 'unavailable'
   intra_pct: number
   rs1m: number
   trend_grade: 'A' | 'B' | 'C'

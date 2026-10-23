@@ -6,10 +6,10 @@ function MacroRow({
 }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="flex items-baseline justify-between py-[0.35rem] rule-subtle-bottom">
-      <span className="text-[10px] font-mono text-charcoal/55">{label}</span>
+      <span className="text-[10px] font-mono text-charcoal/65">{label}</span>
       <div className="text-right">
         <span className="text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
-        {sub && <span className="text-[9px] font-mono text-charcoal/50 ml-1">{sub}</span>}
+        {sub && <span className="text-[9px] font-mono text-charcoal/65 ml-1">{sub}</span>}
       </div>
     </div>
   )
@@ -24,12 +24,6 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
 
   const smallVsLarge = iwm && qqq ? iwm.rs1m - qqq.rs1m : null
 
-  function bondLabel(rs1m: number) {
-    if (rs1m > 1) return 'Rising'
-    if (rs1m < -1) return 'Falling'
-    return 'Flat'
-  }
-
   function trendColor(rs1m: number) {
     if (rs1m > 0.5) return '#6B8E7F'
     if (rs1m < -0.5) return '#C0443A'
@@ -38,42 +32,43 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
+      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
         Macro Context
       </h2>
 
       {tlt && (
         <MacroRow
           label="Bonds (TLT)"
-          value={bondLabel(tlt.rs1m)}
-          sub={`${tlt.rs1m > 0 ? '+' : ''}${tlt.rs1m.toFixed(2)} RS1M`}
-          color={trendColor(tlt.rs1m)}
+          value={`${tlt.d20_pct > 0 ? '+' : ''}${tlt.d20_pct.toFixed(2)}% · 20D`}
+          sub={`${tlt.rs1m > 0 ? '+' : ''}${tlt.rs1m.toFixed(2)} score`}
+          color={trendColor(tlt.d20_pct)}
         />
       )}
       {hyg && (
         <MacroRow
-          label="Credit (HYG)"
-          value={hyg.trend_grade === 'A' ? 'Tight' : hyg.trend_grade === 'C' ? 'Widening' : 'Neutral'}
-          sub={`${hyg.rs1m > 0 ? '+' : ''}${hyg.rs1m.toFixed(2)} RS1M`}
-          color={hyg.trend_grade === 'A' ? '#6B8E7F' : hyg.trend_grade === 'C' ? '#C0443A' : '#888'}
+          label="High-yield ETF (HYG)"
+          value={`${hyg.d20_pct > 0 ? '+' : ''}${hyg.d20_pct.toFixed(2)}% · 20D`}
+          sub={`${hyg.rs1m > 0 ? '+' : ''}${hyg.rs1m.toFixed(2)} score`}
+          color={trendColor(hyg.d20_pct)}
         />
       )}
       {dxy && (
         <MacroRow
           label="Dollar (DXY)"
-          value={bondLabel(dxy.rs1m)}
-          sub={`${dxy.rs1m > 0 ? '+' : ''}${dxy.rs1m.toFixed(2)} RS1M`}
-          color={trendColor(dxy.rs1m)}
+          value={`${dxy.d20_pct > 0 ? '+' : ''}${dxy.d20_pct.toFixed(2)}% · 20D`}
+          sub={`${dxy.rs1m > 0 ? '+' : ''}${dxy.rs1m.toFixed(2)} score`}
+          color={trendColor(dxy.d20_pct)}
         />
       )}
       {smallVsLarge !== null && iwm && qqq && (
         <MacroRow
           label="Small vs Large"
-          value={`IWM ${smallVsLarge > 0 ? 'leading' : 'lagging'}`}
-          sub={`${smallVsLarge > 0 ? '+' : ''}${smallVsLarge.toFixed(2)} spread`}
+          value={`IWM score ${smallVsLarge >= 0 ? 'higher' : 'lower'}`}
+          sub={`${smallVsLarge > 0 ? '+' : ''}${smallVsLarge.toFixed(2)} gap`}
           color={smallVsLarge > 0.5 ? '#6B8E7F' : smallVsLarge < -0.5 ? '#C0443A' : '#888'}
         />
       )}
+      <p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed mt-3">20D = price change over 20 trading sessions. Scores compare volatility-adjusted performance with SPY. HYG price changes do not measure credit spreads.</p>
     </div>
   )
 }

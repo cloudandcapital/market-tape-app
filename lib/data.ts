@@ -1,4 +1,5 @@
 import type { Meta, Snapshot, SnapshotRow } from './types'
+import { validateMarketData } from './marketIntegrity'
 
 const BASE = 'https://raw.githubusercontent.com/cloudandcapital/market-tape/main/data'
 
@@ -12,6 +13,11 @@ export async function fetchSnapshot(): Promise<Snapshot> {
   const res = await fetch(`${BASE}/snapshot.json`, { next: { revalidate: 1800 } })
   if (!res.ok) throw new Error('Failed to fetch snapshot.json')
   return res.json()
+}
+
+export async function fetchMarketData(): Promise<{ meta: Meta; snapshot: Snapshot }> {
+  const [meta, snapshot] = await Promise.all([fetchMeta(), fetchSnapshot()])
+  return validateMarketData(meta, snapshot)
 }
 
 export function sparklineUrl(ticker: string): string {
@@ -62,11 +68,15 @@ export function trendArrow(val: string): string {
 }
 
 export function formatMarketSessionLabel(iso: string): string {
-  const sessionDate = new Date(iso).toLocaleDateString('en-US', {
+  const sessionDate = new Date(iso.length === 10 ? `${iso}T12:00:00Z` : iso).toLocaleDateString('en-US', {
     timeZone: 'America/New_York',
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
-  return `Market data · ${sessionDate} · close · ET`
+  return `Prices dated · ${sessionDate} · ET`
+}
+
+export function formatPublishedLabel(iso: string): string {
+  return `Snapshot published ${new Date(iso).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })} ET`
 }
