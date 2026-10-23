@@ -57,7 +57,7 @@ export function validateMarketData(meta: Meta, snapshot: Snapshot): { meta: Meta
     || !status.breadth || ![status.breadth.above_20d_pct, status.breadth.above_50d_pct].every(value => Number.isFinite(value) && value >= 0 && value <= 100)) {
     throw new Error('Invalid market status')
   }
-  // Reconcile the displayed participation metrics independently of the pipeline metadata.
+  // Reconcile legacy mixed-basket metadata independently; the UI computes equity-only breadth separately.
   const exposure = Math.round(rows.filter(row => row.rs1m > 0).length / rows.length * 100)
   const above20 = rows.filter(row => row.above_20d).length / rows.length * 100
   const above50 = rows.filter(row => row.above_50d).length / rows.length * 100

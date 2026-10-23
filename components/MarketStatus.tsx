@@ -1,25 +1,26 @@
-import type { Meta, Snapshot } from '@/lib/types'
-import { guidanceColor, getRow } from '@/lib/data'
+import type { Snapshot } from '@/lib/types'
+import { getRow } from '@/lib/data'
 import { yieldChangeBasisPoints } from '@/lib/marketIntegrity'
+import { equityBreadth } from '@/lib/equityBreadth'
 
 function InternalRow({
   label, value, change, invertColor = false, arrow, period = '1D', changeLabel,
 }: { label: string; value: string; change: number; invertColor?: boolean; arrow?: string; period?: string; changeLabel?: string }) {
   const positive = invertColor ? change < 0 : change > 0
-  const changeColor = Math.abs(change) < 0.05 ? '#888' : positive ? '#6B8E7F' : '#C0443A'
+  const changeColor = Math.abs(change) < 0.05 ? '#6D6964' : positive ? '#4A6B5F' : '#C0443A'
   const arrowColor = invertColor
-    ? (change < -0.5 ? '#6B8E7F' : change > 0.5 ? '#C0443A' : '#888')
-    : (change > 0.5 ? '#6B8E7F' : change < -0.5 ? '#C0443A' : '#888')
+    ? (change < -0.5 ? '#4A6B5F' : change > 0.5 ? '#C0443A' : '#6D6964')
+    : (change > 0.5 ? '#4A6B5F' : change < -0.5 ? '#C0443A' : '#6D6964')
   const sign = change > 0 ? '+' : ''
   return (
     <div className="flex items-baseline justify-between py-[0.28rem]">
       <div className="flex items-baseline gap-1">
-        <span className="text-[10px] font-mono text-charcoal/65">{label}</span>
-        {arrow && <span className="text-[10px] font-mono font-medium" style={{ color: arrowColor }}>{arrow}</span>}
+        <span className="text-[0.72rem] font-mono text-charcoal/65">{label}</span>
+        {arrow && <span className="text-[0.72rem] font-mono font-medium" style={{ color: arrowColor }}>{arrow}</span>}
       </div>
       <div className="flex items-baseline gap-1.5">
         <span className="text-xs font-mono font-medium text-charcoal">{value}</span>
-        <span className="text-[10px] font-mono" style={{ color: changeColor }}>
+        <span className="text-[0.72rem] font-mono" style={{ color: changeColor }}>
           {changeLabel ?? `${sign}${change.toFixed(1)}%`} · {period}
         </span>
       </div>
@@ -27,29 +28,33 @@ function InternalRow({
   )
 }
 
-export default function MarketStatus({ meta }: { meta: Meta }) {
-  const { status } = meta
-  const { exposure, trend, risk, breadth, momentum_env } = status
+export default function MarketStatus({ snapshot }: { snapshot: Snapshot }) {
+  const equity = equityBreadth(snapshot)
+  const risk = equity.risk
+  const momentum_env = equity.momentum
+  const exposure = { level: equity.level, band: equity.band }
+  const trend = { long_term: equity.trends.long, intermediate_term: equity.trends.intermediate, short_term: equity.trends.short }
+  const breadth = { above_20d_pct: equity.above20d, above_50d_pct: equity.above50d, breadth_label: equity.label }
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
+      <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
         Market Status
       </h2>
 
       {/* Exposure */}
       <div className="mb-6">
         <div className="flex items-baseline justify-between mb-2">
-          <span className="text-sm font-mono text-charcoal/65">Relative-strength breadth</span>
-          <span className={`text-xl font-serif font-semibold ${guidanceColor(exposure.guidance)}`}>
-            {exposure.guidance}
+          <span className="text-sm font-mono text-charcoal/65">Equity ETF breadth</span>
+          <span className={`text-xl font-serif font-semibold ${exposure.level >= 70 ? 'text-sage-dark' : exposure.level < 40 ? 'text-loss' : 'text-charcoal'}`}>
+            {exposure.band}
           </span>
         </div>
         <div className="h-1 bg-charcoal/10 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${
-              exposure.guidance === 'Risk-On' ? 'bg-sage'
-              : exposure.guidance === 'Defensive' ? 'bg-loss'
+              exposure.level >= 70 ? 'bg-sage'
+              : exposure.level < 40 ? 'bg-loss'
               : 'bg-charcoal/30'
             }`}
             style={{ width: `${exposure.level}%` }}
@@ -57,16 +62,16 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
         </div>
         <div className="flex items-baseline justify-between mt-1">
           <span className="text-xs font-mono text-charcoal/65">{exposure.level}/100</span>
-          <span className="text-[10px] font-mono text-charcoal/65">Share with a positive RS1M score</span>
+          <span className="text-[0.72rem] font-mono text-charcoal/65">{equity.positiveCount} of {equity.count} positive RS1M scores</span>
         </div>
-        <p className="text-[0.68rem] font-mono text-charcoal/65 mt-2 leading-relaxed">A summary of this mixed-asset basket, not a target portfolio allocation or a reading of all US stocks.</p>
+        <p className="text-[0.72rem] font-mono text-charcoal/65 mt-2 leading-relaxed">Equity ETFs only, counted once. SPY is the benchmark and is excluded. This is a tracked sample, not all US stocks or a target allocation.</p>
       </div>
 
       <hr className="rule-subtle-bottom border-0 mb-6" />
 
       {/* Trend */}
       <div className="mb-6">
-        <p className="text-sm font-mono text-charcoal/65 mb-3">Trend</p>
+        <p className="text-sm font-mono text-charcoal/65 mb-3">Equity ETF trend</p>
         <div className="space-y-2">
           {[
             { label: '20-session median', val: trend.long_term },
@@ -76,7 +81,7 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
             <div key={label} className="flex justify-between items-center">
               <span className="text-xs font-mono text-charcoal/65">{label}</span>
               <span className={`text-xs font-mono font-medium ${
-                val === 'Up' ? 'text-sage' : val === 'Down' ? 'text-loss' : 'text-charcoal/65'
+                val === 'Up' ? 'text-sage-dark' : val === 'Down' ? 'text-loss' : 'text-charcoal/65'
               }`}>{val}</span>
             </div>
           ))}
@@ -88,9 +93,9 @@ export default function MarketStatus({ meta }: { meta: Meta }) {
       {/* Breadth */}
       <div className="mb-6">
         <div className="flex justify-between mb-3">
-          <p className="text-sm font-mono text-charcoal/65">Breadth</p>
+          <p className="text-sm font-mono text-charcoal/65">Equity ETFs above averages</p>
           <span className={`text-xs font-mono ${
-            breadth.breadth_label === 'Strong' ? 'text-sage'
+            breadth.breadth_label === 'Strong' ? 'text-sage-dark'
             : breadth.breadth_label === 'Weak' ? 'text-loss'
             : 'text-charcoal/65'
           }`}>{breadth.breadth_label}</span>
@@ -149,7 +154,7 @@ export function MarketInternals({ snapshot }: { snapshot: Snapshot }) {
 
   return (
     <section aria-labelledby="market-internals-heading">
-      <h2 id="market-internals-heading" className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-3">
+      <h2 id="market-internals-heading" className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-3">
         Market Internals
       </h2>
       <div className="rows-subtle">

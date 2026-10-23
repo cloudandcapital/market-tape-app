@@ -26,7 +26,7 @@ export const BENCHMARKS = {
 
   gpuSupplyStatus: {
     value: 'H100 $2.99–$10.98/hr · H200 $3.99–$10.85/hr · B200 $5.99–$16.11/hr; availability varies materially by generation, provider, region, commitment, and access model',
-    source: 'Thunder Compute dedicated GPU pricing comparisons — October 16, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
+    source: 'Thunder Compute selected published GPU rental comparisons (one vendor’s compilation; includes reservation-only rates) — October 16, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
     sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
     sourceLinks: [
       { label: 'Thunder Compute — H100 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
@@ -37,7 +37,7 @@ export const BENCHMARKS = {
     lastUpdated: '2026-10-16',
     nextReviewDue: '2026-11-16',
     reviewCadence: 'monthly',
-    notes: 'October 16, 2026 dedicated comparisons: H100 $2.99–$10.98/GPU-hour; H200 $3.99–$10.85; B200 $5.99–$16.11. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary.',
+    notes: 'October 16, 2026 selected list-rate comparisons from one GPU vendor: H100 $2.99–$10.98/GPU-hour; H200 $3.99–$10.85; B200 $5.99–$16.11. H200’s $10.85 Google Cloud endpoint is reservation-only; B200’s $16.11 Google Cloud endpoint is on-demand-equivalent, available through reservation, Spot, or Flex-start. H100 endpoints use the comparison’s selected US-region list rates. These are not market-wide lows/highs or executable quotes. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
@@ -50,7 +50,7 @@ export const BENCHMARKS = {
     lastUpdated: '2026-08-31',
     nextReviewDue: '2027-02-28',
     reviewCadence: 'semi-annual',
-    notes: 'CBRE H1 2026 primary-market figures: net absorption 1,456.2 MW (+11.7% YoY), under construction 7,481.1 MW (+24.8%), and total supply 10,903 MW (+33.7%). Capacity remains tight despite construction growth: vacancy reached a record-low 1.4%, 80.4% of construction was preleased, and less than 1,500 MW remained available. The prior construction-decline explanation is no longer current.',
+    notes: 'CBRE H1 2026 primary-market figures: net absorption 1,456.2 MW (+11.7% YoY), under construction 7,481.1 MW (+24.8%), and total supply 10,903 MW (+33.7%). Capacity remains tight despite construction growth: vacancy held steady at 1.4% versus year-end 2025, 80.4% of construction was preleased, and less than 1,500 MW remained available. The prior construction-decline explanation is no longer current.',
   } satisfies Benchmark,
 
   // ─── Historical reference (stable — infrequent review) ────────────────────
@@ -125,7 +125,7 @@ export function buildInfraContextBlock(liveMultiples: {
 - AI Infrastructure NTM P/S (est.): ${liveMultiples.aiInfra} [source: ${sourceNote('aiInfra')}]
 - Hyperscaler CapEx Trend: ${b.hyperscalerCapexTrend.value} [source: ${b.hyperscalerCapexTrend.source}]
 - GPU Supply Status: ${b.gpuSupplyStatus.value} [source: ${b.gpuSupplyStatus.source}]
-- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; capacity remains tight because vacancy is at a record low and most construction is preleased [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]
+- Data Center Supply/Demand: ${b.dataCenterConstructionYoY.value}; capacity remains tight because vacancy held steady at 1.4% versus year-end 2025 and most construction is preleased [source: ${b.dataCenterConstructionYoY.source}, updated ${b.dataCenterConstructionYoY.lastUpdated}]
 - NVIDIA Data Center Revenue: ${b.nvidiaDcRevenue.value} [source: ${b.nvidiaDcRevenue.source}]`
 }
 

@@ -1,3 +1,4 @@
+import { BENCHMARKS } from './industryBenchmarks'
 import { CLOUD_REVIEW } from './cloudReview'
 import type { Benchmark } from '@/lib/industryBenchmarks'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
@@ -14,7 +15,7 @@ export function riskAlertSource(title: string) {
 }
 
 export interface RiskAlertInputs {
-  market: Pick<MarketContextData, 'macroData'>
+  market: Pick<MarketContextData, 'macroData'> & Partial<Pick<MarketContextData, 'sectorData'>>
   multiples: { saas: string }
   benchmarks: {
     gpuSupplyStatus: Benchmark
@@ -43,7 +44,16 @@ export function validateRiskAlerts(alerts: BriefResponse['riskAlerts'], inputs: 
         && Number.isFinite(dc.construction_preleased_pct) && dc.construction_preleased_pct >= 80 && dc.construction_preleased_pct <= 100
       default: return false
     }
-  }).map(alert => ({ ...alert, message: enforceDecisionGuardrail(alert.message) }))
+  }).map(alert => {
+    // The trigger is internal; visible messages describe the measured observation.
+    const source = riskAlertSource(alert.title)
+    if (source === 'dataCenterConstructionYoY' && typeof dc === 'object' && dc && 'vacancy_pct' in dc) {
+      return { ...alert, message: `CBRE’s H1 2026 primary-market vacancy was ${dc.vacancy_pct}%, unchanged from year-end 2025; ${dc.construction_preleased_pct}% of construction was preleased.` }
+    }
+    if (source === 'TLT') return { ...alert, message: `TLT’s price fell ${Math.abs(market.macroData.tlt!.d20!).toFixed(2)}% over 20 trading sessions. This ETF move does not measure a Treasury yield or a credit spread.` }
+    if (source === 'DXY') return { ...alert, message: `DXY fell ${Math.abs(market.macroData.dxy!.d20!).toFixed(2)}% over 20 trading sessions. Check actual currency exposures before drawing a business conclusion.` }
+    return { ...alert, message: benchmarks.gpuSupplyStatus.value }
+  })
 }
 
 export const ORGANIZATION_DECISION_CONTEXT =
@@ -74,18 +84,19 @@ export function enforceDecisionGuardrail(text: string): string {
 }
 
 export function enforceInterpretationGuardrails(brief: BriefResponse, inputs: RiskAlertInputs): BriefResponse {
+  const sectors = inputs.market.sectorData ? [...inputs.market.sectorData].sort((a, b) => b.rs1m - a.rs1m) : []
   return {
     ...brief,
     riskAlerts: validateRiskAlerts(brief.riskAlerts, inputs),
     morningBrief: {
       ...brief.morningBrief,
-      cloudFinanceImplications: brief.morningBrief.cloudFinanceImplications.map(enforceDecisionGuardrail),
-      action: enforceDecisionGuardrail(brief.morningBrief.action),
+      cloudFinanceImplications: ['Which costs are tied to steady usage, and which can change?', 'What do the actual quote, notice deadline, and contract terms say?'],
+      action: sectors.length > 1 ? `What explains the score difference between ${sectors[0].ticker} and ${sectors[sectors.length - 1].ticker}? Check their holdings and recent news.` : enforceDecisionGuardrail(brief.morningBrief.action),
     },
     finopsSignals: {
-      cloudSpend: enforceDecisionGuardrail(brief.finopsSignals.cloudSpend),
-      saasRenewals: enforceDecisionGuardrail(brief.finopsSignals.saasRenewals),
-      infrastructure: enforceDecisionGuardrail(brief.finopsSignals.infrastructure),
+      cloudSpend: 'What are you using, what are you paying, and where do the two differ?',
+      saasRenewals: 'When is the notice deadline, which seats are used, and what alternatives have you priced?',
+      infrastructure: `Selected GPU rental list rates from Thunder Compute’s October 16 comparison: ${BENCHMARKS.gpuSupplyStatus.value}. This vendor comparison includes reservation-only rates, not a market-wide price floor or a capacity quote.`,
     },
     commitmentWindows: CLOUD_REVIEW,
     sectorInsights: enforceDecisionGuardrail(brief.sectorInsights),

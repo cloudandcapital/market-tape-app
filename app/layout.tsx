@@ -26,16 +26,16 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://market-tape.cloudandcapital.com'),
   title: 'Market Tape — Markets & Technology Finance | Cloud & Capital',
   description:
-    'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
+    'Market intelligence for FinOps teams. 48 tracked instruments with an expandable table, equity ETF breadth, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
   openGraph: {
     title: 'Market Tape — Markets & Technology Finance | Cloud & Capital',
-    description: 'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
+    description: 'Market intelligence for FinOps teams. 48 tracked instruments with an expandable table, equity ETF breadth, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
     url: 'https://market-tape.cloudandcapital.com',
     images: [{ url: '/og-image.png', width: 1200, height: 630 }],
   },
   twitter: {
     card: 'summary_large_image',
-    description: 'Market intelligence for FinOps teams. 48 unique instruments displayed as 52 rows, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
+    description: 'Market intelligence for FinOps teams. 48 tracked instruments with an expandable table, equity ETF breadth, a source-linked AI compute deal tracker, and Lumen explaining dated market snapshots, with clear score definitions and questions for a technology cost review.',
     title: 'Market Tape — Markets & Technology Finance | Cloud & Capital',
     images: ['/og-image.png'],
   },

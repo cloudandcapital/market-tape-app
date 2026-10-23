@@ -6,6 +6,7 @@ export interface MarketContextData {
     spy: number
     spyD1: number
     guidance: string
+    equityBasket?: { count: number; positiveCount: number; excludes: string }
     exposureLevel: number
     trends: { long: string; intermediate: string; short: string }
     breadth: { above20d: number; above50d: number; label: string }
@@ -13,7 +14,9 @@ export interface MarketContextData {
     risk: { volatility: string; sentiment: string; momentum: string }
   }
   sectorData: Array<{ ticker: string; name: string; rs1m: number }>
+  infrastructureData?: Array<{ ticker: string; d1: number; d5: number; d20: number; rs1m: number }>
   macroData: {
+    tnx?: { yieldPercent: number; dailyBasisPoints: number | null } | null
     tlt: { rs1m: number; grade: string; d1: number; d20?: number } | null
     hyg: { rs1m: number; grade: string; d20?: number } | null
     dxy: { rs1m: number; last: number; d20?: number } | null

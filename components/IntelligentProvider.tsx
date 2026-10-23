@@ -1,9 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
 
-const CACHE_KEY = 'intelligent-brief-v19'
+const CACHE_KEY = 'intelligent-brief-v20'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
 const REQUEST_TIMEOUT_MS = 75_000
 
@@ -16,6 +16,7 @@ interface IntelligentState {
   refresh: () => void
   paused?: boolean
   snapshotChanged?: boolean
+  refreshMessage?: string
 }
 
 export const IntelligentCtx = createContext<IntelligentState>({
@@ -69,6 +70,8 @@ export function IntelligentProvider({ contextData, initialData = null, children,
   const [loading, setLoading] = useState(!initialData && !disabled)
   const [error, setError] = useState(false)
   const [snapshotChanged, setSnapshotChanged] = useState(false)
+  const [refreshMessage, setRefreshMessage] = useState('')
+  const previousGeneration = useRef(initialData?.generatedAt)
 
   const hash = hashContext(contextData)
 
@@ -78,12 +81,14 @@ export function IntelligentProvider({ contextData, initialData = null, children,
       const cached = loadCache(hash)
       if (cached) {
         setData(cached)
+        previousGeneration.current = cached.generatedAt
         setLoading(false)
         return
       }
     }
     setLoading(true)
     setError(false)
+    if (force) setRefreshMessage('Checking analysis for this snapshot…')
     const controller = new AbortController()
     const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
     try {
@@ -94,6 +99,7 @@ export function IntelligentProvider({ contextData, initialData = null, children,
         signal: controller.signal,
       })
       if (res.status === 409) {
+        setRefreshMessage('A newer snapshot is available. Reload the page.')
         setSnapshotChanged(true)
         setData(null)
         setError(true)
@@ -102,14 +108,18 @@ export function IntelligentProvider({ contextData, initialData = null, children,
       if (!res.ok) throw new Error('Analysis request failed')
       const json = await res.json()
       if (json.success && json.data) {
+        if (force) setRefreshMessage(json.data.generatedAt === previousGeneration.current ? 'Checked. This is still the cached analysis for this snapshot; refreshing does not fetch live prices.' : 'Analysis updated for the displayed snapshot.')
+        previousGeneration.current = json.data.generatedAt
         setData(json.data)
         saveCache(json.data, hash)
       } else {
+        if (force) setRefreshMessage('Could not refresh analysis. Any earlier analysis below keeps its original date.')
         setError(true)
         const cached = loadCache(hash)
         if (cached) setData(cached)
       }
     } catch {
+      if (force) setRefreshMessage('Could not refresh analysis. Any earlier analysis below keeps its original date.')
       setError(true)
       const cached = loadCache(hash)
       if (cached) setData(cached)
@@ -131,7 +141,7 @@ export function IntelligentProvider({ contextData, initialData = null, children,
   const cachedAt = data ? formatCachedAt(data) : null
 
   return (
-    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refresh: () => fetchBrief(true) }}>
+    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refreshMessage, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
       <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
         <BriefSection />
@@ -143,18 +153,18 @@ export function IntelligentProvider({ contextData, initialData = null, children,
 }
 
 function BriefSection() {
-  const { data, loading, cachedAt, refresh, paused, snapshotChanged } = useIntelligent()
+  const { data, loading, cachedAt, refresh, paused, snapshotChanged, refreshMessage } = useIntelligent()
 
   return (
     <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem] rule-subtle-bottom">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
-          <span className="font-mono text-[0.68rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
+          <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#4A6B5F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.68rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-              <span className="font-mono text-[0.68rem] tracking-[0.06em] uppercase text-charcoal/65">
+              <span className="font-mono text-[0.72rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
+              <span className="font-mono text-[0.72rem] tracking-[0.06em] uppercase text-charcoal/65">
                 {cachedAt}
               </span>
             </>
@@ -163,8 +173,8 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading || paused || snapshotChanged}
-          className="font-mono text-[0.68rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-auto sm:ml-3"
-          style={{ color: 'rgba(0,0,0,0.55)' }}
+          className="font-mono text-[0.72rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer px-2 py-2 min-h-8 flex-shrink-0 ml-auto sm:ml-3"
+          style={{ color: '#655e58' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
         >
@@ -172,6 +182,7 @@ function BriefSection() {
         </button>
       </div>
 
+      {refreshMessage && <p role="status" aria-live="polite" className="px-7 pt-2 font-mono text-xs text-charcoal/65">{refreshMessage}</p>}
       {/* Content */}
       <div className="px-7 py-5">
         {loading && (
@@ -200,25 +211,25 @@ function BriefSection() {
         {!loading && data && (
           <div>
             {data.morningBrief.headline && (
-              <p className="font-mono text-[0.68rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
+              <p className="font-mono text-[0.72rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
                 {data.morningBrief.headline}
               </p>
             )}
             <div className="grid gap-4 md:grid-cols-[1.25fr_1fr]">
               <div>
                 <p className="font-serif text-[0.95rem] leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
-                <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Session moves</p>
+                <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Session moves</p>
                 <ul className="space-y-1.5">
-                  {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
+                  {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
                 </ul>
               </div>
               <div className="md:border-l md:pl-5" style={{ borderColor: 'var(--rule-subtle)' }}>
-                <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Questions for a cost review</p>
+                <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Separate questions for your cost review</p>
                 <ul className="space-y-1.5 mb-4">
-                  {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
+                  {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
                 </ul>
                 <div className="rule-subtle-top pt-3">
-                  <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">Decision to monitor</p>
+                  <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">A market question to follow</p>
                   <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
                 </div>
               </div>

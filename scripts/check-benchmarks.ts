@@ -54,10 +54,10 @@ const todayStr = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0')
 const intelligentBriefModule = readFileSync(new URL('../lib/intelligentBrief.ts', import.meta.url), 'utf8')
 const intelligentProvider = readFileSync(new URL('../components/IntelligentProvider.tsx', import.meta.url), 'utf8')
 const intelligentSignals = readFileSync(new URL('../components/IntelligentSignals.tsx', import.meta.url), 'utf8')
-for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v23', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
+for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v24', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief contract missing: ${contract}`)
 }
-if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v19'")) throw new Error('Browser cache version was not bumped')
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v20'")) throw new Error('Browser cache version was not bumped')
 for (const unsafeOutput of [
   'Defensive exposure guidance at 33/100 suggests the macro backdrop does not yet reward aggressive cloud commitment expansion.',
   'Review non-critical cloud expansion against workload demand and utilization given the Defensive exposure signal at 33/100; monitor breadth improvement before extending commitment duration.',
@@ -149,9 +149,12 @@ const briefFixture = {
 }
 const guardedBrief = enforceInterpretationGuardrails(briefFixture, qualifying)
 if (guardedBrief.riskAlerts.length !== 2 || guardedBrief.cloudValuations !== briefFixture.cloudValuations || guardedBrief.commitmentWindows.spot.status !== 'REVIEW') throw new Error('Valid alerts or existing behavior changed')
-for (const text of [guardedBrief.morningBrief.action, ...guardedBrief.morningBrief.cloudFinanceImplications, ...Object.values(guardedBrief.finopsSignals), guardedBrief.sectorInsights, ...guardedBrief.riskAlerts.map(a => a.message)]) {
-  if (!text.includes(ORGANIZATION_DECISION_CONTEXT)) throw new Error('Organizational-context guardrail lost')
-}
+// Fixed cost questions and source-built alerts do not inherit generated decision prose.
+assert.equal(guardedBrief.finopsSignals.saasRenewals, 'When is the notice deadline, which seats are used, and what alternatives have you priced?')
+assert.ok(!guardedBrief.riskAlerts.some(alert => /threshold|≤|record.low/i.test(alert.message)))
+assert.equal(guardedBrief.morningBrief.cloudFinanceImplications.length, 2)
+assert.ok(guardedBrief.finopsSignals.infrastructure.includes('reservation-only'))
+
 
 const successMarkup = renderToStaticMarkup(createElement(IntelligentCtx.Provider, {
   value: { data: guardedBrief, loading: false, error: false, cachedAt: null, contextData: null, refresh: () => {} },
@@ -258,12 +261,12 @@ if (statusCounts['Announced'] !== 4) throw new Error(`Expected 4 Announced rows,
 if (statusCounts['Target'] !== 2) throw new Error(`Expected 2 Target rows, found ${statusCounts['Target']}`)
 if (statusCounts['Reported / in talks'] !== 5) throw new Error(`Expected 5 Reported / in talks rows, found ${statusCounts['Reported / in talks']}`)
 
-const anthropicSpaceX = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Colossus 1'))
+const anthropicSpaceX = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Colossus I & II'))
 if (!anthropicSpaceX || anthropicSpaceX.status !== 'Signed' || anthropicSpaceX.capacityBasis !== 'company-disclosed') {
   throw new Error('Anthropic–SpaceX must be Signed with company-disclosed capacity')
 }
-if (anthropicSpaceX.amountBasis !== 'reported' || anthropicSpaceX.term !== '3 years reported') {
-  throw new Error('Anthropic–SpaceX value and term must remain reported')
+if (anthropicSpaceX.amountBasis !== 'undisclosed' || anthropicSpaceX.amountBillions !== undefined || !anthropicSpaceX.term.includes('90 days')) {
+  throw new Error('Anthropic–SpaceX must disclose the cancellation term without an invented firm total')
 }
 const anthropicNscale = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.includes('Nscale'))
 if (!anthropicNscale || anthropicNscale.status !== 'Reported / in talks') throw new Error('Anthropic–Nscale must remain reported')
