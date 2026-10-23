@@ -3,7 +3,7 @@ import { CLOUD_REVIEW } from '@/lib/cloudReview'
 export default function CloudReview() {
   return (
     <section aria-labelledby="cloud-review-heading">
-      <h2 id="cloud-review-heading" className="text-[10px] font-mono tracking-[0.18em] uppercase text-charcoal/65 mb-2">Before a cloud commitment</h2>
+      <h2 id="cloud-review-heading" className="text-[0.72rem] font-mono tracking-[0.18em] uppercase text-charcoal/65 mb-2">Before a cloud commitment</h2>
       <p className="font-mono text-xs text-charcoal/65 leading-relaxed mb-3 max-w-3xl">Markets give you context. Your usage and contract decide whether a commitment makes sense. Start with these questions.</p>
       <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
         {[

@@ -2,6 +2,7 @@ import { fetchMarketData, formatMarketSessionLabel, formatPublishedLabel } from 
 import { marketPriceDate, snapshotIsOld } from '@/lib/marketIntegrity'
 import { buildContextData } from '@/lib/marketContext'
 import CloudReview from '@/components/CloudReview'
+import AllInstruments from '@/components/AllInstruments'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
 import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
@@ -37,17 +38,17 @@ export default async function Page() {
         <header className="mb-5">
           <div className="flex items-baseline justify-between flex-wrap gap-3">
             <div>
-              <p className="text-[9px] font-mono tracking-[0.22em] uppercase text-charcoal/65 mb-0.5">Cloud &amp; Capital</p>
+              <p className="text-[0.72rem] font-mono tracking-[0.22em] uppercase text-charcoal/65 mb-0.5">Cloud &amp; Capital</p>
               <h1 className="font-serif italic font-normal tracking-tight"
                 style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: '#191714', lineHeight: 1.1 }}>
                 Market Tape
               </h1>
-              <p className="font-mono text-[0.68rem] leading-relaxed text-charcoal/65 mt-2 max-w-xl">A clearer view of markets, cloud spending, and AI infrastructure.</p>
+              <p className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 mt-2 max-w-xl">A clearer view of markets, cloud spending, and AI infrastructure.</p>
             </div>
             <div className="text-left sm:text-right">
-              <p className="text-[0.68rem] font-mono uppercase tracking-[0.08em] text-charcoal/65">{formatMarketSessionLabel(marketPriceDate(snapshot))}</p>
-              <p className="text-[0.65rem] font-mono text-charcoal/65 mt-1">{formatPublishedLabel(snapshot.generated_at_utc)}</p>
-              <p className="text-[0.65rem] font-mono text-charcoal/65 mt-1">Tracked: {trackedInstrumentCount} unique · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
+              <p className="text-[0.72rem] font-mono uppercase tracking-[0.08em] text-charcoal/65">{formatMarketSessionLabel(marketPriceDate(snapshot))}</p>
+              <p className="text-[0.72rem] font-mono text-charcoal/65 mt-1">{formatPublishedLabel(snapshot.generated_at_utc)}</p>
+              <p className="text-[0.72rem] font-mono text-charcoal/65 mt-1">Tracked: {trackedInstrumentCount} unique · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
             </div>
           </div>
           <hr className="rule-major-bottom border-0 mt-4" />
@@ -66,7 +67,7 @@ export default async function Page() {
           <div className="space-y-10 md:space-y-12">
             {/* Band 2 */}
             <section id="market-signals" className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 scroll-mt-20" aria-label="Primary market signals">
-              <MarketStatus meta={meta} />
+              <MarketStatus snapshot={snapshot} />
               <div>
                 <FinOpsSignals />
                 <hr className="rule-subtle-bottom border-0 my-6" />
@@ -101,10 +102,11 @@ export default async function Page() {
               <Sectors snapshot={snapshot} />
               <div>
                 <CountriesGlobal meta={meta} />
-                <hr className="rule-subtle-bottom border-0 my-7" />
                 <CloudValuations multiples={multiples} />
               </div>
             </section>
+
+            <AllInstruments snapshot={snapshot} />
 
             {/* Band 7 */}
             <section aria-label="Hyperscaler capital expenditure">
@@ -119,16 +121,16 @@ export default async function Page() {
 
           <footer className="mt-12 pt-5 rule-major-top">
             <div className="flex flex-wrap justify-between items-center gap-3">
-              <p className="text-[0.6rem] font-mono text-charcoal/65">
+              <p className="text-[0.72rem] font-mono text-charcoal/65">
                 Data via yFinance · Pipeline checks scheduled every 30 min · Intelligence via Lumen ·{' '}
                 <a href="/sources" className="hover:text-charcoal/65 transition-colors">Methodology &amp; Sources</a>
               </p>
-              <p className="text-[0.6rem] font-mono text-charcoal/65">
+              <p className="text-[0.72rem] font-mono text-charcoal/65">
                 © 2026 Cloud &amp; Capital ·{' '}
                 <a href="https://cloudandcapital.com" className="hover:text-charcoal/65 transition-colors">cloudandcapital.com</a>
               </p>
             </div>
-            <p className="text-[0.68rem] font-mono text-charcoal/65 mt-2">
+            <p className="text-[0.72rem] font-mono text-charcoal/65 mt-2">
               For informational purposes only · Not investment, financial, or tax advice
             </p>
           </footer>

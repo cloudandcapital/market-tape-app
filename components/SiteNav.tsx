@@ -25,8 +25,8 @@ export default function SiteNav() {
     setToolsOpen(false)
   }
 
-  const linkCls = 'font-mono text-[0.57rem] tracking-[0.12em] uppercase text-black/50 hover:text-black no-underline transition-colors duration-150'
-  const mobileLinkCls = 'block px-7 py-[0.8rem] font-mono text-[0.68rem] tracking-[0.16em] uppercase text-white/60 hover:text-white no-underline transition-colors duration-150'
+  const linkCls = 'font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black no-underline transition-colors duration-150'
+  const mobileLinkCls = 'block px-7 py-[0.8rem] font-mono text-[0.72rem] tracking-[0.16em] uppercase text-white/60 hover:text-white no-underline transition-colors duration-150'
 
   const navLinks = [
     { label: 'Services', href: `${BASE}/services` },
@@ -37,6 +37,8 @@ export default function SiteNav() {
 
   const toolLinks = [
     { label: 'All free tools', href: `${BASE}/tools` },
+    { label: 'AI Cost Lens', href: 'https://lens.cloudandcapital.com' },
+    { label: 'Software Renewal Tracker', href: `${BASE}/tools/software-renewal-tracker` },
     { label: 'Market Tape',       href: 'https://market-tape.cloudandcapital.com' },
     { label: 'Signal Audit',      href: `${BASE}/signal-audit` },
     { label: 'Interactive Lab',   href: `${BASE}/interactive-lab` },
@@ -70,11 +72,11 @@ export default function SiteNav() {
                 aria-expanded={toolsOpen}
                 aria-controls="desktop-tools-menu"
                 onClick={(e) => { e.stopPropagation(); setToolsOpen(o => !o) }}
-                className="font-mono text-[0.57rem] tracking-[0.12em] uppercase text-black/50 hover:text-black bg-transparent border-none cursor-pointer p-0 flex items-center gap-1 transition-colors duration-150"
+                className="font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black bg-transparent border-none cursor-pointer p-0 flex items-center gap-1 transition-colors duration-150"
                 style={{ lineHeight: '1', verticalAlign: 'baseline' }}
               >
                 Tools
-                <span className={`text-[0.44rem] inline-block transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>
+                <span className={`text-[0.72rem] inline-block transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {toolsOpen && (
                 <ul
@@ -86,7 +88,7 @@ export default function SiteNav() {
                     <li key={l.label}>
                       <a
                         href={l.href}
-                        className="block px-5 py-[0.55rem] font-mono text-[0.57rem] tracking-[0.12em] uppercase text-black/50 hover:text-black no-underline whitespace-nowrap transition-colors duration-150"
+                        className="block px-5 py-[0.55rem] font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black no-underline whitespace-nowrap transition-colors duration-150"
                         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(107,142,127,0.07)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         style={{ background: 'transparent' }}
@@ -131,7 +133,7 @@ export default function SiteNav() {
               <button
                 aria-expanded={toolsOpen}
                 onClick={event => { event.stopPropagation(); setToolsOpen(o => !o) }}
-                className="block w-full text-left px-7 py-[0.8rem] font-mono text-[0.68rem] tracking-[0.16em] uppercase text-white/60 hover:text-white bg-transparent border-none cursor-pointer transition-colors duration-150"
+                className="block w-full text-left px-7 py-[0.8rem] font-mono text-[0.72rem] tracking-[0.16em] uppercase text-white/60 hover:text-white bg-transparent border-none cursor-pointer transition-colors duration-150"
               >
                 Tools {toolsOpen ? '▴' : '▾'}
               </button>
@@ -142,7 +144,7 @@ export default function SiteNav() {
                       <a
                         href={l.href}
                         onClick={closeMobile}
-                        className="block pl-[2.75rem] pr-7 py-[0.6rem] font-mono text-[0.63rem] tracking-[0.14em] uppercase no-underline transition-colors duration-150"
+                        className="block pl-[2.75rem] pr-7 py-[0.6rem] font-mono text-[0.72rem] tracking-[0.14em] uppercase no-underline transition-colors duration-150"
                         style={{ color: 'rgba(244,239,230,0.42)' }}
                       >
                         {l.label}

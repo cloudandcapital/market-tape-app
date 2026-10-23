@@ -38,7 +38,7 @@
   --color-sage-dark: #4A6B5F;
   --color-sage-light: #8BA898;
   --color-gold: #D4AF37;
-  --color-gain: #6B8E7F;
+  --color-gain: #4A6B5F;
   --color-loss: #A93A33;
   --color-loss-light: #E8A09A;
 }
@@ -58,3 +58,5 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+[tabindex="0"]:focus-visible { outline: 2px solid #3d6055; outline-offset: 4px; }

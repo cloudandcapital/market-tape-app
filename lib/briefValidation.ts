@@ -21,5 +21,7 @@ export function assertBriefResponse(value: unknown): asserts value is BriefRespo
     ...brief.morningBrief.whatChanged, ...brief.morningBrief.cloudFinanceImplications,
     ...Object.values(brief.finopsSignals), brief.sectorInsights, ...brief.riskAlerts.map(alert => alert.message)]
   const scoreAsPercent = /(?:[+-]?\d+(?:\.\d+)?\s*%\s*(?:1M\s*)?(?:RS(?:1M)?\b|relative[- ]strength\b|score\b)|\b(?:RS1M|RS|relative[- ]strength(?:\s+score)?|score)\s*(?:(?:of|at|is)\s+|:\s*)?[+-]?\d+(?:\.\d+)?\s*%)/i
+  const stocksAsBreadth = /(?:\bstocks\b[^.!?]{0,100}\b(?:above|below|breadth|moving average)|\b(?:above|below|breadth|\d+(?:\.\d+)?\s*%)[^.!?]{0,70}\bstocks\b)/i
+  if (visible.some(prose => stocksAsBreadth.test(prose))) throw new Error('Analysis called tracked ETF breadth stocks')
   if (visible.some(prose => scoreAsPercent.test(prose))) throw new Error('Analysis confused score and percentage units')
 }

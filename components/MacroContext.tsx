@@ -6,10 +6,10 @@ function MacroRow({
 }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="flex items-baseline justify-between py-[0.35rem] rule-subtle-bottom">
-      <span className="text-[10px] font-mono text-charcoal/65">{label}</span>
+      <span className="text-[0.72rem] font-mono text-charcoal/65">{label}</span>
       <div className="text-right">
         <span className="text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
-        {sub && <span className="text-[9px] font-mono text-charcoal/65 ml-1">{sub}</span>}
+        {sub && <span className="text-[0.72rem] font-mono text-charcoal/65 ml-1">{sub}</span>}
       </div>
     </div>
   )
@@ -20,19 +20,19 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
   const hyg = getRow(snapshot, 'HYG')
   const dxy = getRow(snapshot, 'DXY')
   const iwm = getRow(snapshot, 'IWM')
-  const qqq = getRow(snapshot, 'QQQ')
+  const spy = getRow(snapshot, 'SPY')
 
-  const smallVsLarge = iwm && qqq ? iwm.rs1m - qqq.rs1m : null
+  const smallVsLarge = iwm && spy ? iwm.rs1m - spy.rs1m : null
 
   function trendColor(rs1m: number) {
-    if (rs1m > 0.5) return '#6B8E7F'
+    if (rs1m > 0.5) return '#4A6B5F'
     if (rs1m < -0.5) return '#C0443A'
-    return '#888'
+    return '#6D6964'
   }
 
   return (
     <div>
-      <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
+      <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
         Macro Context
       </h2>
 
@@ -60,15 +60,15 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
           color={trendColor(dxy.d20_pct)}
         />
       )}
-      {smallVsLarge !== null && iwm && qqq && (
+      {smallVsLarge !== null && iwm && spy && (
         <MacroRow
-          label="Small vs Large"
-          value={`IWM score ${smallVsLarge >= 0 ? 'higher' : 'lower'}`}
-          sub={`${smallVsLarge > 0 ? '+' : ''}${smallVsLarge.toFixed(2)} gap`}
-          color={smallVsLarge > 0.5 ? '#6B8E7F' : smallVsLarge < -0.5 ? '#C0443A' : '#888'}
+          label="Small caps vs S&P 500"
+          value={`IWM ${smallVsLarge > 0 ? 'ahead' : smallVsLarge < 0 ? 'behind' : 'level'}`}
+          sub={`${smallVsLarge > 0 ? '+' : ''}${smallVsLarge.toFixed(2)} score gap`}
+          color={smallVsLarge > 0.5 ? '#4A6B5F' : smallVsLarge < -0.5 ? '#C0443A' : '#6D6964'}
         />
       )}
-      <p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed mt-3">20D = price change over 20 trading sessions. Scores compare volatility-adjusted performance with SPY. HYG price changes do not measure credit spreads.</p>
+      <p className="font-mono text-[0.72rem] text-charcoal/65 leading-relaxed mt-3">20D = price change over 20 trading sessions. Scores compare volatility-adjusted performance with SPY. HYG price changes do not measure credit spreads.</p>
     </div>
   )
 }

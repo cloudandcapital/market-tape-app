@@ -6,19 +6,21 @@ import { enforceInterpretationGuardrails } from '@/lib/intelligentGuardrails'
 import { assertBriefResponse } from '@/lib/briefValidation'
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
 export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
-export const INTELLIGENT_BRIEF_SYSTEM_PROMPT = "Explain markets to a curious reader and a technology-finance team. Use plain English and only supplied data. Separate measurements, source-dated benchmarks, and interpretation. RS1M is a dimensionless volatility-adjusted score: (20-session asset return minus SPY return) divided by the asset’s 20-session realized volatility. Never append % to a score or infer absolute price direction, interest-rate direction, credit spreads, or vendor discounts from it. Daily and 20-session percentage price changes are labeled separately. Market prices do not establish cloud commitment duration, Spot safety, capacity availability, or vendor willingness to discount. Do not issue purchasing verdicts or imply a tested causal relationship. COMMODITY ETF PROXY RULE: GLD and USO are ETF share prices, not commodity spot quotes; never attach dollars-per-ounce or dollars-per-barrel meaning. Use the supplied price date, not today or this morning. Daily bars may still change during a session. Use 20-session language for score rankings. Missing values stay Unavailable. Cite only numbers visible in the dashboard or source tooltips. Never invent forecasts, savings, quotes, benchmarks, or sources. Return only JSON."
+export const INTELLIGENT_BRIEF_SYSTEM_PROMPT = "Explain markets to a curious reader and a technology-finance team. Use plain English and only supplied data. Separate measurements, source-dated benchmarks, and interpretation. RS1M is a dimensionless volatility-adjusted score: (20-session asset return minus SPY return) divided by the asset’s 20-session realized volatility. Never append % to a score or infer absolute price direction, interest-rate direction, credit spreads, or vendor discounts from it. Daily and 20-session percentage price changes are labeled separately. Market prices do not establish cloud commitment duration, Spot safety, capacity availability, or vendor willingness to discount. Do not issue purchasing verdicts or imply a tested causal relationship. COMMODITY ETF PROXY RULE: GLD and USO are ETF share prices, not commodity spot quotes; never attach dollars-per-ounce or dollars-per-barrel meaning. Use the supplied price date, not today or this morning. Daily bars may still change during a session. Use 20-session language for score rankings. Missing values stay Unavailable. Use tracked equity ETFs for breadth, never stocks or all equities. Cite only numbers visible in the dashboard, expanded instrument table, or source tooltips. Round percentages to two decimals and yield changes to whole basis points. Never invent forecasts, savings, quotes, benchmarks, or sources. Return only JSON."
 export const BRIEF_INSTRUCTIONS = [
   "RS1M rankings use score units, not percent. A higher score does not establish a higher raw return across assets with different volatility.",
   "cloudSpend: ask what usage, budget, or contract data is needed; breadth does not justify expanding or pausing a workload.",
   "saasRenewals: a valuation or HYG score cannot establish a discount window. Ask about the quote, seats used, notice deadline, or alternatives.",
   "infrastructure: summarize the source-dated GPU comparison without urgency or a booking horizon.",
   "Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels.",
+  "The action must be a market research question about a named ticker or source, not cloud utilization or a procurement decision.",
+  "Use the supplied Treasury yield move and semiconductor ETF price moves when relevant; do not confuse a yield change in basis points with a price return.",
   "Copy valuations exactly. Do not infer trends from a single snapshot or revive archived fallbacks.",
   "Only permitted alerts: Bond ETF Weakness if TLT d20 < -2%; Dollar Weakening if DXY d20 < -5%; GPU Capacity Tightening if a source explicitly calls a named generation supply-constrained; Data Center Capacity Tightness if vacancy <=2% and construction preleased >=80%. These are review flags, not calibrated forecasts.",
   "Do not generate Rates Rising from a TLT score or SaaS Discount Window from a multiple.",
   "Keep morningBrief below 180 words. whatChanged describes measured session movements, not differences between stored snapshots. cloudFinanceImplications asks questions, without inventing corporate budget behavior.",
   "Do not repeat a long qualification in every field. Frame decisions as questions to check against actual usage and terms.",
-  "Do not describe mixed-asset basket breadth as stock-market-wide breadth or HYG price as a credit spread.",
+  "Breadth and trends describe the explicitly classified equity ETF basket, excluding SPY and all macro instruments. Say tracked equity ETFs, never stocks. HYG price is not a credit spread.",
   "All commitmentWindows statuses must be REVIEW. Reasons identify missing workload and contract evidence. Never call Spot safe based on markets."
 ]
 const RESPONSE_SHAPE = {
@@ -77,7 +79,7 @@ export function buildPrompt(ctx: MarketContextData, multiples: { publicCloud: st
   return JSON.stringify({
     marketSessionLabel: ctx.marketSessionLabel, marketData: ctx.marketData, sectorData: ctx.sectorData,
     leaderboard: { leaders: ctx.leaderboard.leaders.slice(0, 5), laggards: ctx.leaderboard.laggards.slice(0, 5) },
-    macroData: ctx.macroData,
+    macroData: ctx.macroData, infrastructureData: ctx.infrastructureData,
     units: { rs1m: 'dimensionless volatility-adjusted score', d1: 'daily percentage price change', d20: '20-session percentage price change' },
     infrastructure: buildInfraContextBlock(multiples), instructions: BRIEF_INSTRUCTIONS, responseShape: RESPONSE_SHAPE, generationTime: new Date().toISOString(),
   })
@@ -133,6 +135,6 @@ export const getCachedIntelligentBrief = unstable_cache(
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
   }),
-  ['intelligent-brief-v23', INTELLIGENT_BRIEF_MODEL],
+  ['intelligent-brief-v24', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )

@@ -9,6 +9,14 @@ import { validateRiskAlerts } from '../lib/intelligentGuardrails'
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import CloudReview from '../components/CloudReview'
 import MacroContext from '../components/MacroContext'
+import TechConcentration from '../components/TechConcentration'
+import AllInstruments from '../components/AllInstruments'
+import AIComputeCommitments from '../components/AIComputeCommitments'
+import { CountriesGlobal } from '../components/SectorLeaders'
+import { equityBreadth } from '../lib/equityBreadth'
+import { numberTone, signedNumber } from '../lib/numberFormat'
+import { aiComputeData, getSignedDollarSummary } from '../lib/aiCompute'
+import { buildContextData } from '../lib/marketContext'
 import { CloudValuations } from '../components/IntelligentSignals'
 import { IntelligentCtx } from '../components/IntelligentProvider'
 import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
@@ -109,4 +117,94 @@ test('incomplete prose and explicit score-as-percentage claims are rejected', ()
     assert.throws(() => assertBriefResponse({ ...brief, sectorInsights: text }), /score and percentage/)
   }
   assert.throws(() => assertBriefResponse({ morningBrief: {} }), /Incomplete/)
+  for (const text of ['54.17% of stocks above their 20-day average.', 'Stocks above the 50-day moving average are weakening.']) {
+    assert.throws(() => assertBriefResponse({ ...brief, sectorInsights: text }), /breadth stocks/)
+  }
+})
+
+test('a stress move in VIX or bonds cannot improve equity ETF breadth; repeated funds count once', () => {
+  const { snapshot } = fixture()
+  const base = snapshot.groups[0].rows[0]
+  snapshot.groups[0].rows.push({ ...base, ticker: 'IWM', rs1m: 1, above_50d: false })
+  const before = equityBreadth(snapshot)
+  assert.deepEqual({ count: before.count, positive: before.positiveCount, level: before.level, above50d: before.above50d, band: before.band }, { count: 2, positive: 1, level: 50, above50d: 50, band: 'Middle band' })
+  snapshot.groups[0].rows.find(row => row.ticker === '^VIX')!.rs1m = 100
+  snapshot.groups[0].rows.push({ ...base, ticker: 'TLT', rs1m: 100 }, { ...base, ticker: 'BIL', rs1m: 100 })
+  assert.deepEqual(equityBreadth(snapshot), before)
+})
+
+test('small caps compare with SPY, while the XLK grade is labeled as its own trend', () => {
+  const { snapshot } = fixture()
+  const base = snapshot.groups[0].rows[0]
+  snapshot.groups[0].rows.push({ ...base, ticker: 'IWM', rs1m: -0.336 }, { ...base, ticker: 'XLK', rs1m: -0.92, trend_grade: 'C' })
+  const macro = renderToStaticMarkup(createElement(MacroContext, { snapshot }))
+  assert.match(macro, /Small caps vs S&amp;P 500/)
+  assert.match(macro, /IWM behind/)
+  assert.match(macro, /-0.34 score gap/)
+  const tech = renderToStaticMarkup(createElement(TechConcentration, { snapshot }))
+  assert.match(tech, /XLK trend/)
+  assert.match(tech, /XLK · RS1M vs SPY/)
+})
+
+test('rounded zero has no positive sign or gain color, including negative zero', () => {
+  for (const value of [-0, -0.001, 0, 0.001]) {
+    assert.equal(signedNumber(value), '0.00')
+    assert.equal(numberTone(value), 'text-charcoal/65')
+  }
+  const { meta } = fixture()
+  meta.leaders.countries = [{ ticker: 'INDA', name: 'India', rs1m: -0 }]
+  const html = renderToStaticMarkup(createElement(CountriesGlobal, { meta }))
+  assert.doesNotMatch(html, /\+0\.00|text-sage-dark/)
+})
+
+test('the full instrument table includes source instruments once and labels price changes separately', () => {
+  const { snapshot } = fixture()
+  const html = renderToStaticMarkup(createElement(AllInstruments, { snapshot }))
+  assert.match(html, /All 3 tracked instruments/)
+  assert.equal((html.match(/href="https:\/\/finance.yahoo.com\/quote\/QQQ\//g) ?? []).length, 1)
+  assert.match(html, /20D/)
+  assert.match(html, /RS1M score/)
+  assert.match(html, /Macro/)
+})
+
+test('AI compute summary is fixed at every width and never claims a visitor budget horizon', () => {
+  const html = renderToStaticMarkup(createElement(AIComputeCommitments))
+  assert.match(html, /\$265B\+/)
+  assert.match(html, /4 qualifying contracts/)
+  assert.doesNotMatch(html, /forcing|next 6 months|Loading AI|Refresh analysis/)
+})
+
+test('analysis context uses equity breadth and includes Treasury yields and infrastructure ETF price moves', () => {
+  const { snapshot, meta } = fixture()
+  const base = snapshot.groups[0].rows[0]
+  snapshot.groups[0].rows.push({ ...base, ticker: '^TNX', last: 4.95, d1_pct: -3.8 })
+  snapshot.groups.push({ name: 'AI & Infrastructure', rows: [{ ...base, ticker: 'SMH', d1_pct: -6 }] })
+  const context = buildContextData(meta, snapshot)
+  assert.equal(context.marketData.equityBasket?.count, 2)
+  assert.equal(context.marketData.guidance, 'Lower band')
+  assert.ok(context.macroData.tnx!.dailyBasisPoints! < -19)
+  assert.equal(context.infrastructureData![0].d1, -6)
+})
+
+test('an entirely unavailable valuation section is suppressed rather than filled with archived cards', () => {
+  const { baskets } = { baskets: Object.fromEntries(['publicCloud', 'saas', 'aiInfra'].map(key => [key, { source: 'fallback', dataAsOf: '2026-04-24' }])) }
+  const html = renderToStaticMarkup(createElement(CloudValuations, { multiples: { publicCloud: 'Unavailable', saas: 'Unavailable', aiInfra: 'Unavailable', source: 'fallback', asOf: '2026-04-24', baskets } as LiveMultiples }))
+  assert.equal(html, '')
+})
+
+test('supported data-center alerts describe the source, without internal trigger or invented record language', () => {
+  const { meta, snapshot } = fixture()
+  const inputs = { market: buildContextData(meta, snapshot), multiples: { saas: 'Unavailable' }, benchmarks: BENCHMARKS }
+  const alerts = validateRiskAlerts([{ title: 'Data Center Capacity Tightness', type: 'warning', message: 'At or below the ≤2% threshold, a new record low.' }], inputs)
+  assert.match(alerts[0].message, /unchanged from year-end 2025/)
+  assert.doesNotMatch(alerts[0].message, /threshold|≤|record.low/)
+})
+
+test('a cancellable monthly compute agreement is sourced to the filing and never annualized into the headline', () => {
+  const row = aiComputeData.find(row => row.buyer === 'Anthropic' && row.provider.startsWith('xAI / SpaceX'))!
+  assert.match(row.term, /90 days/)
+  assert.equal(row.amountBasis, 'undisclosed')
+  assert.equal(row.amountBillions, undefined)
+  assert.ok(row.sources.some(source => source.url.includes('sec.gov/Archives')))
+  assert.equal(getSignedDollarSummary().totalBillions, 265)
 })
