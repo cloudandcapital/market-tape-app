@@ -14,12 +14,12 @@ export interface MarketContextData {
   }
   sectorData: Array<{ ticker: string; name: string; rs1m: number }>
   macroData: {
-    tlt: { rs1m: number; grade: string; d1: number } | null
-    hyg: { rs1m: number; grade: string } | null
-    dxy: { rs1m: number; last: number } | null
+    tlt: { rs1m: number; grade: string; d1: number; d20?: number } | null
+    hyg: { rs1m: number; grade: string; d20?: number } | null
+    dxy: { rs1m: number; last: number; d20?: number } | null
     gld: { last: number; d1: number; rs1m: number } | null
     uso: { last: number; d1: number } | null
-    iwm: { rs1m: number; last: number } | null
+    iwm: { rs1m: number; last: number; d20?: number } | null
     qqq: { rs1m: number; last: number; d1: number } | null
   }
   leaderboard: {

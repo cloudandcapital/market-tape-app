@@ -6,10 +6,11 @@ import { BENCHMARKS } from '@/lib/industryBenchmarks'
 import { type LiveMultiples, BASKETS, QUARTERLY_MULTIPLES } from '@/lib/liveMultiples'
 import BenchmarkTooltip from './BenchmarkTooltip'
 import DashboardIcon from './DashboardIcon'
+import CloudReview from './CloudReview'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/50 mb-4">
+    <h2 className="text-[10px] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
       {children}
     </h2>
   )
@@ -52,13 +53,13 @@ function ValuationRow({ label, value, tooltip, basket }: { label: string; value:
   return (
     <div className="py-2.5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <p className="font-mono text-[0.68rem] tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
         <div className="flex items-center gap-1.5">
-          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{unavailable ? 'Unavailable' : multiple} {!unavailable && <span className="font-mono text-[0.62rem] font-normal text-charcoal/55">NTM P/S</span>}</p>
+          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{unavailable ? 'Unavailable' : multiple} {!unavailable && <span className="font-mono text-[0.68rem] font-normal text-charcoal/65">NTM P/S</span>}</p>
           <BenchmarkTooltip {...tooltip} />
         </div>
       </div>
-      <p className="font-mono text-[0.6rem] text-charcoal/50 mt-0.5">{unavailable
+      <p className="font-mono text-[0.6rem] text-charcoal/65 mt-0.5">{unavailable
         ? `Live multiple unavailable · Archived ${QUARTERLY_MULTIPLES[basket].value} as of ${QUARTERLY_MULTIPLES[basket].lastUpdated}`
         : periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
       {interpretation && <p className="font-mono text-[0.68rem] text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
@@ -72,20 +73,13 @@ function CapexRow({ label, value, detail, color, tooltip }: {
   return (
     <div className="py-4 md:px-6 first:pl-0 last:pr-0">
       <div className="flex items-center gap-1 mb-1">
-        <p className="font-mono text-[0.58rem] tracking-[0.14em] uppercase text-charcoal/55">{label}</p>
+        <p className="font-mono text-[0.68rem] tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
         <BenchmarkTooltip {...tooltip} />
       </div>
       <p className="font-mono text-[0.82rem] font-semibold leading-snug" style={{ color }}>{value}</p>
-      <p className="font-mono text-[0.64rem] text-charcoal/60 leading-relaxed mt-1">{detail}</p>
+      <p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed mt-1">{detail}</p>
     </div>
   )
-}
-
-function statusColor(s: string): string {
-  if (s === 'FAVORABLE' || s === 'SAFE') return '#16a34a'
-  if (s === 'RISKY')   return '#dc2626'
-  if (s === 'HOLD')    return '#ca8a04'
-  return '#ca8a04' // CAUTION
 }
 
 function Skeleton({ count = 3 }: { count?: number }) {
@@ -99,7 +93,7 @@ function Skeleton({ count = 3 }: { count?: number }) {
 }
 
 function UnavailableAnalysis({ title }: { title: string }) {
-  return <div><SectionLabel>{title}</SectionLabel><p className="font-mono text-[0.68rem] text-charcoal/55 leading-relaxed">Lumen analysis is temporarily unavailable.</p></div>
+  return <div><SectionLabel>{title}</SectionLabel><p className="font-mono text-[0.68rem] text-charcoal/65 leading-relaxed">Lumen analysis is temporarily unavailable.</p></div>
 }
 
 export function FinOpsSignals() {
@@ -120,7 +114,7 @@ export function FinOpsSignals() {
           <div key={label} className="py-2.5 flex items-start gap-2">
             <DashboardIcon name={icon} />
             <div>
-              <p className="text-[0.58rem] font-mono uppercase tracking-[0.1em] text-charcoal/50 mb-0.5">{label}</p>
+              <p className="text-[0.68rem] font-mono uppercase tracking-[0.1em] text-charcoal/65 mb-0.5">{label}</p>
               <p className="text-[0.76rem] font-mono text-charcoal/75 leading-snug">{text}</p>
             </div>
           </div>
@@ -131,42 +125,12 @@ export function FinOpsSignals() {
 }
 
 export function CommitmentWindows() {
-  const { data, loading } = useIntelligent()
-  if (loading) return <div><SectionLabel>Commitment Windows</SectionLabel><Skeleton /></div>
-  if (!data) return <UnavailableAnalysis title="Commitment Windows" />
-  const { commitmentWindows } = data
-
-  return (
-    <div>
-      <SectionLabel>Commitment Windows</SectionLabel>
-      <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
-        {[
-          { label: '1-Year Commitment', win: commitmentWindows.oneYear },
-          { label: '3-Year Commitment', win: commitmentWindows.threeYear },
-          { label: 'Spot / On-Demand',  win: commitmentWindows.spot },
-        ].map(({ label, win }) => (
-          <div key={label} className="py-4 md:px-6 first:pl-0 last:pr-0">
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <span className="text-[0.62rem] font-mono uppercase tracking-[0.12em] text-charcoal/55">{label}</span>
-              <span className="font-mono text-[9px] font-semibold tracking-[0.08em] flex-shrink-0"
-                style={{ color: statusColor(win.status) }}>{win.status.charAt(0) + win.status.slice(1).toLowerCase()}</span>
-            </div>
-            <p className="text-[0.68rem] font-mono text-charcoal/70 leading-relaxed">{win.reason}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
+  return <CloudReview />
 }
 
 export function CloudValuations({ multiples }: { multiples: LiveMultiples }) {
-  const { data } = useIntelligent()
-  // Current source values remain visible even when analysis is loading or unavailable.
-  const cloudValuations = {
-    publicCloud: multiples.publicCloud === 'Unavailable' ? multiples.publicCloud : data?.cloudValuations.publicCloud ?? multiples.publicCloud,
-    saasAverage: multiples.saas === 'Unavailable' ? multiples.saas : data?.cloudValuations.saasAverage ?? multiples.saas,
-    aiInfrastructure: multiples.aiInfra === 'Unavailable' ? multiples.aiInfra : data?.cloudValuations.aiInfrastructure ?? multiples.aiInfra,
-  }
+  // Numeric values always come from the source fetch, never from generated prose.
+  const cloudValuations = { publicCloud: multiples.publicCloud, saasAverage: multiples.saas, aiInfrastructure: multiples.aiInfra }
   return (
     <div>
       <SectionLabel>Cloud Valuations</SectionLabel>
@@ -217,7 +181,7 @@ export function RiskAlerts() {
     const source = riskAlertSource(title)
     if (source === 'TLT' || source === 'DXY') {
       return {
-        source: `Yahoo Finance via yFinance · ${source} · 1M relative strength versus SPY`,
+        source: `Yahoo Finance via yFinance · ${source} · 20-session price change (not a relative-strength score)`,
         sourceUrl: `https://finance.yahoo.com/quote/${source === 'DXY' ? 'DX-Y.NYB' : 'TLT'}/`,
         lastUpdated: contextData?.marketSessionLabel ?? 'Market price date unavailable',
       }
@@ -225,7 +189,6 @@ export function RiskAlerts() {
     if (source === 'gpuSupplyStatus') {
       return { source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }
     }
-    if (source === 'saas') return valuationTooltip(cloudValuations.saasAverage, 'saas')
     if (source === 'dataCenterConstructionYoY') return { source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }
     return { source: 'Unsupported alert', lastUpdated: 'Unavailable' }
   }

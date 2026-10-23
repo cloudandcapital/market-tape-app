@@ -1,0 +1,112 @@
+import assert from 'node:assert/strict'
+import test from 'node:test'
+import { createElement } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
+import { validateMarketData, snapshotIsOld, yieldChangeBasisPoints } from '../lib/marketIntegrity'
+import { formatMarketSessionLabel } from '../lib/data'
+import { assertBriefResponse } from '../lib/briefValidation'
+import { validateRiskAlerts } from '../lib/intelligentGuardrails'
+import { BENCHMARKS } from '../lib/industryBenchmarks'
+import CloudReview from '../components/CloudReview'
+import MacroContext from '../components/MacroContext'
+import { CloudValuations } from '../components/IntelligentSignals'
+import { IntelligentCtx } from '../components/IntelligentProvider'
+import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
+import type { BriefResponse, MarketContextData } from '../lib/intelligentTypes'
+import type { LiveMultiples } from '../lib/liveMultiples'
+
+function fixture() {
+  const row = (ticker: string, rs1m: number): SnapshotRow => ({ ticker, name: ticker, short_name: ticker, last: 100,
+    price_date: '2026-10-22', price_source: 'test fixture', price_status: 'current', intra_pct: 1,
+    d1_pct: 1, d5_pct: 1, d20_pct: 1, atr_pct: 1, dist50_atr: 1, rs1m,
+    trend_grade: 'B', above_20d: true, above_50d: true, mini_rs_chart: '', tradingview_symbol: ticker, leveraged: { long: null, short: null } })
+  const qqq = row('QQQ', -1)
+  const snapshot: Snapshot = { generated_at_utc: '2026-10-23T00:15:00Z', benchmark: 'SPY', groups: [
+    { name: 'Macro', rows: [row('SPY', 0), row('^VIX', 2), qqq] },
+    { name: 'Tech', rows: [structuredClone(qqq)] },
+  ] }
+  const meta: Meta = { app: 'test', generated_at_utc: snapshot.generated_at_utc, benchmark: 'SPY', group_count: 2,
+    instrument_count: 3, display_row_count: 4, leaders: { sectors: [], countries: [] },
+    status: { exposure: { level: 33, guidance: 'Defensive' }, trend: { long_term: 'Sideways', intermediate_term: 'Sideways', short_term: 'Up' },
+      risk: { volatility: 'Neutral', sentiment: 'Bullish', momentum: 'Neutral' }, breadth: { above_20d_pct: 100, above_50d_pct: 100, breadth_label: 'Strong' }, momentum_env: { score: 85, label: 'Momentum-Friendly' } },
+    leaderboard: { leaders: [], laggards: [], universe_count: 3 } }
+  return { meta, snapshot }
+}
+
+test('four displayed rows reconcile to three unique instruments and the price date survives a later publication date', () => {
+  const { meta, snapshot } = fixture()
+  assert.equal(validateMarketData(meta, snapshot).meta.instrument_count, 3)
+  assert.equal(formatMarketSessionLabel(snapshot.groups[0].rows[0].price_date), 'Prices dated · Oct 22, 2026 · ET')
+})
+
+test('mismatched runs, conflicting duplicates, stale prices, invalid numbers, and inflated breadth fail closed', () => {
+  const mutations: Array<(data: ReturnType<typeof fixture>) => void> = [
+    d => { d.meta.generated_at_utc = '2026-10-23T01:00:00Z' },
+    d => { d.snapshot.groups[1].rows[0].last = 101 },
+    d => { d.snapshot.groups[0].rows[0].price_status = 'stale' },
+    d => { d.snapshot.groups[0].rows[0].price_date = '2026-10-21' },
+    d => { d.snapshot.groups[0].rows[0].d1_pct = NaN },
+    d => { d.meta.status.breadth.above_50d_pct = 75 },
+    d => { d.meta.instrument_count = 4 },
+    d => { d.meta.status.exposure.guidance = 'Risk-On' },
+  ]
+  for (const mutate of mutations) { const data = fixture(); mutate(data); assert.throws(() => validateMarketData(data.meta, data.snapshot)) }
+})
+
+test('snapshot age backstop does not call a weekend snapshot stale after only two days', () => {
+  const published = '2026-10-23T21:30:00Z'
+  assert.equal(snapshotIsOld(published, Date.parse('2026-10-25T21:30:00Z')), false)
+  assert.equal(snapshotIsOld(published, Date.parse('2026-10-28T21:30:00Z')), true)
+})
+
+test('yield movement uses basis points rather than confusing a relative percent with percentage points', () => {
+  assert.ok(Math.abs(yieldChangeBasisPoints(4.95, -3.8)! - (-19.55)) < 0.02)
+  assert.equal(yieldChangeBasisPoints(4, -100), null)
+})
+
+test('macro flags use actual price changes, even when relative-strength scores point the other way', () => {
+  const inputs = { market: { macroData: { tlt: { rs1m: -9, d20: 2, grade: 'A', d1: 1 }, dxy: { rs1m: -10, d20: 1, last: 100 }, hyg: null, gld: null, uso: null, iwm: null, qqq: null } }, multiples: { saas: '6×' }, benchmarks: BENCHMARKS }
+  const alerts: BriefResponse['riskAlerts'] = ['Bond ETF Weakness', 'Dollar Weakening', 'SaaS Discount Window'].map(title => ({ type: 'warning', title, message: 'Test observation' }))
+  assert.deepEqual(validateRiskAlerts(alerts, inputs), [])
+  inputs.market.macroData.tlt.d20 = -3
+  inputs.market.macroData.tlt.rs1m = 2
+  assert.deepEqual(validateRiskAlerts(alerts, inputs).map(alert => alert.title), ['Bond ETF Weakness'])
+})
+
+test('cloud questions work without AI and never label Spot safe', () => {
+  const html = renderToStaticMarkup(createElement(CloudReview))
+  assert.match(html, /Can the job stop and restart/)
+  assert.match(html, /unused capacity/)
+  assert.doesNotMatch(html, /FAVORABLE|SAFE|RISKY|Lumen analysis is temporarily unavailable/)
+})
+
+test('a falling relative score does not become a falling ETF price or a widening credit spread', () => {
+  const { snapshot } = fixture()
+  snapshot.groups[0].rows = [
+    { ...snapshot.groups[0].rows[0], ticker: 'TLT', d20_pct: 3, rs1m: -2 },
+    { ...snapshot.groups[0].rows[0], ticker: 'HYG', d20_pct: 1, rs1m: -4, trend_grade: 'C' },
+  ]
+  const html = renderToStaticMarkup(createElement(MacroContext, { snapshot }))
+  assert.match(html, /\+3\.00% · 20D/)
+  assert.match(html, /-2\.00 score/)
+  assert.doesNotMatch(html, /Widening|Tight|Falling/)
+})
+
+test('a cached model cannot replace a real valuation value', () => {
+  const multiples: LiveMultiples = { publicCloud: '~9.1×', saas: 'Unavailable', aiInfra: 'Unavailable', asOf: '2026-10-22', source: 'fallback', baskets: {
+    publicCloud: { source: 'live', dataAsOf: '2026-10-22' }, saas: { source: 'fallback', dataAsOf: '2026-04-24' }, aiInfra: { source: 'fallback', dataAsOf: '2026-04-24' },
+  } }
+  const fake = { cloudValuations: { publicCloud: '999×', saasAverage: '999×', aiInfrastructure: '999×' } } as BriefResponse
+  const html = renderToStaticMarkup(createElement(IntelligentCtx.Provider, { value: { data: fake, loading: false, error: false, cachedAt: null, contextData: null, refresh() {} } }, createElement(CloudValuations, { multiples })))
+  assert.match(html, /9\.1×/)
+  assert.doesNotMatch(html, /999/)
+})
+
+test('incomplete prose and explicit score-as-percentage claims are rejected', () => {
+  const brief = { morningBrief: { headline: 'Mixed signals', marketRead: 'TLT has a score of +1.08.', action: 'Compare the sector scores.', whatChanged: [], cloudFinanceImplications: [] }, finopsSignals: { cloudSpend: 'Check usage.', saasRenewals: 'Check notice dates.', infrastructure: 'Check provider terms.' }, riskAlerts: [], sectorInsights: 'XLP has the highest score.' }
+  assert.doesNotThrow(() => assertBriefResponse(brief))
+  for (const text of ['TLT has RS of +1.08%.', 'TLT +1.08% 1M RS', 'The relative strength score is -2.5%.']) {
+    assert.throws(() => assertBriefResponse({ ...brief, sectorInsights: text }), /score and percentage/)
+  }
+  assert.throws(() => assertBriefResponse({ morningBrief: {} }), /Incomplete/)
+})

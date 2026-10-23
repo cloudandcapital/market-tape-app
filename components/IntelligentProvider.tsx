@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
 
-const CACHE_KEY = 'intelligent-brief-v18'
+const CACHE_KEY = 'intelligent-brief-v19'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
 const REQUEST_TIMEOUT_MS = 75_000
 
@@ -14,6 +14,8 @@ interface IntelligentState {
   cachedAt: string | null
   contextData: MarketContextData | null
   refresh: () => void
+  paused?: boolean
+  snapshotChanged?: boolean
 }
 
 export const IntelligentCtx = createContext<IntelligentState>({
@@ -59,16 +61,19 @@ interface Props {
   contextData: MarketContextData
   initialData?: BriefResponse | null
   children: ReactNode
+  disabled?: boolean
 }
 
-export function IntelligentProvider({ contextData, initialData = null, children }: Props) {
+export function IntelligentProvider({ contextData, initialData = null, children, disabled = false }: Props) {
   const [data, setData] = useState<BriefResponse | null>(initialData)
-  const [loading, setLoading] = useState(!initialData)
+  const [loading, setLoading] = useState(!initialData && !disabled)
   const [error, setError] = useState(false)
+  const [snapshotChanged, setSnapshotChanged] = useState(false)
 
   const hash = hashContext(contextData)
 
   const fetchBrief = useCallback(async (force = false) => {
+    if (disabled) return
     if (!force) {
       const cached = loadCache(hash)
       if (cached) {
@@ -88,6 +93,12 @@ export function IntelligentProvider({ contextData, initialData = null, children 
         body: JSON.stringify({ context: contextData }),
         signal: controller.signal,
       })
+      if (res.status === 409) {
+        setSnapshotChanged(true)
+        setData(null)
+        setError(true)
+        return
+      }
       if (!res.ok) throw new Error('Analysis request failed')
       const json = await res.json()
       if (json.success && json.data) {
@@ -106,7 +117,7 @@ export function IntelligentProvider({ contextData, initialData = null, children 
       window.clearTimeout(timeout)
       setLoading(false)
     }
-  }, [contextData, hash])
+  }, [contextData, hash, disabled])
 
   useEffect(() => {
     if (initialData) {
@@ -120,7 +131,7 @@ export function IntelligentProvider({ contextData, initialData = null, children 
   const cachedAt = data ? formatCachedAt(data) : null
 
   return (
-    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, refresh: () => fetchBrief(true) }}>
+    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
       <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
         <BriefSection />
@@ -132,18 +143,18 @@ export function IntelligentProvider({ contextData, initialData = null, children 
 }
 
 function BriefSection() {
-  const { data, loading, cachedAt, refresh } = useIntelligent()
+  const { data, loading, cachedAt, refresh, paused, snapshotChanged } = useIntelligent()
 
   return (
     <div style={{ background: '#fefdfb' }}>
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem] rule-subtle-bottom">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
-          <span className="font-mono text-[0.52rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
+          <span className="font-mono text-[0.68rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#6B8E7F' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.48rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
-              <span className="font-mono text-[0.54rem] tracking-[0.06em] uppercase text-charcoal/50">
+              <span className="font-mono text-[0.68rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
+              <span className="font-mono text-[0.68rem] tracking-[0.06em] uppercase text-charcoal/65">
                 {cachedAt}
               </span>
             </>
@@ -151,13 +162,13 @@ function BriefSection() {
         </div>
         <button
           onClick={refresh}
-          disabled={loading}
-          className="font-mono text-[0.54rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-auto sm:ml-3"
+          disabled={loading || paused || snapshotChanged}
+          className="font-mono text-[0.68rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer p-0 flex-shrink-0 ml-auto sm:ml-3"
           style={{ color: 'rgba(0,0,0,0.55)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
         >
-          {loading ? 'generating…' : '↺ refresh'}
+          {paused ? 'analysis paused' : snapshotChanged ? 'reload needed' : loading ? 'generating…' : '↺ refresh analysis'}
         </button>
       </div>
 
@@ -171,7 +182,7 @@ function BriefSection() {
                   style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />
               ))}
             </div>
-            <p className="font-mono text-[0.73rem]" style={{ color: 'rgba(0,0,0,0.35)' }}>
+            <p className="font-mono text-[0.73rem]" style={{ color: '#655e58' }}>
               Lumen is analyzing market conditions…
             </p>
           </div>
@@ -179,37 +190,35 @@ function BriefSection() {
 
         {!loading && !data && (
           <div className="flex flex-wrap items-center gap-3 py-3">
-            <p className="font-mono text-[0.73rem]" style={{ color: 'rgba(0,0,0,0.35)' }}>
-              Analysis is temporarily unavailable. Market data below is still current.
+            <p className="font-mono text-[0.73rem]" style={{ color: '#655e58' }}>
+              {paused ? 'Analysis is paused for this older snapshot. Check the dates on the data below.' : snapshotChanged ? 'A different market snapshot is available. Reload the page to keep the numbers and analysis together.' : 'Analysis is temporarily unavailable. You can still explore the dated market data below.'}
             </p>
-            <button onClick={refresh} className="font-mono text-[0.56rem] tracking-[0.12em] uppercase text-charcoal/55 hover:text-charcoal/80">
-              Try again
-            </button>
+            {snapshotChanged ? <a href="/" className="font-mono text-xs underline">Reload Market Tape</a> : !paused && <button onClick={refresh} className="font-mono text-xs underline text-charcoal/65 hover:text-charcoal">Try again</button>}
           </div>
         )}
 
         {!loading && data && (
           <div>
             {data.morningBrief.headline && (
-              <p className="font-mono text-[0.54rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
+              <p className="font-mono text-[0.68rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
                 {data.morningBrief.headline}
               </p>
             )}
             <div className="grid gap-4 md:grid-cols-[1.25fr_1fr]">
               <div>
                 <p className="font-serif text-[0.95rem] leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
-                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/55 mb-2">What changed</p>
+                <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Session moves</p>
                 <ul className="space-y-1.5">
                   {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
               </div>
               <div className="md:border-l md:pl-5" style={{ borderColor: 'var(--rule-subtle)' }}>
-                <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-charcoal/55 mb-2">Cloud-finance implication</p>
+                <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Questions for a cost review</p>
                 <ul className="space-y-1.5 mb-4">
                   {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage">•</span><span>{item}</span></li>)}
                 </ul>
                 <div className="rule-subtle-top pt-3">
-                  <p className="font-mono text-[0.58rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">Decision to monitor</p>
+                  <p className="font-mono text-[0.68rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">Decision to monitor</p>
                   <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
                 </div>
               </div>

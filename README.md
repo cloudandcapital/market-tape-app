@@ -1,12 +1,12 @@
 # Market Tape
 
-Live market dashboard for FinOps and cloud infrastructure teams. Translates market signals into infrastructure decisions — reservation timing, commitment windows, SaaS renewal leverage, GPU capacity guidance.
+Snapshot-based market dashboard for FinOps and cloud infrastructure teams. Connects public-market observations with source-linked infrastructure context and practical questions for a cost review. It does not use stock-market signals to prescribe cloud commitment timing or Spot safety.
 
 Live at [market-tape.cloudandcapital.com](https://market-tape.cloudandcapital.com).
 
 ## What it does
 
-48 unique tracked instruments displayed as 52 rows across seven groups. The upstream pipeline is scheduled to check every 30 minutes during weekday market hours; unchanged snapshots are intentional no-ops. Lumen reads the latest published snapshot and translates moves into plain-English FinOps actions.
+48 unique tracked instruments displayed as 52 rows across seven groups. The upstream pipeline is scheduled to check every 30 minutes during weekday market hours; timestamps identify publication separately from the underlying price date. Lumen reads the latest published snapshot and translates moves in plain English. RS1M is a dimensionless, volatility-adjusted score, never a percentage return.
 
 There's no shortage of market data. There's a shortage of translation between markets and infrastructure decisions. That's the gap Market Tape fills.
 
@@ -17,7 +17,7 @@ There's no shortage of market data. There's a shortage of translation between ma
 | **Lumen Analysis** | Three-paragraph market read with FinOps Signals (cloud spend / SaaS renewals / infrastructure), Risk & Opportunity, and Sector Insights — all anchored to specific signals to prevent flip-flopping verdicts across regenerations |
 | **AI Compute Commitments** | Major AI compute deals with a source-linked status for each row: Signed, Announced, Target, or Reported / in talks. No misleading aggregate is calculated across unlike deal types |
 | **Market Status** | Exposure guidance (Risk-On / Neutral / Defensive), trend, breadth, momentum |
-| **Commitment Windows** | Spot / 1-Year / 3-Year guidance, each anchored to specific market signals |
+| **Before a cloud commitment** | Fixed questions about baseline usage, term risk, interruptions, and capacity; available without Lumen |
 | **Macro Context** | Rates (TLT), gold (GLD), small caps (IWM), Nasdaq (QQQ), dollar (DXY) — relative strength readings tied to commitment math |
 | **Cloud Valuations** | Yahoo Finance basket approximations when available; stale quarterly fallbacks are suppressed and separately dated |
 | **Hyperscaler CapEx** | AWS / Azure / Google Cloud / Meta / Oracle quarterly CapEx trend |

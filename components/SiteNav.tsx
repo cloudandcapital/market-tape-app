@@ -28,23 +28,25 @@ export default function SiteNav() {
   const mobileLinkCls = 'block px-7 py-[0.8rem] font-mono text-[0.68rem] tracking-[0.16em] uppercase text-white/60 hover:text-white no-underline transition-colors duration-150'
 
   const navLinks = [
-    { label: 'Discipline', href: `${BASE}/#discipline` },
-    { label: 'Work',       href: `${BASE}/#work` },
+    { label: 'Services', href: `${BASE}/services` },
     { label: 'About',      href: `${BASE}/#about` },
-    { label: 'Community',  href: `${BASE}/#community` },
-    { label: 'Writing',    href: `${BASE}/#writing` },
+    { label: 'Guides & writing', href: `${BASE}/insights` },
+    { label: 'Contact', href: `${BASE}/#contact` },
   ]
 
   const toolLinks = [
+    { label: 'All free tools', href: `${BASE}/tools` },
     { label: 'Market Tape',       href: 'https://market-tape.cloudandcapital.com' },
     { label: 'Signal Audit',      href: `${BASE}/signal-audit` },
     { label: 'Interactive Lab',   href: `${BASE}/interactive-lab` },
-    { label: 'Cloud+ Cost Guard', href: 'https://guard.cloudandcapital.com' },
+    { label: 'Cloud Cost Guard', href: 'https://guard.cloudandcapital.com' },
   ]
 
   return (
     <>
       <nav
+        aria-label="Primary navigation"
+        onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
         className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center border-b border-black/[0.07]"
         style={{ background: 'rgba(245,238,233,0.96)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}
       >
@@ -64,6 +66,8 @@ export default function SiteNav() {
             {/* Tools dropdown */}
             <li ref={toolsRef} className="relative">
               <button
+                aria-expanded={toolsOpen}
+                aria-controls="desktop-tools-menu"
                 onClick={(e) => { e.stopPropagation(); setToolsOpen(o => !o) }}
                 className="font-mono text-[0.57rem] tracking-[0.12em] uppercase text-black/50 hover:text-black bg-transparent border-none cursor-pointer p-0 flex items-center gap-1 transition-colors duration-150"
                 style={{ lineHeight: '1', verticalAlign: 'baseline' }}
@@ -73,8 +77,9 @@ export default function SiteNav() {
               </button>
               {toolsOpen && (
                 <ul
+                  id="desktop-tools-menu"
                   className="absolute top-[calc(100%+0.85rem)] right-0 list-none m-0 p-[0.4rem_0] min-w-[172px] z-10"
-                  style={{ background: '#faf7f2', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 28px rgba(0,0,0,0.08)' }}
+                  style={{ background: '#f5eee9', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 28px rgba(0,0,0,0.08)' }}
                 >
                   {toolLinks.map(l => (
                     <li key={l.label}>
@@ -98,6 +103,8 @@ export default function SiteNav() {
           <button
             className="md:hidden flex flex-col justify-center gap-[5px] bg-transparent border-none cursor-pointer p-[6px_4px]"
             onClick={() => setMobileOpen(o => !o)}
+            aria-expanded={mobileOpen}
+            aria-controls="mobile-navigation"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
             {[0,1,2].map(i => (
@@ -110,6 +117,8 @@ export default function SiteNav() {
       {/* Mobile panel */}
       {mobileOpen && (
         <div
+          id="mobile-navigation"
+          onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
           className="fixed left-0 right-0 z-40 overflow-y-auto"
           style={{ top: '56px', background: '#191714', borderTop: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 12px 32px rgba(0,0,0,0.35)', maxHeight: 'calc(100vh - 56px)' }}
         >
@@ -119,6 +128,7 @@ export default function SiteNav() {
             ))}
             <li>
               <button
+                aria-expanded={toolsOpen}
                 onClick={() => setToolsOpen(o => !o)}
                 className="block w-full text-left px-7 py-[0.8rem] font-mono text-[0.68rem] tracking-[0.16em] uppercase text-white/60 hover:text-white bg-transparent border-none cursor-pointer transition-colors duration-150"
               >
