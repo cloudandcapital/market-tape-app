@@ -11,6 +11,7 @@ export default function SiteNav() {
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
+      if (e.target instanceof Element && e.target.closest('#mobile-navigation')) return
       if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
         setToolsOpen(false)
       }
