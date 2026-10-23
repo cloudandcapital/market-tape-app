@@ -4,8 +4,8 @@ import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { BENCHMARKS, buildInfraContextBlock } from '@/lib/industryBenchmarks'
 import { enforceInterpretationGuardrails } from '@/lib/intelligentGuardrails'
 import { assertBriefResponse } from '@/lib/briefValidation'
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
+export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
 export const INTELLIGENT_BRIEF_SYSTEM_PROMPT = "Explain markets to a curious reader and a technology-finance team. Use plain English and only supplied data. Separate measurements, source-dated benchmarks, and interpretation. RS1M is a dimensionless volatility-adjusted score: (20-session asset return minus SPY return) divided by the asset’s 20-session realized volatility. Never append % to a score or infer absolute price direction, interest-rate direction, credit spreads, or vendor discounts from it. Daily and 20-session percentage price changes are labeled separately. Market prices do not establish cloud commitment duration, Spot safety, capacity availability, or vendor willingness to discount. Do not issue purchasing verdicts or imply a tested causal relationship. COMMODITY ETF PROXY RULE: GLD and USO are ETF share prices, not commodity spot quotes; never attach dollars-per-ounce or dollars-per-barrel meaning. Use the supplied price date, not today or this morning. Daily bars may still change during a session. Use 20-session language for score rankings. Missing values stay Unavailable. Cite only numbers visible in the dashboard or source tooltips. Never invent forecasts, savings, quotes, benchmarks, or sources. Return only JSON."
 export const BRIEF_INSTRUCTIONS = [
   "RS1M rankings use score units, not percent. A higher score does not establish a higher raw return across assets with different volatility.",
@@ -111,7 +111,7 @@ export async function generateIntelligentBrief(
     max_tokens: 1800,
     system: [{ type: 'text', text: INTELLIGENT_BRIEF_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
     messages: [{ role: 'user', content: buildPrompt(context, multiples) }],
-  }, { signal: AbortSignal.timeout(65_000) })
+  }, { signal: AbortSignal.timeout(45_000) })
 
   const text = message.content[0]?.type === 'text' ? message.content[0].text : ''
   const parsed = parseResponse(text)

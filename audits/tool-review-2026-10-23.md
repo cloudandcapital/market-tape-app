@@ -35,3 +35,9 @@ No review dates were rolled forward merely because code changed. The existing hi
 - Existing benchmark/guardrail checks pass; two upcoming review warnings remain visible.
 - TypeScript and production build pass.
 - The managed preview cannot launch this Next.js app because its supervisor supplies Vite-only CLI flags. No product code or credentials were changed to work around that limitation. Production UI and Lumen verification follow the GitHub/Vercel release; their evidence will be recorded in a follow-up.
+
+## Render-isolation follow-up
+
+The first GitHub preview deployment passed, but production deployment `dpl_3jHpb9xmj4BctaSCpjjbZHB4dRup` failed. Its private build logs are inaccessible to this connection (team-scope 403); automatic approval review also rejected entering a new CLI authentication flow. The deployment failure's root cause is therefore unproven.
+
+Source inspection identified a separate reliability issue: initial page rendering waited for a model call with a 65-second cutoff. The follow-up removes that dependency from the page build/render. The browser requests the same shared, snapshot-checked analysis after dated source data has rendered. The model request has a 45-second cutoff and SDK retries are disabled. This repairs a real render dependency; it is not represented as a log-confirmed explanation of the production failure.
