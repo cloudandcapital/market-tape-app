@@ -1,6 +1,5 @@
-import Image from 'next/image'
 import type { LeaderboardEntry, Meta } from '@/lib/types'
-import { sparklineUrl, gradeColor } from '@/lib/data'
+import { gradeColor } from '@/lib/data'
 
 function MomentumList({ title, rows, tone }: { title: string; rows: LeaderboardEntry[]; tone: 'gain' | 'loss' }) {
   return (
@@ -8,14 +7,11 @@ function MomentumList({ title, rows, tone }: { title: string; rows: LeaderboardE
       <h3 id={`momentum-${tone}`} className="font-mono text-[0.68rem] tracking-[0.18em] uppercase text-charcoal/65 mb-2">{title}</h3>
       <div className="rows-subtle">
         {rows.map((row, i) => (
-          <div key={row.ticker} className="grid grid-cols-[1rem_2.25rem_minmax(0,1fr)_auto] items-center gap-2 py-2 min-h-[3rem]">
+          <div key={row.ticker} className="grid grid-cols-[1rem_minmax(0,1fr)_auto] items-center gap-3 py-2 min-h-[3rem]">
             <span className="font-mono text-[0.68rem] text-charcoal/65 text-right">{i + 1}</span>
-            <div className="w-9 h-5 opacity-80">
-              <Image src={sparklineUrl(row.ticker)} alt={`${row.ticker} relative-strength sparkline`} width={36} height={20} className="w-full h-full object-contain" unoptimized />
-            </div>
             <div className="min-w-0">
               <div className="flex items-baseline gap-1.5">
-                <span className="font-mono text-[0.78rem] font-semibold text-charcoal">{row.ticker}</span>
+                <a className="font-mono text-[0.78rem] font-semibold text-charcoal underline decoration-charcoal/20 underline-offset-4 hover:decoration-charcoal" href={`https://finance.yahoo.com/quote/${encodeURIComponent(row.ticker)}/`} target="_blank" rel="noopener noreferrer" aria-label={`Research ${row.ticker} on Yahoo Finance`}>{row.ticker}</a>
                 <span className={`font-mono text-[0.6rem] ${gradeColor(row.trend_grade)}`}>{row.trend_grade}</span>
               </div>
               <p className="font-mono text-[0.68rem] text-charcoal/65 truncate">{row.short_name}</p>
