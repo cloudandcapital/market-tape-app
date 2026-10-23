@@ -129,7 +129,7 @@ export default function SiteNav() {
             <li>
               <button
                 aria-expanded={toolsOpen}
-                onClick={() => setToolsOpen(o => !o)}
+                onClick={event => { event.stopPropagation(); setToolsOpen(o => !o) }}
                 className="block w-full text-left px-7 py-[0.8rem] font-mono text-[0.68rem] tracking-[0.16em] uppercase text-white/60 hover:text-white bg-transparent border-none cursor-pointer transition-colors duration-150"
               >
                 Tools {toolsOpen ? '▴' : '▾'}
