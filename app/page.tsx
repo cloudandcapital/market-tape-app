@@ -4,7 +4,6 @@ import { buildContextData } from '@/lib/marketContext'
 import CloudReview from '@/components/CloudReview'
 import { checkServerStaleness } from '@/lib/industryBenchmarks'
 import { fetchLiveMultiples } from '@/lib/liveMultiples'
-import { getCachedIntelligentBrief } from '@/lib/intelligentBrief'
 import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
 import { CountriesGlobal, Sectors } from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
@@ -29,9 +28,6 @@ export default async function Page() {
   const oldSnapshot = snapshotIsOld(snapshot.generated_at_utc)
   const trackedInstrumentCount = new Set(snapshot.groups.flatMap(group => group.rows.map(row => row.ticker))).size
   const contextData = buildContextData(meta, snapshot)
-  const initialBrief = oldSnapshot ? null : await getCachedIntelligentBrief(contextData, multiples)
-    .then(result => result.data)
-    .catch(() => null)
 
   return (
     <div className="min-h-screen bg-cream">
@@ -65,7 +61,7 @@ export default async function Page() {
         {oldSnapshot && <p role="status" className="mb-6 border-l-2 border-loss pl-4 text-sm leading-relaxed">This snapshot was published more than four days ago. Check the dates before using it. Lumen is paused until a newer snapshot is available; weekends and market holidays can explain some gaps.</p>}
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
-        <IntelligentProvider key={JSON.stringify(contextData)} contextData={contextData} initialData={initialBrief} disabled={oldSnapshot}>
+        <IntelligentProvider key={JSON.stringify(contextData)} contextData={contextData} disabled={oldSnapshot}>
 
           <div className="space-y-10 md:space-y-12">
             {/* Band 2 */}
