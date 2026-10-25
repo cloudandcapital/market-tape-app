@@ -1,68 +1,10 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { NextResponse } from 'next/server'
-import { buildInfraContextBlock } from '@/lib/industryBenchmarks'
-import { fetchLiveMultiples } from '@/lib/liveMultiples'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-
+// The current page uses /api/intelligent-brief. Keep the old URL from
+// starting a separate, uncached provider request.
 export async function GET() {
-  try {
-    const [metaRes, multiples] = await Promise.all([
-      fetch('https://raw.githubusercontent.com/cloudandcapital/market-tape/main/data/meta.json', {
-        next: { revalidate: 1800 },
-      }),
-      fetchLiveMultiples(),
-    ])
-    if (!metaRes.ok) throw new Error('Failed to fetch meta.json')
-    const meta = await metaRes.json()
-
-    const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 400,
-      system: [
-        {
-          type: 'text',
-          text: `You are a market analyst writing a morning brief for FinOps and cloud finance teams.
-
-Write a 3-paragraph brief (~150 words):
-1. What the market is doing right now (status, trend, breadth in plain terms)
-2. What this means for tech infrastructure and cloud spend decisions (use the benchmark figures above — do not invent others)
-3. One specific thing to watch today
-
-Tone: Sharp, concise, operator-level. No fluff. No disclaimers. Start with a strong first sentence.
-Format: Plain prose only. No markdown. No headers. No bullet points. No asterisks. Just three paragraphs of clean text separated by blank lines.
-
-Treat market and benchmark signals as strategic decision support. Do not present them as organization-specific operational mandates without workload, utilization, contractual, and business context.
-
-GROUNDING RULE: Use only the data provided above. Do not cite specific valuation multiples, GPU lead times, CapEx percentages, or industry benchmarks that are not present in this data. For the infrastructure paragraph, use qualitative language only ("hyperscalers are still expanding," "software budgets face pressure") — never a specific number you have not been given. VERIFIABILITY RULE: Every numeric value you cite must appear in the user-visible dashboard sections (Market Status, Market Internals, Macro Context, Sectors, Cloud Valuations, Hyperscaler CapEx, Tech Concentration, Momentum Universe Leaders/Laggards, AI Compute Commitments). If a value exists in your context but is annotated [internal] or [not user-visible], or is otherwise not displayed to users, use qualitative language instead ("the dollar is weakening," "gold is firming," "small caps lagging," "narrow conviction," "mixed signals"). Do not cite specific percentages, scores, or values that users cannot verify against the page.`,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: `Here's today's market data:
-${JSON.stringify(meta.status, null, 2)}
-
-Top sector leaders (RS1M): ${meta.leaders.sectors.map((s: { ticker: string; rs1m: number }) => `${s.ticker} (${s.rs1m.toFixed(2)})`).join(', ')}
-
-Momentum env: ${meta.status.momentum_env.label} [internal score: ${meta.status.momentum_env.score}/100 — not user-visible, do not cite this number]
-Breadth: ${meta.status.breadth.above_50d_pct.toFixed(0)}% above 50d MA — ${meta.status.breadth.breadth_label}
-Exposure guidance: ${meta.status.exposure.guidance} (${meta.status.exposure.level}/100)
-
-${buildInfraContextBlock(multiples)}`,
-        },
-      ],
-    })
-
-    const text = message.content[0].type === 'text' ? message.content[0].text : ''
-
-    return NextResponse.json(
-      { brief: text, generated_at: new Date().toISOString() },
-      { headers: { 'Cache-Control': 's-maxage=14400, stale-while-revalidate=86400' } },
-    )
-  } catch (err) {
-    console.error('Morning brief error:', err)
-    return NextResponse.json({ error: 'Failed to generate brief' }, { status: 500 })
-  }
+  return NextResponse.json(
+    { error: 'This endpoint has been retired. Open Market Tape for the current brief.' },
+    { status: 410, headers: { 'Cache-Control': 'no-store' } },
+  )
 }
