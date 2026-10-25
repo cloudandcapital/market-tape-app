@@ -49,7 +49,7 @@ The AI compute tracker follows a conservative methodology: it includes major dea
 npm run check-benchmarks
 ```
 
-This flags any benchmark that's overdue for review against its source's publication cadence. See [`BENCHMARKS-MAINTENANCE.md`](./BENCHMARKS-MAINTENANCE.md) for the full update protocol and [`LUMEN-AUDIT.md`](./LUMEN-AUDIT.md) + [`LUMEN-CONSISTENCY-AUDIT.md`](./LUMEN-CONSISTENCY-AUDIT.md) for the pre-launch verification work that established the architecture.
+This flags any benchmark that's overdue for review against its source's publication cadence. See [`BENCHMARKS-MAINTENANCE.md`](./BENCHMARKS-MAINTENANCE.md) for the update protocol.
 
 ## Development
 
