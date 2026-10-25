@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { validateMarketData, snapshotIsOld, yieldChangeBasisPoints } from '../lib/marketIntegrity'
 import { formatMarketSessionLabel } from '../lib/data'
 import { assertBriefResponse } from '../lib/briefValidation'
-import { validateRiskAlerts } from '../lib/intelligentGuardrails'
+import { removeUnsupportedVixPointClaims, validateRiskAlerts } from '../lib/intelligentGuardrails'
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import CloudReview from '../components/CloudReview'
 import MacroContext from '../components/MacroContext'
@@ -18,9 +18,10 @@ import { numberTone, signedNumber } from '../lib/numberFormat'
 import { aiComputeData, getSignedDollarSummary } from '../lib/aiCompute'
 import { buildContextData } from '../lib/marketContext'
 import { CloudValuations } from '../components/IntelligentSignals'
+import { GET as getRetiredMorningBrief } from '../app/api/morning-brief/route'
 import { IntelligentCtx } from '../components/IntelligentProvider'
 import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
-import type { BriefResponse, MarketContextData } from '../lib/intelligentTypes'
+import type { BriefResponse } from '../lib/intelligentTypes'
 import type { LiveMultiples } from '../lib/liveMultiples'
 
 function fixture() {
@@ -72,6 +73,12 @@ test('yield movement uses basis points rather than confusing a relative percent 
   assert.equal(yieldChangeBasisPoints(4, -100), null)
 })
 
+test('VIX percentage moves cannot be relabeled as points while Treasury basis points remain', () => {
+  const generated = 'SPY fell 0.52%, with the VIX at 19.45, up 2.21 points. The 10-year Treasury yield rose about 4 basis points.'
+  const guarded = removeUnsupportedVixPointClaims(generated)
+  assert.equal(guarded, 'The 10-year Treasury yield rose about 4 basis points.')
+})
+
 test('macro flags use actual price changes, even when relative-strength scores point the other way', () => {
   const inputs = { market: { macroData: { tlt: { rs1m: -9, d20: 2, grade: 'A', d1: 1 }, dxy: { rs1m: -10, d20: 1, last: 100 }, hyg: null, gld: null, uso: null, iwm: null, qqq: null } }, multiples: { saas: '6×' }, benchmarks: BENCHMARKS }
   const alerts: BriefResponse['riskAlerts'] = ['Bond ETF Weakness', 'Dollar Weakening', 'SaaS Discount Window'].map(title => ({ type: 'warning', title, message: 'Test observation' }))
@@ -120,6 +127,23 @@ test('incomplete prose and explicit score-as-percentage claims are rejected', ()
   for (const text of ['54.17% of stocks above their 20-day average.', 'Stocks above the 50-day moving average are weakening.']) {
     assert.throws(() => assertBriefResponse({ ...brief, sectorInsights: text }), /breadth stocks/)
   }
+})
+
+test('retired morning brief stays unavailable and does not return a generated brief', async () => {
+  const response = await getRetiredMorningBrief()
+  assert.equal(response.status, 410)
+  assert.equal(response.headers.get('Cache-Control'), 'no-store')
+  assert.deepEqual(await response.json(), {
+    error: 'This endpoint has been retired. Open Market Tape for the current brief.',
+  })
+})
+
+test('hyperscaler benchmark carries Meta Q3 guidance without closing the remaining earnings review', () => {
+  const benchmark = BENCHMARKS.hyperscalerCapexTrend
+  assert.equal(benchmark.lastUpdated, '2026-10-21')
+  assert.equal(benchmark.nextReviewDue, '2026-11-01')
+  assert.match(benchmark.notes, /Meta \$135–145B/)
+  assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Meta — Q3 2026 results'))
 })
 
 test('a stress move in VIX or bonds cannot improve equity ETF breadth; repeated funds count once', () => {

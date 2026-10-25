@@ -83,6 +83,17 @@ export function enforceDecisionGuardrail(text: string): string {
   return `${text.trim()} ${ORGANIZATION_DECISION_CONTEXT}`
 }
 
+const VIX_REFERENCE = /\bVIX\b/i
+const POINT_CHANGE = /\b(?:up|down|rose|fell|gained|lost|jumped|moved)\b.*\bpoints?\b/i
+
+export function removeUnsupportedVixPointClaims(text: string): string {
+  return text
+    .split(/(?<=[.!?])\s+/)
+    .filter(sentence => !(VIX_REFERENCE.test(sentence) && POINT_CHANGE.test(sentence)))
+    .join(' ')
+    .trim()
+}
+
 export function enforceInterpretationGuardrails(brief: BriefResponse, inputs: RiskAlertInputs): BriefResponse {
   const sectors = inputs.market.sectorData ? [...inputs.market.sectorData].sort((a, b) => b.rs1m - a.rs1m) : []
   return {
@@ -90,6 +101,9 @@ export function enforceInterpretationGuardrails(brief: BriefResponse, inputs: Ri
     riskAlerts: validateRiskAlerts(brief.riskAlerts, inputs),
     morningBrief: {
       ...brief.morningBrief,
+      headline: removeUnsupportedVixPointClaims(brief.morningBrief.headline) || 'Dated market snapshot',
+      marketRead: removeUnsupportedVixPointClaims(brief.morningBrief.marketRead) || 'See the VIX one-day percentage change in Market Internals.',
+      whatChanged: brief.morningBrief.whatChanged.map(removeUnsupportedVixPointClaims).filter(Boolean),
       cloudFinanceImplications: ['Which costs are tied to steady usage, and which can change?', 'What do the actual quote, notice deadline, and contract terms say?'],
       action: sectors.length > 1 ? `What explains the score difference between ${sectors[0].ticker} and ${sectors[sectors.length - 1].ticker}? Check their holdings and recent news.` : enforceDecisionGuardrail(brief.morningBrief.action),
     },

@@ -16,7 +16,7 @@ import { aiComputeData, getSignedDollarSummary, getStatusSafeAiComputeFallback, 
 import { readFileSync } from 'node:fs'
 import { QUARTERLY_MULTIPLES, fetchLiveMultiples } from '../lib/liveMultiples'
 import type { RiskAlertInputs } from '../lib/intelligentGuardrails'
-import { enforceDecisionGuardrail, enforceInterpretationGuardrails, validateRiskAlerts, riskAlertSource, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
+import { enforceDecisionGuardrail, enforceInterpretationGuardrails, removeUnsupportedVixPointClaims, validateRiskAlerts, riskAlertSource, ORGANIZATION_DECISION_CONTEXT } from '../lib/intelligentGuardrails'
 
 // Use synthetic credentials only. No environment values enter diagnostic tests.
 const diagnosticError = new APIError(400, {
@@ -54,10 +54,11 @@ const todayStr = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0')
 const intelligentBriefModule = readFileSync(new URL('../lib/intelligentBrief.ts', import.meta.url), 'utf8')
 const intelligentProvider = readFileSync(new URL('../components/IntelligentProvider.tsx', import.meta.url), 'utf8')
 const intelligentSignals = readFileSync(new URL('../components/IntelligentSignals.tsx', import.meta.url), 'utf8')
-for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v24', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
+for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'VIX d1 is a percentage price change, never a point change', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v25', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief contract missing: ${contract}`)
 }
-if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v20'")) throw new Error('Browser cache version was not bumped')
+if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v21'")) throw new Error('Browser cache version was not bumped')
+assert.equal(removeUnsupportedVixPointClaims('VIX was up 2.21 points. Treasury yields rose 4 basis points.'), 'Treasury yields rose 4 basis points.')
 for (const unsafeOutput of [
   'Defensive exposure guidance at 33/100 suggests the macro backdrop does not yet reward aggressive cloud commitment expansion.',
   'Review non-critical cloud expansion against workload demand and utilization given the Defensive exposure signal at 33/100; monitor breadth improvement before extending commitment duration.',
