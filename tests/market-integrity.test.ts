@@ -18,10 +18,10 @@ import { numberTone, signedNumber } from '../lib/numberFormat'
 import { aiComputeData, getSignedDollarSummary } from '../lib/aiCompute'
 import { buildContextData } from '../lib/marketContext'
 import { CloudValuations } from '../components/IntelligentSignals'
-import { buildSourceMorningBrief, MORNING_BRIEF_DECISION_CONTEXT } from '../lib/morningBriefGuardrails'
+import { GET as getRetiredMorningBrief } from '../app/api/morning-brief/route'
 import { IntelligentCtx } from '../components/IntelligentProvider'
 import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
-import type { BriefResponse, MarketContextData } from '../lib/intelligentTypes'
+import type { BriefResponse } from '../lib/intelligentTypes'
 import type { LiveMultiples } from '../lib/liveMultiples'
 
 function fixture() {
@@ -129,17 +129,13 @@ test('incomplete prose and explicit score-as-percentage claims are rejected', ()
   }
 })
 
-test('legacy morning brief is deterministic, source-built, and free of investment-like directives', () => {
-  const { meta, snapshot } = fixture()
-  const brief = buildSourceMorningBrief(buildContextData(meta, snapshot), {
-    publicCloud: 'Unavailable', saas: 'Unavailable', aiInfra: 'Unavailable', asOf: '2026-04-24', source: 'fallback',
-    baskets: Object.fromEntries(['publicCloud', 'saas', 'aiInfra'].map(key => [key, { source: 'fallback', dataAsOf: '2026-04-24' }])) as LiveMultiples['baskets'],
+test('retired morning brief stays unavailable and does not return a generated brief', async () => {
+  const response = await getRetiredMorningBrief()
+  assert.equal(response.status, 410)
+  assert.equal(response.headers.get('Cache-Control'), 'no-store')
+  assert.deepEqual(await response.json(), {
+    error: 'This endpoint has been retired. Open Market Tape for the current brief.',
   })
-  assert.equal(brief.split(/\n\s*\n/).length, 3)
-  assert.match(brief, /1 of 2 tracked equity ETFs/)
-  assert.match(brief, /Current valuation baskets are unavailable/)
-  assert.match(brief, new RegExp(MORNING_BRIEF_DECISION_CONTEXT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
-  assert.doesNotMatch(brief, /exposure guidance|cautious hold|aggression|risk[- ]on|risk[- ]off|credit spread|pressure .* valuations?/i)
 })
 
 test('hyperscaler benchmark carries Meta Q3 guidance without closing the remaining earnings review', () => {

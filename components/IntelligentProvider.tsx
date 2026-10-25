@@ -204,7 +204,7 @@ function BriefSection() {
             <p className="font-mono text-[0.73rem]" style={{ color: '#655e58' }}>
               {paused ? 'Analysis is paused for this older snapshot. Check the dates on the data below.' : snapshotChanged ? 'A different market snapshot is available. Reload the page to keep the numbers and analysis together.' : 'Analysis is temporarily unavailable. You can still explore the dated market data below.'}
             </p>
-            {snapshotChanged ? <a href="/" className="font-mono text-xs underline">Reload Market Tape</a> : !paused && <button onClick={refresh} className="font-mono text-xs underline text-charcoal/65 hover:text-charcoal">Try again</button>}
+            {snapshotChanged ? <button type="button" onClick={() => window.location.reload()} className="font-mono text-xs underline focus-visible:outline-2 focus-visible:outline-offset-4">Reload Market Tape</button> : !paused && <button onClick={refresh} className="font-mono text-xs underline text-charcoal/65 hover:text-charcoal">Try again</button>}
           </div>
         )}
 

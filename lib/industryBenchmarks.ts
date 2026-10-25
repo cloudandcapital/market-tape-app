@@ -112,11 +112,13 @@ export function buildInfraContextBlock(liveMultiples: {
   saas: string
   aiInfra: string
   source?: 'live' | 'fallback'
-  baskets?: Record<string, { source: 'live' | 'fallback'; dataAsOf: string }>
+  baskets?: Record<string, { source: 'live' | 'fallback'; dataAsOf?: string }>
 }): string {
   const b = BENCHMARKS
   const sourceNote = (basket: string) => liveMultiples.baskets?.[basket]?.source === 'live'
-    ? `Yahoo Finance basket median, fetched ${liveMultiples.baskets[basket].dataAsOf}`
+    ? liveMultiples.baskets[basket].dataAsOf
+      ? `Yahoo Finance basket median, fetched ${liveMultiples.baskets[basket].dataAsOf}`
+      : 'Yahoo Finance basket median, live'
     : `UNAVAILABLE; archived fallback dated 2026-04-24 is suppressed, do not quote a multiple`
 
   return `CLOUD INFRASTRUCTURE CONTEXT (source-attributed — use only what is listed here; do not extrapolate or cite additional statistics):

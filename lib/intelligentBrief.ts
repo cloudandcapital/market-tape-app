@@ -1,4 +1,5 @@
 import { unstable_cache } from 'next/cache'
+import { briefMultiplesInput } from './briefCacheInputs'
 import Anthropic from '@anthropic-ai/sdk'
 import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { BENCHMARKS, buildInfraContextBlock } from '@/lib/industryBenchmarks'
@@ -108,6 +109,11 @@ export async function generateIntelligentBrief(
   multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
   model = INTELLIGENT_BRIEF_MODEL,
 ): Promise<BriefResponse> {
+  // Hosted previews must not spend the production provider allowance.
+  const deployment = process.env.NODE_ENV === 'production' || process.env.VERCEL === '1' || process.env.VERCEL_ENV !== undefined
+  if (deployment && process.env.VERCEL_ENV !== 'production') {
+    throw new Error('AI_GENERATION_DISABLED')
+  }
   const message = await client.messages.create({
     model,
     max_tokens: 1800,
@@ -127,7 +133,7 @@ export async function generateIntelligentBrief(
 
 // Shared Data Cache entry: one generation per unique 30-minute market snapshot.
 // Bump the version whenever the response schema or prompt contract changes.
-export const getCachedIntelligentBrief = unstable_cache(
+const getCachedIntelligentBriefEntry = unstable_cache(
   async (
     context: MarketContextData,
     multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
@@ -138,3 +144,10 @@ export const getCachedIntelligentBrief = unstable_cache(
   ['intelligent-brief-v25', INTELLIGENT_BRIEF_MODEL],
   { revalidate: 1800, tags: ['intelligent-brief'] },
 )
+
+export function getCachedIntelligentBrief(
+  context: MarketContextData,
+  multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
+) {
+  return getCachedIntelligentBriefEntry(context, briefMultiplesInput(multiples))
+}
