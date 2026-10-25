@@ -5,7 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import { validateMarketData, snapshotIsOld, yieldChangeBasisPoints } from '../lib/marketIntegrity'
 import { formatMarketSessionLabel } from '../lib/data'
 import { assertBriefResponse } from '../lib/briefValidation'
-import { validateRiskAlerts } from '../lib/intelligentGuardrails'
+import { removeUnsupportedVixPointClaims, validateRiskAlerts } from '../lib/intelligentGuardrails'
 import { BENCHMARKS } from '../lib/industryBenchmarks'
 import CloudReview from '../components/CloudReview'
 import MacroContext from '../components/MacroContext'
@@ -71,6 +71,12 @@ test('snapshot age backstop does not call a weekend snapshot stale after only tw
 test('yield movement uses basis points rather than confusing a relative percent with percentage points', () => {
   assert.ok(Math.abs(yieldChangeBasisPoints(4.95, -3.8)! - (-19.55)) < 0.02)
   assert.equal(yieldChangeBasisPoints(4, -100), null)
+})
+
+test('VIX percentage moves cannot be relabeled as points while Treasury basis points remain', () => {
+  const generated = 'SPY fell 0.52%, with the VIX at 19.45, up 2.21 points. The 10-year Treasury yield rose about 4 basis points.'
+  const guarded = removeUnsupportedVixPointClaims(generated)
+  assert.equal(guarded, 'The 10-year Treasury yield rose about 4 basis points.')
 })
 
 test('macro flags use actual price changes, even when relative-strength scores point the other way', () => {
