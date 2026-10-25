@@ -83,12 +83,13 @@ export function enforceDecisionGuardrail(text: string): string {
   return `${text.trim()} ${ORGANIZATION_DECISION_CONTEXT}`
 }
 
-const UNSUPPORTED_VIX_POINT_CHANGE = /\bVIX\b[^.!?]{0,100}\b(?:up|down|rose|fell|gained|lost|jumped|moved)\b[^.!?]{0,40}\bpoints?\b/i
+const VIX_REFERENCE = /\bVIX\b/i
+const POINT_CHANGE = /\b(?:up|down|rose|fell|gained|lost|jumped|moved)\b.*\bpoints?\b/i
 
 export function removeUnsupportedVixPointClaims(text: string): string {
   return text
     .split(/(?<=[.!?])\s+/)
-    .filter(sentence => !UNSUPPORTED_VIX_POINT_CHANGE.test(sentence))
+    .filter(sentence => !(VIX_REFERENCE.test(sentence) && POINT_CHANGE.test(sentence)))
     .join(' ')
     .trim()
 }
