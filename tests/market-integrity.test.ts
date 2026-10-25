@@ -18,6 +18,7 @@ import { numberTone, signedNumber } from '../lib/numberFormat'
 import { aiComputeData, getSignedDollarSummary } from '../lib/aiCompute'
 import { buildContextData } from '../lib/marketContext'
 import { CloudValuations } from '../components/IntelligentSignals'
+import { enforceMorningBriefGuardrails, MORNING_BRIEF_DECISION_CONTEXT, MORNING_BRIEF_SAFE_FALLBACK } from '../lib/morningBriefGuardrails'
 import { IntelligentCtx } from '../components/IntelligentProvider'
 import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
 import type { BriefResponse, MarketContextData } from '../lib/intelligentTypes'
@@ -120,6 +121,33 @@ test('incomplete prose and explicit score-as-percentage claims are rejected', ()
   for (const text of ['54.17% of stocks above their 20-day average.', 'Stocks above the 50-day moving average are weakening.']) {
     assert.throws(() => assertBriefResponse({ ...brief, sectorInsights: text }), /breadth stocks/)
   }
+})
+
+test('legacy morning brief rejects investment-like directives and always adds operating context', () => {
+  const productionFailure = [
+    'Market participation remains mixed.',
+    'This is not a market rewarding aggression, so exposure guidance is parked at a cautious hold.',
+    'Watch whether defensive sector leadership holds or fades intraday.',
+  ].join('\n\n')
+  assert.equal(enforceMorningBriefGuardrails(productionFailure), MORNING_BRIEF_SAFE_FALLBACK)
+  assert.doesNotMatch(MORNING_BRIEF_SAFE_FALLBACK, /exposure guidance|cautious hold|aggression|risk[- ]on|risk[- ]off/i)
+
+  const neutral = [
+    'Tracked equity ETF participation is mixed in the dated snapshot.',
+    'Technology-finance teams should verify current operating evidence.',
+    'Watch the next dated breadth reading.',
+  ].join('\n\n')
+  const guarded = enforceMorningBriefGuardrails(neutral)
+  assert.match(guarded, new RegExp(MORNING_BRIEF_DECISION_CONTEXT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.equal(guarded.split(/\n\s*\n/).length, 3)
+})
+
+test('hyperscaler benchmark carries Meta Q3 guidance without closing the remaining earnings review', () => {
+  const benchmark = BENCHMARKS.hyperscalerCapexTrend
+  assert.equal(benchmark.lastUpdated, '2026-10-21')
+  assert.equal(benchmark.nextReviewDue, '2026-11-01')
+  assert.match(benchmark.notes, /Meta \$135–145B/)
+  assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Meta — Q3 2026 results'))
 })
 
 test('a stress move in VIX or bonds cannot improve equity ETF breadth; repeated funds count once', () => {

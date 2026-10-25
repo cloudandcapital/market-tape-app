@@ -70,21 +70,21 @@ export const BENCHMARKS = {
 
   hyperscalerCapexTrend: {
     value: 'Expanding',
-    source: 'Amazon, Microsoft, Alphabet, and Meta Q2 2026 earnings; Oracle Q1 FY2027 results',
+    source: 'Meta Q3 2026 results; Amazon, Microsoft, and Alphabet Q2 2026 earnings; Oracle Q1 FY2027 results',
     sourceUrl: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/',
     sourceLinks: [
       { label: 'Amazon — Q2 2026 results', url: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/' },
       { label: 'Microsoft — FY2026 Q4 earnings', url: 'https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4' },
       { label: 'Alphabet — Q2 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q2-Earnings-Call-2026-GgTAq7Is0z/default.aspx' },
-      { label: 'Meta — Q2 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Second-Quarter-2026-Results/default.aspx' },
+      { label: 'Meta — Q3 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Third-Quarter-2026-Results/default.aspx' },
       { label: 'AWS & NVIDIA — 2 million additional GPUs', url: 'https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai' },
       { label: 'Oracle — Q1 FY2027 results', url: 'https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Q1-Results-Driven-by-Triple-Digit-Growth-in-Cloud-Infrastructure-Revenues/default.aspx' },
       { label: 'Google — Finland AI infrastructure', url: 'https://www.googlecloudpresscorner.com/2026-09-09-Google-Deepens-Commitment-to-Finland-with-Two-Year-EUR13-Billion-investment-in-AI-Infrastructure' },
     ],
-    lastUpdated: '2026-09-13',
+    lastUpdated: '2026-10-21',
     nextReviewDue: '2026-11-01',
     reviewCadence: 'quarterly',
-    notes: 'Full-year 2026 guidance after Q2 earnings: Amazon approximately $220B; Microsoft approximately $175B (lease classification shifted); Alphabet $195–205B; Meta $130–145B. Oracle Q1 FY2027 cloud infrastructure revenue was $7.4B (+121% YoY); RPO $664B, with more than $30B of new AI cloud bookings, 850 MW of added data-center capacity and over 300,000 GPUs delivered since Q4. Those Oracle aggregates are not individual customer compute contract values. Google plans at least €13B of Finland digital-infrastructure investment during 2027–28, with a 22-year nuclear PPA and other energy support. AWS and NVIDIA plan 2 million additional NVIDIA GPUs in 2027–28. All are capex/capacity or earnings context, not signed customer-deal totals. Values: Expanding / Stable / Contracting. Recheck after the next earnings cycle.',
+    notes: 'Full-year 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B (lease classification shifted); Alphabet $195–205B; Meta $135–145B, narrowed on October 21 from $130–145B. Oracle Q1 FY2027 cloud infrastructure revenue was $7.4B (+121% YoY); RPO $664B, with more than $30B of new AI cloud bookings, 850 MW of added data-center capacity and over 300,000 GPUs delivered since Q4. Those Oracle aggregates are not individual customer compute contract values. Google plans at least €13B of Finland digital-infrastructure investment during 2027–28, with a 22-year nuclear PPA and other energy support. AWS and NVIDIA plan 2 million additional NVIDIA GPUs in 2027–28. All are capex/capacity or earnings context, not signed customer-deal totals. Values: Expanding / Stable / Contracting. The November 1 review remains due so Amazon, Microsoft, and Alphabet can be refreshed after their next results.',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────

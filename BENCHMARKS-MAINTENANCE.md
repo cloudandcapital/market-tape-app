@@ -43,7 +43,7 @@ Five entries remain that require manual monthly, quarterly, or semi-annual revie
 | `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (October 2026; reviewed October 16; next review November 16) + NVIDIA earnings | Monthly |
 | `dataCenterConstructionYoY` | Absorption +11.7% / construction +24.8% YoY · vacancy 1.4% | CBRE H1 2026 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
-| `hyperscalerCapexTrend` | Expanding | Q2 2026 company earnings disclosures | Quarterly |
+| `hyperscalerCapexTrend` | Expanding | Meta Q3 2026 plus current Amazon, Microsoft, Alphabet, and Oracle disclosures | Quarterly |
 | `nvidiaDcRevenue` | $89.0B Q2 FY2027 | NVIDIA financial results | Quarterly |
 
 ### Where to find updated values
@@ -52,7 +52,7 @@ Five entries remain that require manual monthly, quarterly, or semi-annual revie
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
-**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, Meta, and Oracle earnings calls (quarterly), plus material regional infrastructure commitments. Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current Q2 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $130–145B. Oracle Q1 FY2027 reported $7.4B cloud-infrastructure revenue and $664B RPO; neither is an individual compute-deal value. Update after each earnings cycle.
+**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, Meta, and Oracle earnings calls (quarterly), plus material regional infrastructure commitments. Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $135–145B after its October 21 Q3 update narrowed the prior $130–145B range. Oracle Q1 FY2027 reported $7.4B cloud-infrastructure revenue and $664B RPO; neither is an individual compute-deal value. The November 1 review remains due so the remaining companies can be refreshed after their next results.
 
 **SaaS 2021 peak multiple** — Historical reference. Only review to confirm the narrative framing ("compressed from 2021 peaks") is still accurate context. Rarely needs updating.
 
