@@ -16,7 +16,7 @@ export function buildSourceMorningBrief(context: MarketContextData, multiples: L
     : `${currentValuations} of 3 current valuation baskets are available.`
 
   return [
-    `${market.guidance}: ${equity.positiveCount} of ${equity.count} tracked equity ETFs have positive 20-session RS1M scores, ${market.breadth.above20d}% are above their 20-day averages, and ${market.breadth.above50d}% are above their 50-day averages. The classified trend horizons are ${market.trends.short_term.toLowerCase()} short term, ${market.trends.intermediate_term.toLowerCase()} intermediate term, and ${market.trends.long_term.toLowerCase()} long term.`,
+    `${market.guidance}: ${equity.positiveCount} of ${equity.count} tracked equity ETFs have positive 20-session RS1M scores, ${market.breadth.above20d}% are above their 20-day averages, and ${market.breadth.above50d}% are above their 50-day averages. The classified trend horizons are ${market.trends.short.toLowerCase()} short term, ${market.trends.intermediate.toLowerCase()} intermediate term, and ${market.trends.long.toLowerCase()} long term.`,
     `Market conditions are context, not instructions to change technology commitments. The source-dated hyperscaler CapEx benchmark remains ${BENCHMARKS.hyperscalerCapexTrend.value.toLowerCase()}. ${valuationStatus} ${MORNING_BRIEF_DECISION_CONTEXT}`,
     'Watch the next dated snapshot for changes in tracked equity ETF breadth and sector score gaps. Compare any change with actual workload and contract evidence before drawing technology-finance conclusions.',
   ].join('\n\n')
