@@ -18,7 +18,7 @@ import { numberTone, signedNumber } from '../lib/numberFormat'
 import { aiComputeData, getSignedDollarSummary } from '../lib/aiCompute'
 import { buildContextData } from '../lib/marketContext'
 import { CloudValuations } from '../components/IntelligentSignals'
-import { enforceMorningBriefGuardrails, MORNING_BRIEF_DECISION_CONTEXT, MORNING_BRIEF_SAFE_FALLBACK } from '../lib/morningBriefGuardrails'
+import { buildSourceMorningBrief, MORNING_BRIEF_DECISION_CONTEXT } from '../lib/morningBriefGuardrails'
 import { IntelligentCtx } from '../components/IntelligentProvider'
 import type { Meta, Snapshot, SnapshotRow } from '../lib/types'
 import type { BriefResponse, MarketContextData } from '../lib/intelligentTypes'
@@ -123,23 +123,17 @@ test('incomplete prose and explicit score-as-percentage claims are rejected', ()
   }
 })
 
-test('legacy morning brief rejects investment-like directives and always adds operating context', () => {
-  const productionFailure = [
-    'Market participation remains mixed.',
-    'This is not a market rewarding aggression, so exposure guidance is parked at a cautious hold.',
-    'Watch whether defensive sector leadership holds or fades intraday.',
-  ].join('\n\n')
-  assert.equal(enforceMorningBriefGuardrails(productionFailure), MORNING_BRIEF_SAFE_FALLBACK)
-  assert.doesNotMatch(MORNING_BRIEF_SAFE_FALLBACK, /exposure guidance|cautious hold|aggression|risk[- ]on|risk[- ]off/i)
-
-  const neutral = [
-    'Tracked equity ETF participation is mixed in the dated snapshot.',
-    'Technology-finance teams should verify current operating evidence.',
-    'Watch the next dated breadth reading.',
-  ].join('\n\n')
-  const guarded = enforceMorningBriefGuardrails(neutral)
-  assert.match(guarded, new RegExp(MORNING_BRIEF_DECISION_CONTEXT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
-  assert.equal(guarded.split(/\n\s*\n/).length, 3)
+test('legacy morning brief is deterministic, source-built, and free of investment-like directives', () => {
+  const { meta, snapshot } = fixture()
+  const brief = buildSourceMorningBrief(buildContextData(meta, snapshot), {
+    publicCloud: 'Unavailable', saas: 'Unavailable', aiInfra: 'Unavailable', asOf: '2026-04-24', source: 'fallback',
+    baskets: Object.fromEntries(['publicCloud', 'saas', 'aiInfra'].map(key => [key, { source: 'fallback', dataAsOf: '2026-04-24' }])) as LiveMultiples['baskets'],
+  })
+  assert.equal(brief.split(/\n\s*\n/).length, 3)
+  assert.match(brief, /1 of 2 tracked equity ETFs/)
+  assert.match(brief, /Current valuation baskets are unavailable/)
+  assert.match(brief, new RegExp(MORNING_BRIEF_DECISION_CONTEXT.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')))
+  assert.doesNotMatch(brief, /exposure guidance|cautious hold|aggression|risk[- ]on|risk[- ]off|credit spread|pressure .* valuations?/i)
 })
 
 test('hyperscaler benchmark carries Meta Q3 guidance without closing the remaining earnings review', () => {
