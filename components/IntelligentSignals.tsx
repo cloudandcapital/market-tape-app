@@ -154,11 +154,11 @@ export function HyperscalerCapex() {
       <SectionLabel>Hyperscaler CapEx</SectionLabel>
       <div className="grid grid-cols-1 md:grid-cols-3 strip-dividers">
         <CapexRow label="Hyperscaler spend" value={capexDirection} detail="Amazon, Microsoft, Alphabet, Meta, and Oracle investment direction; Google Finland infrastructure context."
-          color={capexDirection.toLowerCase() === 'expanding' ? '#4A6B5F' : capexDirection.toLowerCase() === 'contracting' ? '#A93A33' : '#666'}
+          color={capexDirection.toLowerCase() === 'expanding' ? 'var(--theme-green, #4A6B5F)' : capexDirection.toLowerCase() === 'contracting' ? 'var(--theme-rose, #A93A33)' : 'var(--theme-muted, #666)'}
           tooltip={{ source: BENCHMARKS.hyperscalerCapexTrend.source, sourceUrl: BENCHMARKS.hyperscalerCapexTrend.sourceUrl, lastUpdated: BENCHMARKS.hyperscalerCapexTrend.lastUpdated }} />
-        <CapexRow label="GPU rental rates" value="Selected list rates" detail={`${BENCHMARKS.gpuSupplyStatus.value}. Thunder Compute, October 16, 2026; includes reservation-only and on-demand-equivalent endpoints.`} color="#9A762A"
+        <CapexRow label="GPU rental rates" value="Selected list rates" detail={`${BENCHMARKS.gpuSupplyStatus.value}. Thunder Compute, October 16, 2026; includes reservation-only and on-demand-equivalent endpoints.`} color="var(--theme-sand, #9A762A)"
           tooltip={{ source: BENCHMARKS.gpuSupplyStatus.source, sourceUrl: BENCHMARKS.gpuSupplyStatus.sourceUrl, sourceLinks: BENCHMARKS.gpuSupplyStatus.sourceLinks, lastUpdated: BENCHMARKS.gpuSupplyStatus.lastUpdated }} />
-        <CapexRow label="Data-center capacity" value="Tightening" detail={BENCHMARKS.dataCenterConstructionYoY.value} color="#4A6B5F"
+        <CapexRow label="Data-center capacity" value="Tightening" detail={BENCHMARKS.dataCenterConstructionYoY.value} color="var(--theme-green, #4A6B5F)"
           tooltip={{ source: BENCHMARKS.dataCenterConstructionYoY.source, sourceUrl: BENCHMARKS.dataCenterConstructionYoY.sourceUrl, lastUpdated: BENCHMARKS.dataCenterConstructionYoY.lastUpdated }} />
       </div>
     </div>

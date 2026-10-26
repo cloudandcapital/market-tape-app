@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import ColorModeToggle from './ColorModeToggle'
 
 const BASE = 'https://cloudandcapital.com'
 
@@ -51,7 +52,7 @@ export default function SiteNav() {
         aria-label="Primary navigation"
         onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
         className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center border-b border-black/[0.07]"
-        style={{ background: 'rgba(245,238,233,0.96)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}
+        style={{ background: 'var(--theme-panel, rgba(245,238,233,0.96))', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}
       >
         <div className="max-w-6xl mx-auto px-6 md:px-10 w-full flex items-center justify-between">
 
@@ -82,7 +83,7 @@ export default function SiteNav() {
                 <ul
                   id="desktop-tools-menu"
                   className="absolute top-[calc(100%+0.85rem)] right-0 list-none m-0 p-[0.4rem_0] min-w-[172px] z-10"
-                  style={{ background: '#f5eee9', border: '1px solid rgba(0,0,0,0.08)', boxShadow: '0 8px 28px rgba(0,0,0,0.08)' }}
+                  style={{ background: 'var(--theme-bg, #f5eee9)', border: '1px solid var(--theme-line, rgba(0,0,0,0.08))', boxShadow: '0 8px 28px rgba(0,0,0,0.08)' }}
                 >
                   {toolLinks.map(l => (
                     <li key={l.label}>
@@ -102,16 +103,17 @@ export default function SiteNav() {
             </li>
           </ul>
 
+          <ColorModeToggle />
           {/* Hamburger */}
           <button
-            className="md:hidden flex flex-col justify-center gap-[5px] bg-transparent border-none cursor-pointer p-[6px_4px]"
+            className="tape-menu-toggle md:hidden flex flex-col justify-center gap-[5px] bg-transparent border-none cursor-pointer p-[6px_4px]"
             onClick={() => setMobileOpen(o => !o)}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
             {[0,1,2].map(i => (
-              <span key={i} className="block w-[22px] h-[1.5px] rounded-sm" style={{ background: '#000' }} />
+              <span key={i} className="block w-[22px] h-[1.5px] rounded-sm" style={{ background: 'var(--tape-menu-ink, #000)' }} />
             ))}
           </button>
         </div>
@@ -123,7 +125,7 @@ export default function SiteNav() {
           id="mobile-navigation"
           onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
           className="fixed left-0 right-0 z-40 overflow-y-auto"
-          style={{ top: '56px', background: '#191714', borderTop: '1px solid rgba(255,255,255,0.06)', boxShadow: '0 12px 32px rgba(0,0,0,0.35)', maxHeight: 'calc(100vh - 56px)' }}
+          style={{ top: '56px', background: 'var(--theme-deep, #191714)', borderTop: '1px solid var(--theme-line, rgba(255,255,255,0.06))', boxShadow: '0 12px 32px rgba(0,0,0,0.35)', maxHeight: 'calc(100vh - 56px)' }}
         >
           <ul className="list-none m-0 p-[0.75rem_0_1.25rem]">
             {navLinks.map(l => (
@@ -138,7 +140,7 @@ export default function SiteNav() {
                 Tools {toolsOpen ? '▴' : '▾'}
               </button>
               {toolsOpen && (
-                <ul className="list-none m-0 p-[0.25rem_0]" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                <ul className="list-none m-0 p-[0.25rem_0]" style={{ background: 'var(--theme-panel, rgba(255,255,255,0.04))' }}>
                   {toolLinks.map(l => (
                     <li key={l.label}>
                       <a

@@ -12,9 +12,9 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
   const growthLeading = qqq && spy ? qqq.rs1m > spy.rs1m : null
 
   function gradeColor(g: string) {
-    if (g === 'A') return '#4A6B5F'
-    if (g === 'C') return '#C0443A'
-    return '#84672C'
+    if (g === 'A') return 'var(--theme-green, #4A6B5F)'
+    if (g === 'C') return 'var(--theme-rose, #C0443A)'
+    return 'var(--theme-sand, #84672C)'
   }
 
   return (
@@ -42,7 +42,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
         {growthSpread !== null && (
           <div className="flex items-baseline justify-between py-[0.35rem]">
             <span className="text-[0.72rem] font-mono text-charcoal/65">QQQ · RS1M score</span>
-            <span className="text-xs font-mono font-medium" style={{ color: growthLeading ? '#4A6B5F' : '#C0443A' }}>
+            <span className="text-xs font-mono font-medium" style={{ color: growthLeading ? 'var(--theme-green, #4A6B5F)' : 'var(--theme-rose, #C0443A)' }}>
               {growthLeading ? 'Ahead' : 'Behind'} {growthSpread > 0 ? '+' : ''}{growthSpread.toFixed(2)}
             </span>
           </div>
@@ -52,7 +52,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
             <span className="text-[0.72rem] font-mono text-charcoal/65">Nasdaq-100 ETF (QQQ)</span>
             <span className="text-xs font-mono font-medium text-charcoal">
               ${qqq.last.toFixed(0)} &nbsp;
-              <span style={{ color: qqq.d1_pct > 0 ? '#4A6B5F' : '#C0443A' }}>
+              <span style={{ color: qqq.d1_pct > 0 ? 'var(--theme-green, #4A6B5F)' : 'var(--theme-rose, #C0443A)' }}>
                 {qqq.d1_pct > 0 ? '+' : ''}{qqq.d1_pct.toFixed(1)}%
               </span>
             </span>

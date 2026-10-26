@@ -10,7 +10,7 @@ function parseInline(text: string): React.ReactNode[] {
   const parts = text.split(/\*\*(.*?)\*\*/g)
   return parts.map((part, i) =>
     i % 2 === 1
-      ? <strong key={i} style={{ fontWeight: 600, color: '#191714' }}>{part}</strong>
+      ? <strong key={i} style={{ fontWeight: 600, color: 'var(--theme-ink, #191714)' }}>{part}</strong>
       : part
   )
 }
@@ -32,10 +32,10 @@ export default function MorningBrief() {
   }, [])
 
   return (
-    <div className="px-5 py-4" style={{ background: '#fff' }}>
+    <div className="px-5 py-4" style={{ background: 'var(--theme-panel, #fff)' }}>
 
       {/* Label */}
-      <p className="font-mono text-[0.46rem] tracking-[0.22em] uppercase mb-3" style={{ color: '#6B8E7F' }}>
+      <p className="font-mono text-[0.46rem] tracking-[0.22em] uppercase mb-3" style={{ color: 'var(--theme-green, #6B8E7F)' }}>
         Morning Brief
       </p>
 
@@ -47,17 +47,17 @@ export default function MorningBrief() {
             <div className="flex gap-1">
               {[0, 1, 2].map(i => (
                 <span key={i} className="block w-1 h-1 rounded-full animate-pulse"
-                  style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />
+                  style={{ background: 'var(--theme-sage-panel, #6B8E7F)', animationDelay: `${i * 0.2}s` }} />
               ))}
             </div>
-            <p className="font-mono text-[0.7rem]" style={{ color: '#aaa' }}>
+            <p className="font-mono text-[0.7rem]" style={{ color: 'var(--theme-muted, #aaa)' }}>
               Analyzing market conditions…
             </p>
           </div>
         )}
 
         {error && !loading && (
-          <p className="font-mono text-[0.7rem]" style={{ color: '#bbb' }}>
+          <p className="font-mono text-[0.7rem]" style={{ color: 'var(--theme-muted, #bbb)' }}>
             Brief unavailable — market data may still be loading.
           </p>
         )}
@@ -71,7 +71,7 @@ export default function MorningBrief() {
                   fontFamily: 'var(--font-playfair), Georgia, serif',
                   fontSize: i === 0 ? '0.93rem' : '0.87rem',
                   lineHeight: 1.6,
-                  color: i === 0 ? '#191714' : '#3a3a3a',
+                  color: i === 0 ? 'var(--theme-ink, #191714)' : 'var(--theme-ink, #3a3a3a)',
                   fontWeight: i === 0 ? 400 : 300,
                   margin: 0,
                 }}

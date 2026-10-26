@@ -40,7 +40,7 @@ export default async function Page() {
             <div>
               <p className="text-[0.72rem] font-mono tracking-[0.22em] uppercase text-charcoal/65 mb-0.5">Cloud &amp; Capital</p>
               <h1 className="font-serif italic font-normal tracking-tight"
-                style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: '#191714', lineHeight: 1.1 }}>
+                style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: 'var(--theme-ink, #191714)', lineHeight: 1.1 }}>
                 Market Tape
               </h1>
               <p className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 mt-2 max-w-xl">A clearer view of markets, cloud spending, and AI infrastructure.</p>
@@ -115,7 +115,7 @@ export default async function Page() {
           </div>
 
           {/* Full methodology-aware tracker follows the primary market dashboard. */}
-          <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: '#fefdfb' }}>
+          <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid var(--theme-line, rgba(0,0,0,0.08))', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: 'var(--theme-panel, #fefdfb)' }}>
             <AIComputeCommitments />
           </div>
 

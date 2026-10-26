@@ -143,7 +143,7 @@ export function IntelligentProvider({ contextData, initialData = null, children,
   return (
     <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refreshMessage, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
-      <div className="mb-8 overflow-hidden" style={{ border: '1px solid rgba(0,0,0,0.08)', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
+      <div className="mb-8 overflow-hidden" style={{ border: '1px solid var(--theme-line, rgba(0,0,0,0.08))', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
         <BriefSection />
       </div>
 
@@ -156,14 +156,14 @@ function BriefSection() {
   const { data, loading, cachedAt, refresh, paused, snapshotChanged, refreshMessage } = useIntelligent()
 
   return (
-    <div style={{ background: '#fefdfb' }}>
+    <div style={{ background: 'var(--theme-panel, #fefdfb)' }}>
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem] rule-subtle-bottom">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
-          <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: '#4A6B5F' }}>Lumen&apos;s Analysis</span>
+          <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: 'var(--theme-green, #4A6B5F)' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.72rem] flex-shrink-0" style={{ color: 'rgba(0,0,0,0.2)' }}>·</span>
+              <span className="font-mono text-[0.72rem] flex-shrink-0" style={{ color: 'var(--theme-ink, rgba(0,0,0,0.2))' }}>·</span>
               <span className="font-mono text-[0.72rem] tracking-[0.06em] uppercase text-charcoal/65">
                 {cachedAt}
               </span>
@@ -174,7 +174,7 @@ function BriefSection() {
           onClick={refresh}
           disabled={loading || paused || snapshotChanged}
           className="font-mono text-[0.72rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer px-2 py-2 min-h-8 flex-shrink-0 ml-auto sm:ml-3"
-          style={{ color: '#655e58' }}
+          style={{ color: 'var(--theme-muted, #655e58)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
         >
@@ -190,10 +190,10 @@ function BriefSection() {
             <div className="flex gap-1">
               {[0,1,2].map(i => (
                 <span key={i} className="block w-1.5 h-1.5 rounded-full animate-pulse"
-                  style={{ background: '#6B8E7F', animationDelay: `${i * 0.2}s` }} />
+                  style={{ background: 'var(--theme-sage-panel, #6B8E7F)', animationDelay: `${i * 0.2}s` }} />
               ))}
             </div>
-            <p className="font-mono text-[0.73rem]" style={{ color: '#655e58' }}>
+            <p className="font-mono text-[0.73rem]" style={{ color: 'var(--theme-muted, #655e58)' }}>
               Lumen is analyzing market conditions…
             </p>
           </div>
@@ -201,7 +201,7 @@ function BriefSection() {
 
         {!loading && !data && (
           <div className="flex flex-wrap items-center gap-3 py-3">
-            <p className="font-mono text-[0.73rem]" style={{ color: '#655e58' }}>
+            <p className="font-mono text-[0.73rem]" style={{ color: 'var(--theme-muted, #655e58)' }}>
               {paused ? 'Analysis is paused for this older snapshot. Check the dates on the data below.' : snapshotChanged ? 'A different market snapshot is available. Reload the page to keep the numbers and analysis together.' : 'Analysis is temporarily unavailable. You can still explore the dated market data below.'}
             </p>
             {snapshotChanged ? <button type="button" onClick={() => window.location.reload()} className="font-mono text-xs underline focus-visible:outline-2 focus-visible:outline-offset-4">Reload Market Tape</button> : !paused && <button onClick={refresh} className="font-mono text-xs underline text-charcoal/65 hover:text-charcoal">Try again</button>}

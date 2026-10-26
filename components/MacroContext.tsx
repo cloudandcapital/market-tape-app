@@ -8,7 +8,7 @@ function MacroRow({
     <div className="flex items-start justify-between gap-3 py-2 rule-subtle-bottom">
       <span className="max-w-[52%] text-[0.72rem] leading-relaxed font-mono text-charcoal/65">{label}</span>
       <div className="shrink-0 text-right">
-        <span className="block text-xs font-mono font-medium" style={{ color: color ?? '#191714' }}>{value}</span>
+        <span className="block text-xs font-mono font-medium" style={{ color: color ?? 'var(--theme-ink, #191714)' }}>{value}</span>
         {sub && <span className="block mt-0.5 text-[0.72rem] font-mono text-charcoal/65">{sub}</span>}
       </div>
     </div>
@@ -25,9 +25,9 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
   const smallVsLarge = iwm && spy ? iwm.rs1m - spy.rs1m : null
 
   function trendColor(rs1m: number) {
-    if (rs1m > 0.5) return '#4A6B5F'
-    if (rs1m < -0.5) return '#C0443A'
-    return '#6D6964'
+    if (rs1m > 0.5) return 'var(--theme-green, #4A6B5F)'
+    if (rs1m < -0.5) return 'var(--theme-rose, #C0443A)'
+    return 'var(--theme-muted, #6D6964)'
   }
 
   return (
@@ -65,7 +65,7 @@ export default function MacroContext({ snapshot }: { snapshot: Snapshot }) {
           label="Small caps vs S&P 500"
           value={`IWM ${smallVsLarge > 0 ? 'ahead' : smallVsLarge < 0 ? 'behind' : 'level'}`}
           sub={`${smallVsLarge > 0 ? '+' : ''}${smallVsLarge.toFixed(2)} score gap`}
-          color={smallVsLarge > 0.5 ? '#4A6B5F' : smallVsLarge < -0.5 ? '#C0443A' : '#6D6964'}
+          color={smallVsLarge > 0.5 ? 'var(--theme-green, #4A6B5F)' : smallVsLarge < -0.5 ? 'var(--theme-rose, #C0443A)' : 'var(--theme-muted, #6D6964)'}
         />
       )}
       <p className="font-mono text-[0.72rem] text-charcoal/65 leading-relaxed mt-3">20D = price change over 20 trading sessions. Scores compare volatility-adjusted performance with SPY. HYG price changes do not measure credit spreads.</p>

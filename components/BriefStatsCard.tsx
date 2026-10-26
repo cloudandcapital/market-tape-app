@@ -2,9 +2,9 @@ import type { Meta } from '@/lib/types'
 
 interface Props { meta: Meta }
 
-const SAGE   = '#6B8E7F'
-const GOLD   = '#C9A961'
-const RED    = '#C0443A'
+const SAGE   = 'var(--theme-green, #6B8E7F)'
+const GOLD   = 'var(--theme-sand, #C9A961)'
+const RED    = 'var(--theme-rose, #C0443A)'
 
 function signalColor(g: string) {
   if (g === 'Risk-On')  return SAGE
@@ -26,11 +26,11 @@ function trendColor(v: string) {
 
 function Row({ label, value, color }: { label: string; value: string; color?: string }) {
   return (
-    <div className="flex items-baseline justify-between py-[0.32rem]" style={{ borderBottom: '1px solid rgba(0,0,0,0.055)' }}>
-      <span className="font-mono text-[0.48rem] tracking-[0.16em] uppercase" style={{ color: '#888' }}>
+    <div className="flex items-baseline justify-between py-[0.32rem]" style={{ borderBottom: '1px solid var(--theme-line, rgba(0,0,0,0.055))' }}>
+      <span className="font-mono text-[0.48rem] tracking-[0.16em] uppercase" style={{ color: 'var(--theme-muted, #888)' }}>
         {label}
       </span>
-      <span className="font-mono text-[0.75rem] font-medium" style={{ color: color ?? '#191714' }}>
+      <span className="font-mono text-[0.75rem] font-medium" style={{ color: color ?? 'var(--theme-ink, #191714)' }}>
         {value}
       </span>
     </div>
@@ -45,13 +45,13 @@ export default function BriefStatsCard({ meta }: Props) {
     <div
       className="p-4 flex flex-col gap-3"
       style={{
-        background: '#f5eee9',
+        background: 'var(--theme-bg, #f5eee9)',
         borderRight: '1px solid rgba(0,0,0,0.09)',
       }}
     >
       {/* Signal header */}
       <div>
-        <p className="font-mono text-[0.46rem] tracking-[0.22em] uppercase mb-1.5" style={{ color: '#888' }}>
+        <p className="font-mono text-[0.46rem] tracking-[0.22em] uppercase mb-1.5" style={{ color: 'var(--theme-muted, #888)' }}>
           Signal
         </p>
         <div className="flex items-center gap-1.5">
@@ -94,8 +94,8 @@ export default function BriefStatsCard({ meta }: Props) {
       </div>
 
       {/* Trend row */}
-      <div style={{ borderTop: '1px solid rgba(0,0,0,0.055)', paddingTop: '0.45rem' }}>
-        <p className="font-mono text-[0.46rem] tracking-[0.16em] uppercase mb-1" style={{ color: '#888' }}>
+      <div style={{ borderTop: '1px solid var(--theme-line, rgba(0,0,0,0.055))', paddingTop: '0.45rem' }}>
+        <p className="font-mono text-[0.46rem] tracking-[0.16em] uppercase mb-1" style={{ color: 'var(--theme-muted, #888)' }}>
           Trend
         </p>
         <div className="flex items-center gap-3">
@@ -105,7 +105,7 @@ export default function BriefStatsCard({ meta }: Props) {
             { t: 'ST', v: trend.short_term },
           ].map(({ t, v }) => (
             <div key={t} className="flex items-baseline gap-0.5">
-              <span className="font-mono text-[0.46rem] tracking-[0.1em] uppercase" style={{ color: '#aaa' }}>{t}</span>
+              <span className="font-mono text-[0.46rem] tracking-[0.1em] uppercase" style={{ color: 'var(--theme-muted, #aaa)' }}>{t}</span>
               <span className="font-mono text-[0.78rem] font-medium" style={{ color: trendColor(v) }}>
                 {trendArrow(v)}
               </span>
@@ -115,7 +115,7 @@ export default function BriefStatsCard({ meta }: Props) {
       </div>
 
       {/* Timestamp */}
-      <p className="font-mono text-[0.44rem] tracking-[0.08em] mt-auto" style={{ color: 'rgba(0,0,0,0.2)' }}>
+      <p className="font-mono text-[0.44rem] tracking-[0.08em] mt-auto" style={{ color: 'var(--theme-ink, rgba(0,0,0,0.2))' }}>
         {new Date(meta.generated_at_utc).toLocaleTimeString('en-US', {
           hour: '2-digit', minute: '2-digit',
           timeZone: 'America/New_York', timeZoneName: 'short',

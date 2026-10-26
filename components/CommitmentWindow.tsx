@@ -10,19 +10,19 @@ function getRecs(vix: number, guidance: string, longTrend: string): Recs {
   const bearish = vix > 28 || guidance === 'Defensive'
 
   if (bullish) return {
-    oneYear:   { label: 'FAVORABLE',  color: '#6B8E7F', note: 'Market supports 1Y commits' },
-    threeYear: { label: 'CONSIDER',   color: '#C9A961', note: 'Evaluate multi-year carefully' },
-    spot:      { label: 'SAFE',       color: '#6B8E7F', note: 'On-demand is low-risk' },
+    oneYear:   { label: 'FAVORABLE',  color: 'var(--theme-green, #6B8E7F)', note: 'Market supports 1Y commits' },
+    threeYear: { label: 'CONSIDER',   color: 'var(--theme-sand, #C9A961)', note: 'Evaluate multi-year carefully' },
+    spot:      { label: 'SAFE',       color: 'var(--theme-green, #6B8E7F)', note: 'On-demand is low-risk' },
   }
   if (bearish) return {
-    oneYear:   { label: 'HOLD',       color: '#C0443A', note: 'Pause non-critical commits' },
-    threeYear: { label: 'HOLD',       color: '#C0443A', note: 'Wait for clearer signal' },
-    spot:      { label: 'SAFE',       color: '#6B8E7F', note: 'On-demand is lowest-risk' },
+    oneYear:   { label: 'HOLD',       color: 'var(--theme-rose, #C0443A)', note: 'Pause non-critical commits' },
+    threeYear: { label: 'HOLD',       color: 'var(--theme-rose, #C0443A)', note: 'Wait for clearer signal' },
+    spot:      { label: 'SAFE',       color: 'var(--theme-green, #6B8E7F)', note: 'On-demand is lowest-risk' },
   }
   return {
-    oneYear:   { label: 'CAUTIOUS',   color: '#C9A961', note: 'Selective commits only' },
-    threeYear: { label: 'HOLD',       color: '#C0443A', note: 'Not the right window' },
-    spot:      { label: 'SAFE',       color: '#6B8E7F', note: 'On-demand is safest now' },
+    oneYear:   { label: 'CAUTIOUS',   color: 'var(--theme-sand, #C9A961)', note: 'Selective commits only' },
+    threeYear: { label: 'HOLD',       color: 'var(--theme-rose, #C0443A)', note: 'Not the right window' },
+    spot:      { label: 'SAFE',       color: 'var(--theme-green, #6B8E7F)', note: 'On-demand is safest now' },
   }
 }
 
