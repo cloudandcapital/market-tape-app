@@ -9,7 +9,7 @@ const paths: Record<IconName, React.ReactNode> = {
 }
 
 export default function DashboardIcon({ name, tone = 'neutral' }: { name: IconName; tone?: 'neutral' | 'caution' | 'positive' }) {
-  const color = tone === 'positive' ? '#4A6B5F' : tone === 'caution' ? '#9A762A' : 'rgba(25,23,20,0.5)'
+  const color = tone === 'positive' ? 'var(--theme-green, #4A6B5F)' : tone === 'caution' ? 'var(--theme-sand, #9A762A)' : 'rgba(25,23,20,0.5)'
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mt-0.5 h-4 w-4 flex-none">
       {paths[name]}

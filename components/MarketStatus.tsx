@@ -7,10 +7,10 @@ function InternalRow({
   label, value, change, invertColor = false, arrow, period = '1D', changeLabel,
 }: { label: string; value: string; change: number; invertColor?: boolean; arrow?: string; period?: string; changeLabel?: string }) {
   const positive = invertColor ? change < 0 : change > 0
-  const changeColor = Math.abs(change) < 0.05 ? '#6D6964' : positive ? '#4A6B5F' : '#C0443A'
+  const changeColor = Math.abs(change) < 0.05 ? 'var(--theme-muted, #6D6964)' : positive ? 'var(--theme-green, #4A6B5F)' : 'var(--theme-rose, #C0443A)'
   const arrowColor = invertColor
-    ? (change < -0.5 ? '#4A6B5F' : change > 0.5 ? '#C0443A' : '#6D6964')
-    : (change > 0.5 ? '#4A6B5F' : change < -0.5 ? '#C0443A' : '#6D6964')
+    ? (change < -0.5 ? 'var(--theme-green, #4A6B5F)' : change > 0.5 ? 'var(--theme-rose, #C0443A)' : 'var(--theme-muted, #6D6964)')
+    : (change > 0.5 ? 'var(--theme-green, #4A6B5F)' : change < -0.5 ? 'var(--theme-rose, #C0443A)' : 'var(--theme-muted, #6D6964)')
   const sign = change > 0 ? '+' : ''
   return (
     <div className="flex items-baseline justify-between py-[0.28rem]">

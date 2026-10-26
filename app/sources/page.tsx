@@ -33,7 +33,7 @@ export default function SourcesPage() {
         {/* Header */}
         <header className="mb-10">
           <p className="font-mono text-[0.72rem] tracking-[0.22em] uppercase text-charcoal/65 mb-1">Cloud &amp; Capital · Market Tape</p>
-          <h1 className="font-serif font-medium" style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', color: '#191714', lineHeight: 1.15 }}>
+          <h1 className="font-serif font-medium" style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', color: 'var(--theme-ink, #191714)', lineHeight: 1.15 }}>
             Methodology &amp; Sources
           </h1>
           <p className="font-mono text-[0.72rem] text-charcoal/65 mt-2 leading-relaxed">
@@ -163,7 +163,7 @@ export default function SourcesPage() {
 
         <div className="space-y-3">
           {aiComputeData.map((row, i) => (
-            <div key={i} className="flex flex-col items-start gap-2 py-2 sm:flex-row sm:justify-between sm:gap-4" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+            <div key={i} className="flex flex-col items-start gap-2 py-2 sm:flex-row sm:justify-between sm:gap-4" style={{ borderBottom: '1px solid var(--theme-line, rgba(0,0,0,0.06))' }}>
               <div className="min-w-0 max-w-full">
                 <p className="font-mono text-[0.72rem] font-medium text-charcoal/80">
                   {row.buyer} — {row.provider}
@@ -208,7 +208,7 @@ export default function SourcesPage() {
 
         <div className="space-y-5">
           {Object.entries(BENCHMARKS).map(([key, bm]) => (
-            <div key={key} className="py-3" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+            <div key={key} className="py-3" style={{ borderBottom: '1px solid var(--theme-line, rgba(0,0,0,0.06))' }}>
               <div className="flex items-baseline justify-between gap-3 mb-1">
                 <span className="font-mono text-[0.72rem] tracking-[0.08em] text-charcoal/65">{key}</span>
                 <span className="font-mono text-[0.72rem] font-medium text-charcoal/85">{bm.value}</span>
