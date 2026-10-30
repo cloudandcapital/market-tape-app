@@ -48,7 +48,7 @@ export default async function Page() {
             </div>
           </div>
           <div className="tape-hero-art" aria-hidden="true">
-            <Image src="/images/market-tape-bars-v2.png" width={1536} height={1024} alt="" priority sizes="(max-width: 767px) 1px, (max-width: 1100px) 40vw, 580px" />
+            <Image src="/images/market-tape-bars-v2.png" width={1536} height={1024} alt="" priority sizes="(max-width: 767px) 1px, (max-width: 916px) 220px, (max-width: 1333px) 24vw, 320px" />
           </div>
         </header>
 
