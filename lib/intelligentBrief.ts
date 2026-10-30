@@ -5,6 +5,7 @@ import type { MarketContextData, BriefResponse } from '@/lib/intelligentTypes'
 import { BENCHMARKS, buildInfraContextBlock } from '@/lib/industryBenchmarks'
 import { enforceInterpretationGuardrails } from '@/lib/intelligentGuardrails'
 import { assertBriefResponse } from '@/lib/briefValidation'
+import { briefGenerationCacheKey, createBriefGenerationGate } from './briefGenerationPolicy'
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, maxRetries: 0 })
 export const INTELLIGENT_BRIEF_MODEL = 'claude-sonnet-4-6'
 export const INTELLIGENT_BRIEF_SYSTEM_PROMPT = "Explain markets to a curious reader and a technology-finance team. Use plain English and only supplied data. Separate measurements, source-dated benchmarks, and interpretation. RS1M is a dimensionless volatility-adjusted score: (20-session asset return minus SPY return) divided by the asset’s 20-session realized volatility. Never append % to a score or infer absolute price direction, interest-rate direction, credit spreads, or vendor discounts from it. Daily and 20-session percentage price changes are labeled separately. VIX d1 is a percentage price change, never a point change; only the supplied Treasury yield movement uses basis points. Market prices do not establish cloud commitment duration, Spot safety, capacity availability, or vendor willingness to discount. Do not issue purchasing verdicts or imply a tested causal relationship. COMMODITY ETF PROXY RULE: GLD and USO are ETF share prices, not commodity spot quotes; never attach dollars-per-ounce or dollars-per-barrel meaning. Use the supplied price date, not today or this morning. Daily bars may still change during a session. Use 20-session language for score rankings. Missing values stay Unavailable. Use tracked equity ETFs for breadth, never stocks or all equities. Cite only numbers visible in the dashboard, expanded instrument table, or source tooltips. Round percentages to two decimals and yield changes to whole basis points. Never invent forecasts, savings, quotes, benchmarks, or sources. Return only JSON."
@@ -131,23 +132,32 @@ export async function generateIntelligentBrief(
   return result
 }
 
-// Shared Data Cache entry: one generation per unique 30-minute market snapshot.
-// Bump the version whenever the response schema or prompt contract changes.
+const generateSharedBrief = createBriefGenerationGate<{ data: BriefResponse; cachedAt: number }>()
+
+// Reuse unchanged model/source inputs instead of regenerating solely because time passed.
+// The contract key includes the current prompt and benchmarks, excluding generationTime.
+// Bump the version when interpretation guards or the response contract change.
 const getCachedIntelligentBriefEntry = unstable_cache(
   async (
     context: MarketContextData,
     multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
-  ) => ({
+    contractKey: string,
+  ) => generateSharedBrief(contractKey, async () => ({
     data: await generateIntelligentBrief(context, multiples),
     cachedAt: Date.now(),
-  }),
-  ['intelligent-brief-v25', INTELLIGENT_BRIEF_MODEL],
-  { revalidate: 1800, tags: ['intelligent-brief'] },
+  })),
+  ['intelligent-brief-v26', INTELLIGENT_BRIEF_MODEL],
+  { revalidate: false, tags: ['intelligent-brief'] },
 )
 
 export function getCachedIntelligentBrief(
   context: MarketContextData,
   multiples: { publicCloud: string; saas: string; aiInfra: string; source?: 'live' | 'fallback' },
 ) {
-  return getCachedIntelligentBriefEntry(context, briefMultiplesInput(multiples))
+  const normalizedMultiples = briefMultiplesInput(multiples)
+  const contractKey = briefGenerationCacheKey(
+    INTELLIGENT_BRIEF_MODEL, INTELLIGENT_BRIEF_SYSTEM_PROMPT, buildPrompt(context, normalizedMultiples),
+    { context, multiples: normalizedMultiples, benchmarks: BENCHMARKS },
+  )
+  return getCachedIntelligentBriefEntry(context, normalizedMultiples, contractKey)
 }
