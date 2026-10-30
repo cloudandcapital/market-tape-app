@@ -176,10 +176,10 @@
 
 /* Dashboard opening: measures and cost context before supporting detail. */
 .tape-mobile-summary { display: none; }
-.tape-hero { grid-template-columns: minmax(0,1fr) 116px; min-height: 0; gap: 24px; padding: 24px 0 18px; }
+.tape-hero { grid-template-columns: minmax(0,1fr) clamp(220px,24vw,320px); min-height: 0; gap: 32px; padding: 24px 0 18px; }
 .tape-hero h1 { font-size: clamp(32px,3.4vw,48px); line-height: 1.05; margin-bottom: 8px; letter-spacing: -.025em; }
 .tape-hero-copy > p { max-width: 78ch; font-size: 16px; line-height: 1.5; }
-.tape-hero-art img { max-height: 96px; transform: none; }
+.tape-hero-art img { display: block; max-height: none; transform: none; }
 .tape-hero-actions { display: flex; gap: 10px 26px; margin-top: 10px; }
 .tape-hero .tape-text-link { min-height: 40px; font-size: 14px; padding-block: 6px; }
 .tape-snapshot-context { padding: 12px 0 18px; font-size: 13px; }
