@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import ColorModeToggle from './ColorModeToggle'
+import Link from 'next/link'
 
 const BASE = 'https://cloudandcapital.com'
 
@@ -9,6 +10,8 @@ export default function SiteNav() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
   const toolsRef = useRef<HTMLLIElement>(null)
+  const mobileToggleRef = useRef<HTMLButtonElement>(null)
+  const desktopToolsRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -24,10 +27,12 @@ export default function SiteNav() {
   function closeMobile() {
     setMobileOpen(false)
     setToolsOpen(false)
+    if (mobileOpen) mobileToggleRef.current?.focus()
+    else if (toolsOpen) desktopToolsRef.current?.focus()
   }
 
-  const linkCls = 'font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black no-underline transition-colors duration-150'
-  const mobileLinkCls = 'block px-7 py-[0.8rem] font-mono text-[0.72rem] tracking-[0.16em] uppercase text-white/60 hover:text-white no-underline transition-colors duration-150'
+  const linkCls = 'tape-nav-link no-underline transition-colors duration-150'
+  const mobileLinkCls = 'tape-mobile-link block px-7 py-[0.8rem] no-underline transition-colors duration-150'
 
   const navLinks = [
     { label: 'Services', href: `${BASE}/services` },
@@ -42,27 +47,27 @@ export default function SiteNav() {
     { label: 'Software Renewal Tracker', href: `${BASE}/tools/software-renewal-tracker` },
     { label: 'Market Tape',       href: 'https://market-tape.cloudandcapital.com' },
     { label: 'Signal Audit',      href: `${BASE}/signal-audit` },
-    { label: 'Interactive Lab',   href: `${BASE}/interactive-lab` },
     { label: 'Cloud Cost Guard', href: 'https://guard.cloudandcapital.com' },
   ]
 
   return (
     <>
+      <a href="#tape-main" className="tape-skip-link">Skip to content</a>
       <nav
         aria-label="Primary navigation"
         onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
-        className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center border-b border-black/[0.07]"
+        className="tape-nav fixed top-0 left-0 right-0 z-50 flex items-center border-b border-black/[0.07]"
         style={{ background: 'var(--theme-panel, rgba(245,238,233,0.96))', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)' }}
       >
-        <div className="max-w-6xl mx-auto px-6 md:px-10 w-full flex items-center justify-between">
+        <div className="tape-nav-inner">
 
           {/* Logo */}
-          <a href={BASE} className="font-serif text-[0.88rem] font-medium tracking-[0.14em] uppercase text-black no-underline leading-none">
+          <div className="tape-nav-brand"><a href={BASE} className="tape-wordmark">
             Cloud &amp; Capital
-          </a>
+          </a><Link href="/" className="tape-nav-title">Market Tape</Link></div>
 
           {/* Desktop links */}
-          <ul className="hidden md:flex items-center gap-6 list-none m-0 p-0">
+          <ul className="tape-desktop-nav items-center gap-6 list-none m-0 p-0">
             {navLinks.map(l => (
               <li key={l.label}><a href={l.href} className={linkCls}>{l.label}</a></li>
             ))}
@@ -70,14 +75,16 @@ export default function SiteNav() {
             {/* Tools dropdown */}
             <li ref={toolsRef} className="relative">
               <button
+                ref={desktopToolsRef}
+                type="button"
                 aria-expanded={toolsOpen}
                 aria-controls="desktop-tools-menu"
                 onClick={(e) => { e.stopPropagation(); setToolsOpen(o => !o) }}
-                className="font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black bg-transparent border-none cursor-pointer p-0 flex items-center gap-1 transition-colors duration-150"
+                className="tape-nav-link bg-transparent border-none cursor-pointer flex items-center gap-1 transition-colors duration-150"
                 style={{ lineHeight: '1', verticalAlign: 'baseline' }}
               >
                 Tools
-                <span className={`text-[0.72rem] inline-block transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>
+                <span className={`text-sm inline-block transition-transform duration-200 ${toolsOpen ? 'rotate-180' : ''}`}>▾</span>
               </button>
               {toolsOpen && (
                 <ul
@@ -89,7 +96,7 @@ export default function SiteNav() {
                     <li key={l.label}>
                       <a
                         href={l.href}
-                        className="block px-5 py-[0.55rem] font-mono text-[0.72rem] tracking-[0.12em] uppercase text-black/65 hover:text-black no-underline whitespace-nowrap transition-colors duration-150"
+                        className="tape-nav-link block px-5 py-3 no-underline whitespace-nowrap transition-colors duration-150"
                         onMouseEnter={e => (e.currentTarget.style.background = 'rgba(107,142,127,0.07)')}
                         onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                         style={{ background: 'transparent' }}
@@ -106,7 +113,9 @@ export default function SiteNav() {
           <ColorModeToggle />
           {/* Hamburger */}
           <button
-            className="tape-menu-toggle md:hidden flex flex-col justify-center gap-[5px] bg-transparent border-none cursor-pointer p-[6px_4px]"
+            ref={mobileToggleRef}
+            type="button"
+            className="tape-menu-toggle flex-col justify-center gap-[5px] bg-transparent border-none cursor-pointer p-[6px_4px]"
             onClick={() => setMobileOpen(o => !o)}
             aria-expanded={mobileOpen}
             aria-controls="mobile-navigation"
@@ -125,7 +134,7 @@ export default function SiteNav() {
           id="mobile-navigation"
           onKeyDown={event => { if (event.key === 'Escape') closeMobile() }}
           className="fixed left-0 right-0 z-40 overflow-y-auto"
-          style={{ top: '56px', background: 'var(--theme-deep, #191714)', borderTop: '1px solid var(--theme-line, rgba(255,255,255,0.06))', boxShadow: '0 12px 32px rgba(0,0,0,0.35)', maxHeight: 'calc(100vh - 56px)' }}
+          style={{ top: 'var(--tape-nav-height)', background: 'var(--theme-deep, #191714)', borderTop: '1px solid var(--theme-line, rgba(255,255,255,0.06))', boxShadow: '0 12px 32px rgba(0,0,0,0.2)', maxHeight: 'calc(100vh - var(--tape-nav-height))' }}
         >
           <ul className="list-none m-0 p-[0.75rem_0_1.25rem]">
             {navLinks.map(l => (
@@ -133,21 +142,22 @@ export default function SiteNav() {
             ))}
             <li>
               <button
+                type="button"
                 aria-expanded={toolsOpen}
+                aria-controls="mobile-tools-menu"
                 onClick={event => { event.stopPropagation(); setToolsOpen(o => !o) }}
-                className="block w-full text-left px-7 py-[0.8rem] font-mono text-[0.72rem] tracking-[0.16em] uppercase text-white/60 hover:text-white bg-transparent border-none cursor-pointer transition-colors duration-150"
+                className="tape-mobile-link block w-full text-left px-7 py-[0.8rem] bg-transparent border-none cursor-pointer transition-colors duration-150"
               >
                 Tools {toolsOpen ? '▴' : '▾'}
               </button>
               {toolsOpen && (
-                <ul className="list-none m-0 p-[0.25rem_0]" style={{ background: 'var(--theme-panel, rgba(255,255,255,0.04))' }}>
+                <ul id="mobile-tools-menu" className="list-none m-0 p-[0.25rem_0]" style={{ background: 'var(--theme-deep, #191714)' }}>
                   {toolLinks.map(l => (
                     <li key={l.label}>
                       <a
                         href={l.href}
                         onClick={closeMobile}
-                        className="block pl-[2.75rem] pr-7 py-[0.6rem] font-mono text-[0.72rem] tracking-[0.14em] uppercase no-underline transition-colors duration-150"
-                        style={{ color: 'rgba(244,239,230,0.42)' }}
+                        className="tape-mobile-link block pl-[2.75rem] pr-7 py-3 no-underline transition-colors duration-150"
                       >
                         {l.label}
                       </a>

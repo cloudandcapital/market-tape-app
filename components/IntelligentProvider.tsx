@@ -143,7 +143,7 @@ export function IntelligentProvider({ contextData, initialData = null, children,
   return (
     <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refreshMessage, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
-      <div className="mb-8 overflow-hidden" style={{ border: '1px solid var(--theme-line, rgba(0,0,0,0.08))', borderLeft: '3px solid #6B8E7F', borderRadius: '2px' }}>
+      <div className="tape-analysis overflow-hidden">
         <BriefSection />
       </div>
 
@@ -160,11 +160,11 @@ function BriefSection() {
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-y-2 px-4 sm:px-7 py-[0.7rem] rule-subtle-bottom">
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
-          <span className="font-mono text-[0.72rem] tracking-[0.22em] uppercase flex-shrink-0" style={{ color: 'var(--theme-green, #4A6B5F)' }}>Lumen&apos;s Analysis</span>
+          <span className="font-mono text-sm tracking-[0.22em] uppercase flex-shrink-0" style={{ color: 'var(--theme-green, #4A6B5F)' }}>Lumen&apos;s Analysis</span>
           {cachedAt && !loading && (
             <>
-              <span className="font-mono text-[0.72rem] flex-shrink-0" style={{ color: 'var(--theme-ink, rgba(0,0,0,0.2))' }}>·</span>
-              <span className="font-mono text-[0.72rem] tracking-[0.06em] uppercase text-charcoal/65">
+              <span className="font-mono text-sm flex-shrink-0" style={{ color: 'var(--theme-ink, rgba(0,0,0,0.2))' }}>·</span>
+              <span className="font-mono text-sm tracking-[0.06em] uppercase text-charcoal/65">
                 {cachedAt}
               </span>
             </>
@@ -173,7 +173,7 @@ function BriefSection() {
         <button
           onClick={refresh}
           disabled={loading || paused || snapshotChanged}
-          className="font-mono text-[0.72rem] tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer px-2 py-2 min-h-8 flex-shrink-0 ml-auto sm:ml-3"
+          className="font-mono text-sm tracking-[0.14em] uppercase transition-colors disabled:opacity-40 bg-transparent border-none cursor-pointer px-2 py-2 min-h-8 flex-shrink-0 ml-auto sm:ml-3"
           style={{ color: 'var(--theme-muted, #655e58)' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.7)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'rgba(0,0,0,0.55)')}
@@ -182,7 +182,7 @@ function BriefSection() {
         </button>
       </div>
 
-      {refreshMessage && <p role="status" aria-live="polite" className="px-7 pt-2 font-mono text-xs text-charcoal/65">{refreshMessage}</p>}
+      {refreshMessage && <p role="status" aria-live="polite" className="px-7 pt-2 font-mono text-sm text-charcoal/65">{refreshMessage}</p>}
       {/* Content */}
       <div className="px-7 py-5">
         {loading && (
@@ -193,7 +193,7 @@ function BriefSection() {
                   style={{ background: 'var(--theme-sage-panel, #6B8E7F)', animationDelay: `${i * 0.2}s` }} />
               ))}
             </div>
-            <p className="font-mono text-[0.73rem]" style={{ color: 'var(--theme-muted, #655e58)' }}>
+            <p className="font-mono text-sm" style={{ color: 'var(--theme-muted, #655e58)' }}>
               Lumen is analyzing market conditions…
             </p>
           </div>
@@ -201,36 +201,36 @@ function BriefSection() {
 
         {!loading && !data && (
           <div className="flex flex-wrap items-center gap-3 py-3">
-            <p className="font-mono text-[0.73rem]" style={{ color: 'var(--theme-muted, #655e58)' }}>
-              {paused ? 'Analysis is paused for this older snapshot. Check the dates on the data below.' : snapshotChanged ? 'A different market snapshot is available. Reload the page to keep the numbers and analysis together.' : 'Analysis is temporarily unavailable. You can still explore the dated market data below.'}
+            <p className="font-mono text-sm" style={{ color: 'var(--theme-muted, #655e58)' }}>
+              {paused ? 'Analysis is paused for this older snapshot. Check the dates on this page.' : snapshotChanged ? 'A different market snapshot is available. Reload the page to keep the numbers and analysis together.' : 'Analysis is temporarily unavailable. You can still review the dated numbers.'}
             </p>
-            {snapshotChanged ? <button type="button" onClick={() => window.location.reload()} className="font-mono text-xs underline focus-visible:outline-2 focus-visible:outline-offset-4">Reload Market Tape</button> : !paused && <button onClick={refresh} className="font-mono text-xs underline text-charcoal/65 hover:text-charcoal">Try again</button>}
+            {snapshotChanged ? <button type="button" onClick={() => window.location.reload()} className="font-mono text-sm underline focus-visible:outline-2 focus-visible:outline-offset-4">Reload Market Tape</button> : !paused && <button onClick={refresh} className="font-mono text-sm underline text-charcoal/65 hover:text-charcoal">Try again</button>}
           </div>
         )}
 
         {!loading && data && (
           <div>
             {data.morningBrief.headline && (
-              <p className="font-mono text-[0.72rem] tracking-[0.18em] uppercase mb-3 text-sage-dark">
+              <p className="font-mono text-sm tracking-[0.18em] uppercase mb-3 text-sage-dark">
                 {data.morningBrief.headline}
               </p>
             )}
             <div className="grid gap-4 md:grid-cols-[1.25fr_1fr]">
               <div>
-                <p className="font-serif text-[0.95rem] leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
-                <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Session moves</p>
+                <p className="font-sans text-base leading-relaxed text-charcoal mb-4">{data.morningBrief.marketRead}</p>
+                <p className="font-mono text-sm tracking-[0.16em] uppercase text-charcoal/65 mb-2">Session moves</p>
                 <ul className="space-y-1.5">
-                  {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
+                  {data.morningBrief.whatChanged.slice(0, 3).map((item, i) => <li key={i} className="font-mono text-sm leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
                 </ul>
               </div>
               <div className="md:border-l md:pl-5" style={{ borderColor: 'var(--rule-subtle)' }}>
-                <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-charcoal/65 mb-2">Separate questions for your cost review</p>
+                <p className="font-mono text-sm tracking-[0.16em] uppercase text-charcoal/65 mb-2">Separate questions for your cost review</p>
                 <ul className="space-y-1.5 mb-4">
-                  {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
+                  {data.morningBrief.cloudFinanceImplications.slice(0, 2).map((item, i) => <li key={i} className="font-mono text-sm leading-relaxed text-charcoal/65 flex gap-2"><span className="text-sage-dark">•</span><span>{item}</span></li>)}
                 </ul>
                 <div className="rule-subtle-top pt-3">
-                  <p className="font-mono text-[0.72rem] tracking-[0.16em] uppercase text-sage-dark mb-1.5">A market question to follow</p>
-                  <p className="font-serif italic text-[0.84rem] leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
+                  <p className="font-mono text-sm tracking-[0.16em] uppercase text-sage-dark mb-1.5">A market question to follow</p>
+                  <p className="font-serif italic text-lg leading-relaxed text-charcoal/80">{data.morningBrief.action}</p>
                 </div>
               </div>
             </div>

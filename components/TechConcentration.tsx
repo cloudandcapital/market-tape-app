@@ -6,6 +6,7 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
   const xlk = getRow(snapshot, 'XLK')
   const qqq = getRow(snapshot, 'QQQ')
   const spy = getRow(snapshot, 'SPY')
+  const skyy = getRow(snapshot, 'SKYY')
 
   // RS1M is a volatility-adjusted score; this is not a price ratio.
   const growthSpread = qqq && spy ? qqq.rs1m - spy.rs1m : null
@@ -18,47 +19,22 @@ export default function TechConcentration({ snapshot }: { snapshot: Snapshot }) 
   }
 
   return (
-    <div>
-      <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
-        Tech snapshot
-      </h2>
-
-      <div className="rows-subtle">
-        {xlk && (
-          <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[0.72rem] font-mono text-charcoal/65">XLK trend</span>
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs font-mono font-medium" style={{ color: gradeColor(xlk.trend_grade) }}>
-                Grade {xlk.trend_grade}
-              </span>
-
-            </div>
-          </div>
-        )}
-        {xlk && <div className="flex items-baseline justify-between py-[0.35rem]">
-          <span className="text-[0.72rem] font-mono text-charcoal/65">XLK · RS1M vs SPY</span>
-          <span className={`text-xs font-mono ${numberTone(xlk.rs1m)}`}>{signedNumber(xlk.rs1m)} score</span>
-        </div>}
-        {growthSpread !== null && (
-          <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[0.72rem] font-mono text-charcoal/65">QQQ · RS1M score</span>
-            <span className="text-xs font-mono font-medium" style={{ color: growthLeading ? 'var(--theme-green, #4A6B5F)' : 'var(--theme-rose, #C0443A)' }}>
-              {growthLeading ? 'Ahead' : 'Behind'} {growthSpread > 0 ? '+' : ''}{growthSpread.toFixed(2)}
-            </span>
-          </div>
-        )}
-        {qqq && (
-          <div className="flex items-baseline justify-between py-[0.35rem]">
-            <span className="text-[0.72rem] font-mono text-charcoal/65">Nasdaq-100 ETF (QQQ)</span>
-            <span className="text-xs font-mono font-medium text-charcoal">
-              ${qqq.last.toFixed(0)} &nbsp;
-              <span style={{ color: qqq.d1_pct > 0 ? 'var(--theme-green, #4A6B5F)' : 'var(--theme-rose, #C0443A)' }}>
-                {qqq.d1_pct > 0 ? '+' : ''}{qqq.d1_pct.toFixed(1)}%
-              </span>
-            </span>
-          </div>
-        )}
-      </div>
+    <div className="tape-tech">
+      <h2 className="tape-eyebrow">Technology snapshot</h2>
+      <p className="tape-score-label">RS1M score</p>
+      {xlk && <div className="tape-tech-row">
+        <div><h3>Technology ETF <span>· XLK</span></h3><p>XLK trend: <span style={{ color: gradeColor(xlk.trend_grade) }}>Grade {xlk.trend_grade}</span></p></div>
+        <p className={`tape-tech-score ${numberTone(xlk.rs1m)}`} aria-label={`XLK · RS1M vs SPY: ${signedNumber(xlk.rs1m)} score`}>{signedNumber(xlk.rs1m)}</p>
+      </div>}
+      {qqq && <div className="tape-tech-row">
+        <div><h3>Nasdaq-100 ETF <span>· QQQ</span></h3><p>${qqq.last.toFixed(0)} <span className={numberTone(qqq.d1_pct, 1)}>{signedNumber(qqq.d1_pct, 1)}% · 1D</span></p>
+        </div>
+        <p className={`tape-tech-score ${numberTone(qqq.rs1m)}`} aria-label={`QQQ · RS1M score: ${signedNumber(qqq.rs1m)}${growthSpread === null ? '' : `. ${growthLeading ? 'Ahead of' : 'Behind'} SPY by ${Math.abs(growthSpread).toFixed(2)} score`}`}>{signedNumber(qqq.rs1m)}</p>
+      </div>}
+      {skyy && <div className="tape-tech-row">
+        <div><h3>Cloud computing ETF <span>· SKYY</span></h3><p>Cloud infrastructure and related companies.</p></div>
+        <p className={`tape-tech-score ${numberTone(skyy.rs1m)}`} aria-label={`SKYY · RS1M score: ${signedNumber(skyy.rs1m)}`}>{signedNumber(skyy.rs1m)}</p>
+      </div>}
     </div>
   )
 }

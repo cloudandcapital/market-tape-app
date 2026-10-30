@@ -8,7 +8,7 @@ export function Sectors({ snapshot }: { snapshot: Snapshot }) {
 
   return (
     <div>
-      <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
+      <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
         Sectors · RS1M score vs SPY
       </h2>
 
@@ -20,10 +20,10 @@ export function Sectors({ snapshot }: { snapshot: Snapshot }) {
             <div key={s.ticker}>
               <div className="flex justify-between items-baseline mb-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[0.72rem] font-mono text-charcoal/65 w-3">{i + 1}</span>
-                  <span className="text-[0.72rem] font-mono font-semibold text-charcoal">{s.ticker}</span>
+                  <span className="text-sm font-mono text-charcoal/65 w-3">{i + 1}</span>
+                  <span className="text-sm font-mono font-semibold text-charcoal">{s.ticker}</span>
                 </div>
-                <span className={`text-[0.72rem] font-mono font-medium ${numberTone(s.rs1m)}`}>
+                <span className={`text-sm font-mono font-medium ${numberTone(s.rs1m)}`}>
                   {signedNumber(s.rs1m)}
                 </span>
               </div>
@@ -47,7 +47,7 @@ export function CountriesGlobal({ meta }: { meta: Meta }) {
 
   return (
     <div>
-      <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">Global ETF leaders · RS1M score</h2>
+      <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">Global ETF leaders · RS1M score</h2>
       <div className="space-y-3">
         {countries.map((c, i) => {
           const isPos = roundedValue(c.rs1m) > 0
@@ -56,7 +56,7 @@ export function CountriesGlobal({ meta }: { meta: Meta }) {
             <div key={c.ticker}>
               <div className="flex justify-between items-baseline mb-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-[0.72rem] font-mono text-charcoal/65">{i + 1}</span>
+                  <span className="text-sm font-mono text-charcoal/65">{i + 1}</span>
                   <span className="text-sm font-mono font-medium text-charcoal">{c.ticker}</span>
                 </div>
                 <span className={`text-sm font-mono ${numberTone(c.rs1m)}`}>
