@@ -1,27 +1,22 @@
 import type { Metadata } from 'next'
-import { Playfair_Display, Inter, DM_Mono } from 'next/font/google'
+import { Cormorant_Garamond, Jost } from 'next/font/google'
 import './globals.css'
 import './color-mode.css'
+import './editorial.css'
 import { themeBootstrap } from '@/lib/color-mode'
 import SiteNav from '@/components/SiteNav'
 
-const playfair = Playfair_Display({
+const playfair = Cormorant_Garamond({
   variable: '--font-playfair',
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   style: ['normal', 'italic'],
 })
 
-const inter = Inter({
+const inter = Jost({
   variable: '--font-inter',
   subsets: ['latin'],
   weight: ['300', '400', '500', '600'],
-})
-
-const dmMono = DM_Mono({
-  variable: '--font-mono',
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
 })
 
 export const metadata: Metadata = {
@@ -52,11 +47,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-color-mode="light" suppressHydrationWarning className={`${playfair.variable} ${inter.variable} ${dmMono.variable}`}>
+    <html lang="en" data-color-mode="light" suppressHydrationWarning className={`${playfair.variable} ${inter.variable}`}>
       <head><meta name="theme-color" content="#F5EEE9" /><script dangerouslySetInnerHTML={{ __html: themeBootstrap }} /></head>
       <body className="min-h-screen bg-cream text-charcoal antialiased">
         <SiteNav />
-        <div className="pt-14">{children}</div>
+        <div className="tape-page-content">{children}</div>
       </body>
     </html>
   )

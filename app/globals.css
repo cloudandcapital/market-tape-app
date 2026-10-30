@@ -2,7 +2,7 @@
 
 :root {
   --background: #f5eee9;
-  --foreground: #000000;
+  --foreground: #24211e;
   --rule-major: rgba(25, 23, 20, 0.14);
   --rule-subtle: rgba(25, 23, 20, 0.055);
 }
@@ -26,14 +26,14 @@
   --color-foreground: var(--foreground);
   --font-serif: var(--font-playfair);
   --font-sans: var(--font-inter);
-  --font-mono: var(--font-mono);
+  --font-mono: var(--font-inter);
 }
 
 @theme {
   --color-cream: #f5eee9;
   --color-cream-dark: #EBE3DB;
   --color-ink: #191714;
-  --color-charcoal: #000000;
+  --color-charcoal: #24211e;
   --color-sage: #6B8E7F;
   --color-sage-dark: #4A6B5F;
   --color-sage-light: #8BA898;

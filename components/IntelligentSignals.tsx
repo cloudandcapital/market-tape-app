@@ -10,7 +10,7 @@ import CloudReview from './CloudReview'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h2 className="text-[0.72rem] font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
+    <h2 className="text-sm font-mono tracking-[0.2em] uppercase text-charcoal/65 mb-4">
       {children}
     </h2>
   )
@@ -53,16 +53,16 @@ function ValuationRow({ label, value, tooltip, basket }: { label: string; value:
   return (
     <div className="py-2.5">
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <p className="font-mono text-[0.72rem] tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
+        <p className="font-mono text-sm tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
         <div className="flex items-center gap-1.5">
-          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{unavailable ? 'Unavailable' : multiple} {!unavailable && <span className="font-mono text-[0.72rem] font-normal text-charcoal/65">NTM P/S</span>}</p>
+          <p className="font-serif text-[1.15rem] leading-none text-charcoal">{unavailable ? 'Unavailable' : multiple} {!unavailable && <span className="font-mono text-sm font-normal text-charcoal/65">NTM P/S</span>}</p>
           <BenchmarkTooltip {...tooltip} />
         </div>
       </div>
-      <p className="font-mono text-[0.72rem] text-charcoal/65 mt-0.5">{unavailable
+      <p className="font-mono text-sm text-charcoal/65 mt-0.5">{unavailable
         ? `Live multiple unavailable · Archived ${QUARTERLY_MULTIPLES[basket].value} as of ${QUARTERLY_MULTIPLES[basket].lastUpdated}`
         : periodMatch ? `${periodMatch} basket median` : 'Live basket median'}</p>
-      {interpretation && <p className="font-mono text-[0.72rem] text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
+      {interpretation && <p className="font-mono text-sm text-charcoal/70 leading-snug mt-1">{interpretation}</p>}
     </div>
   )
 }
@@ -73,11 +73,11 @@ function CapexRow({ label, value, detail, color, tooltip }: {
   return (
     <div className="py-4 md:px-6 first:pl-0 last:pr-0">
       <div className="flex items-center gap-1 mb-1">
-        <p className="font-mono text-[0.72rem] tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
+        <p className="font-mono text-sm tracking-[0.14em] uppercase text-charcoal/65">{label}</p>
         <BenchmarkTooltip {...tooltip} />
       </div>
-      <p className="font-mono text-[0.82rem] font-semibold leading-snug" style={{ color }}>{value}</p>
-      <p className="font-mono text-[0.72rem] text-charcoal/65 leading-relaxed mt-1">{detail}</p>
+      <p className="font-mono text-sm font-semibold leading-snug" style={{ color }}>{value}</p>
+      <p className="font-mono text-sm text-charcoal/65 leading-relaxed mt-1">{detail}</p>
     </div>
   )
 }
@@ -93,7 +93,7 @@ function Skeleton({ count = 3 }: { count?: number }) {
 }
 
 function UnavailableAnalysis({ title }: { title: string }) {
-  return <div><SectionLabel>{title}</SectionLabel><p className="font-mono text-[0.72rem] text-charcoal/65 leading-relaxed">Lumen analysis is temporarily unavailable.</p></div>
+  return <div><SectionLabel>{title}</SectionLabel><p className="font-mono text-sm text-charcoal/65 leading-relaxed">Lumen analysis is temporarily unavailable.</p></div>
 }
 
 export function FinOpsSignals() {
@@ -114,8 +114,8 @@ export function FinOpsSignals() {
           <div key={label} className="py-2.5 flex items-start gap-2">
             <DashboardIcon name={icon} />
             <div>
-              <p className="text-[0.72rem] font-mono uppercase tracking-[0.1em] text-charcoal/65 mb-0.5">{label}</p>
-              <p className="text-[0.76rem] font-mono text-charcoal/75 leading-snug">{text}</p>
+              <p className="text-sm font-mono uppercase tracking-[0.1em] text-charcoal/65 mb-0.5">{label}</p>
+              <p className="text-sm font-mono text-charcoal/75 leading-snug">{text}</p>
             </div>
           </div>
         ))}
@@ -205,10 +205,10 @@ export function RiskAlerts() {
                 <DashboardIcon name={alert.type === 'warning' ? 'warning' : 'opportunity'} tone={alert.type === 'warning' ? 'caution' : 'positive'} />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1 mb-1">
-                    <p className="font-mono text-[0.72rem] font-semibold text-charcoal/80 leading-none">{alert.title}</p>
+                    <p className="font-mono text-sm font-semibold text-charcoal/80 leading-none">{alert.title}</p>
                     <BenchmarkTooltip {...sourceForAlert(alert.title)} />
                   </div>
-                  <p className="font-mono text-[0.72rem] text-charcoal/65 leading-snug">{alert.message}</p>
+                  <p className="font-mono text-sm text-charcoal/65 leading-snug">{alert.message}</p>
                 </div>
               </div>
             ))}

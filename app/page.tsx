@@ -9,10 +9,12 @@ import MarketStatus, { MarketInternals } from '@/components/MarketStatus'
 import { CountriesGlobal, Sectors } from '@/components/SectorLeaders'
 import MomentumLeaderboard from '@/components/MomentumLeaderboard'
 import MacroContext from '@/components/MacroContext'
-import TechConcentration from '@/components/TechConcentration'
+import MarketOverview from '@/components/MarketOverview'
+import { CostConnections } from '@/components/TechnologyCostContext'
 import { CloudValuations, FinOpsSignals, HyperscalerCapex, RiskAlerts } from '@/components/IntelligentSignals'
 import { IntelligentProvider } from '@/components/IntelligentProvider'
 import AIComputeCommitments from '@/components/AIComputeCommitments'
+import Image from 'next/image'
 
 export const revalidate = 1800
 
@@ -23,7 +25,7 @@ export default async function Page() {
   checkServerStaleness()
 
   const market = await fetchMarketData().catch(() => null)
-  if (!market) return <div className="max-w-6xl mx-auto px-6 py-10 md:px-10"><h1 className="font-serif text-3xl mb-4">Market Tape</h1><section className="border border-charcoal/15 rounded-xl p-6 mb-10"><h2 className="font-serif text-xl mb-2">The market snapshot is unavailable</h2><p className="text-sm leading-relaxed mb-4">The price files may be updating or could not be verified. Refresh the page in a moment. I’ve kept the separately sourced infrastructure information below.</p><a href="/sources" className="underline">Methodology &amp; sources</a></section><HyperscalerCapex /><div className="mt-10"><AIComputeCommitments /></div></div>
+  if (!market) return <div id="tape-main" role="main" className="max-w-6xl mx-auto px-6 py-10 md:px-10"><h1 className="font-serif text-3xl mb-4">Market Tape</h1><section className="border border-charcoal/15 rounded-xl p-6 mb-10"><h2 className="font-serif text-xl mb-2">The market snapshot is unavailable</h2><p className="text-sm leading-relaxed mb-4">The price files may be updating or could not be verified. Refresh the page in a moment. I’ve kept the separately sourced infrastructure information below.</p><a href="/sources" className="underline">Methodology &amp; sources</a></section><HyperscalerCapex /><div className="mt-10"><AIComputeCommitments /></div></div>
   const { meta, snapshot } = market
   const multiples = await fetchLiveMultiples()
   const oldSnapshot = snapshotIsOld(snapshot.generated_at_utc)
@@ -31,47 +33,46 @@ export default async function Page() {
   const contextData = buildContextData(meta, snapshot)
 
   return (
-    <div className="min-h-screen bg-cream">
-      <div className="max-w-6xl mx-auto px-6 py-6 md:px-10 md:py-8">
+    <main id="tape-main" className="min-h-screen bg-cream">
+      <div className="tape-shell">
 
         {/* Page header — ABOVE the brief */}
-        <header className="mb-5">
-          <div className="flex items-baseline justify-between flex-wrap gap-3">
-            <div>
-              <p className="text-[0.72rem] font-mono tracking-[0.22em] uppercase text-charcoal/65 mb-0.5">Cloud &amp; Capital</p>
-              <h1 className="font-serif italic font-normal tracking-tight"
-                style={{ fontSize: 'clamp(1.6rem, 3.5vw, 2.2rem)', color: 'var(--theme-ink, #191714)', lineHeight: 1.1 }}>
-                Market Tape
-              </h1>
-              <p className="font-mono text-[0.72rem] leading-relaxed text-charcoal/65 mt-2 max-w-xl">A clearer view of markets, cloud spending, and AI infrastructure.</p>
-            </div>
-            <div className="text-left sm:text-right">
-              <p className="text-[0.72rem] font-mono uppercase tracking-[0.08em] text-charcoal/65">{formatMarketSessionLabel(marketPriceDate(snapshot))}</p>
-              <p className="text-[0.72rem] font-mono text-charcoal/65 mt-1">{formatPublishedLabel(snapshot.generated_at_utc)}</p>
-              <p className="text-[0.72rem] font-mono text-charcoal/65 mt-1">Tracked: {trackedInstrumentCount} unique · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups</p>
+        <header className="tape-hero">
+          <div className="tape-hero-copy">
+            <h1>Markets, technology &amp; costs</h1>
+            <p>What the market is doing, where technology fits, and what to check in your cost planning.</p>
+            <div className="tape-hero-actions">
+              <a href="#cost-connections" className="tape-text-link">How the numbers connect <Image src="/icons/arrow-right.svg" width={18} height={18} alt="" /></a>
+              <a href="https://cloudandcapital.com/insights/using-market-tape" className="tape-text-link">Read the guide <Image src="/icons/arrow-up-right.svg" width={16} height={16} alt="" /></a>
+              <a href="/sources" className="tape-text-link">Sources</a>
             </div>
           </div>
-          <hr className="rule-major-bottom border-0 mt-4" />
+          <div className="tape-hero-art" aria-hidden="true">
+            <Image src="/images/market-tape-bars-v2.png" width={1536} height={1024} alt="" priority sizes="(max-width: 767px) 1px, (max-width: 1100px) 40vw, 580px" />
+          </div>
         </header>
 
-        <section className="mb-7 rounded-xl border border-charcoal/10 px-4 py-4 sm:px-5" aria-label="How to use Market Tape">
-          <p className="text-sm leading-relaxed max-w-3xl">Start with market breadth, compare sector scores, then check the source behind anything relevant to your research or technology budget.</p>
-          <p className="font-mono text-xs text-charcoal/65 leading-relaxed mt-2">Scheduled snapshots, not live quotes. Daily bars can change during the trading session. RS1M is a volatility-adjusted score, not a percentage return.</p>
-          <div className="flex flex-wrap gap-x-5 gap-y-2 mt-3 font-mono text-xs text-sage-dark"><a href="#market-signals" className="underline underline-offset-4">Explore the numbers ↓</a><a href="https://cloudandcapital.com/insights/using-market-tape" className="underline underline-offset-4">Read the guide ↗</a><a href="/sources" className="underline underline-offset-4">Methodology &amp; sources ↗</a></div>
-        </section>
+        <div className="tape-snapshot-context" aria-label="Snapshot dates">
+          <p>{formatMarketSessionLabel(marketPriceDate(snapshot))}</p>
+          <p>{formatPublishedLabel(snapshot.generated_at_utc)}</p>
+          <p className="tape-snapshot-kind">Scheduled snapshots, not live quotes.</p>
+        </div>
         {oldSnapshot && <p role="status" className="mb-6 border-l-2 border-loss pl-4 text-sm leading-relaxed">This snapshot was published more than four days ago. Check the dates before using it. Lumen is paused until a newer snapshot is available; weekends and market holidays can explain some gaps.</p>}
+
+        <MarketOverview snapshot={snapshot} />
+        <p className="tape-universe-note">Tracked: {trackedInstrumentCount} unique · Universe screened: {meta.leaderboard.universe_count} · {meta.group_count} groups. The equity ETF sample is not all US stocks or a target allocation. Daily bars can change during the trading session. RS1M is a volatility-adjusted score, not a percentage return.</p>
+
+        <CostConnections />
 
         {/* IntelligentProvider renders Intelligence Brief first, then its children */}
         <IntelligentProvider key={JSON.stringify(contextData)} contextData={contextData} disabled={oldSnapshot}>
 
-          <div className="space-y-10 md:space-y-12">
+          <div className="tape-research space-y-10 md:space-y-12">
             {/* Band 2 */}
-            <section id="market-signals" className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 scroll-mt-20" aria-label="Primary market signals">
-              <MarketStatus snapshot={snapshot} />
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" aria-label="Market conditions and technology cost context">
+              <MarketStatus snapshot={snapshot} detailsOnly />
               <div>
                 <FinOpsSignals />
-                <hr className="rule-subtle-bottom border-0 my-6" />
-                <TechConcentration snapshot={snapshot} />
               </div>
             </section>
 
@@ -115,7 +116,7 @@ export default async function Page() {
           </div>
 
           {/* Full methodology-aware tracker follows the primary market dashboard. */}
-          <div className="mt-10 px-4 sm:px-7 py-5" style={{ border: '1px solid var(--theme-line, rgba(0,0,0,0.08))', borderLeft: '3px solid rgba(0,0,0,0.12)', borderRadius: '2px', background: 'var(--theme-panel, #fefdfb)' }}>
+          <div className="tape-compute-surface mt-10">
             <AIComputeCommitments />
           </div>
 
@@ -138,6 +139,6 @@ export default async function Page() {
         </IntelligentProvider>
 
       </div>
-    </div>
+    </main>
   )
 }
