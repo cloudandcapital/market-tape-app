@@ -27,7 +27,7 @@ There's no shortage of market data. There's a shortage of translation between ma
 
 ## Stack
 
-- **Framework:** Next.js 16.3.3 (App Router) + React 19.2.8
+- **Framework:** Next.js 16.4.3 (App Router) + React 19.2.8
 - **Styling:** Tailwind CSS v4
 - **AI:** Anthropic Claude API (`@anthropic-ai/sdk` ^0.91.1) — Haiku for AI Compute analysis line, Sonnet for the heavier intelligent brief
 - **Valuation multiples:** Yahoo Finance via API route (representative SaaS, AI infrastructure, and public-cloud baskets); per-basket source/date reported, unavailable values suppressed
