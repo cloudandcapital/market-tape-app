@@ -54,7 +54,7 @@ const todayStr = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0')
 const intelligentBriefModule = readFileSync(new URL('../lib/intelligentBrief.ts', import.meta.url), 'utf8')
 const intelligentProvider = readFileSync(new URL('../components/IntelligentProvider.tsx', import.meta.url), 'utf8')
 const intelligentSignals = readFileSync(new URL('../components/IntelligentSignals.tsx', import.meta.url), 'utf8')
-for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'VIX d1 is a percentage price change, never a point change', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v25', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
+for (const contract of ['COMMODITY ETF PROXY RULE', 'dimensionless volatility-adjusted score', 'dollars-per-ounce', 'dollars-per-barrel', 'VIX d1 is a percentage price change, never a point change', 'Never claim Blackwell or B200 supply cannot be resolved through standard procurement channels', "['intelligent-brief-v26', INTELLIGENT_BRIEF_MODEL]", 'result.cloudValuations = { publicCloud: multiples.publicCloud', 'assertBriefResponse(parsed)']) {
   if (!intelligentBriefModule.includes(contract)) throw new Error(`Intelligent-brief contract missing: ${contract}`)
 }
 if (!intelligentProvider.includes("const CACHE_KEY = 'intelligent-brief-v21'")) throw new Error('Browser cache version was not bumped')
