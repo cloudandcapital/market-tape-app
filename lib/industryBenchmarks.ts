@@ -25,19 +25,19 @@ export const BENCHMARKS = {
   // ─── GPU Supply Status ─────────────────────────────────────────────────────
 
   gpuSupplyStatus: {
-    value: 'H100 $2.99–$10.98/hr · H200 $3.99–$10.85/hr · B200 $5.99–$16.11/hr; availability varies materially by generation, provider, region, commitment, and access model',
-    source: 'Thunder Compute selected published GPU rental comparisons (one vendor’s compilation; includes reservation-only rates) — October 16, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
+    value: 'H100 $2.40–$10.98/hr · H200 $3.85–$10.85/hr · B200 $5.99–$16.11/hr; availability varies materially by generation, provider, region, commitment, marketplace, and access model',
+    source: 'Thunder Compute selected published GPU rental comparisons (one vendor’s compilation; includes marketplace and reservation-only endpoints) — reviewed November 3, 2026 (H100, H200, B200); NVIDIA Q2 FY2027 earnings (NVIDIA-specific demand commentary)',
     sourceUrl: 'https://www.thundercompute.com/blog/nvidia-h100-pricing',
     sourceLinks: [
-      { label: 'Thunder Compute — H100 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
-      { label: 'Thunder Compute — H200 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h200-pricing' },
-      { label: 'Thunder Compute — B200 pricing (October 2026)', url: 'https://www.thundercompute.com/blog/nvidia-b200-pricing' },
+      { label: 'Thunder Compute — H100 pricing (November 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h100-pricing' },
+      { label: 'Thunder Compute — H200 pricing (November 2026)', url: 'https://www.thundercompute.com/blog/nvidia-h200-pricing' },
+      { label: 'Thunder Compute — B200 pricing (November 2026)', url: 'https://www.thundercompute.com/blog/nvidia-b200-pricing' },
       { label: 'NVIDIA — Q2 FY2027 earnings', url: 'https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-second-quarter-fiscal-2027' },
     ],
-    lastUpdated: '2026-10-16',
-    nextReviewDue: '2026-11-16',
+    lastUpdated: '2026-11-08',
+    nextReviewDue: '2026-12-08',
     reviewCadence: 'monthly',
-    notes: 'October 16, 2026 selected list-rate comparisons from one GPU vendor: H100 $2.99–$10.98/GPU-hour; H200 $3.99–$10.85; B200 $5.99–$16.11. H200’s $10.85 Google Cloud endpoint is reservation-only; B200’s $16.11 Google Cloud endpoint is on-demand-equivalent, available through reservation, Spot, or Flex-start. H100 endpoints use the comparison’s selected US-region list rates. These are not market-wide lows/highs or executable quotes. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, and configuration differences make rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary.',
+    notes: 'November 3, 2026 selected comparisons from one GPU vendor: H100 $2.40–$10.98/GPU-hour; H200 $3.85–$10.85; B200 $5.99–$16.11. The H100 and H200 lows are marketplace endpoints whose host, storage, and bandwidth terms can vary; H200’s $10.85 Google Cloud endpoint is reservation-only. B200’s $16.11 Google Cloud endpoint is an on-demand-equivalent rate available through reservation, Spot, or Flex-start. Multi-GPU endpoints are normalized per GPU. These are not market-wide lows/highs or executable quotes. Availability language differs by provider and purchase model, so the benchmark does not characterize any generation as uniformly available or supply-constrained. Provider, commitment, marketplace, region, configuration, and ancillary-charge differences make the rental ranges non-comparable to hardware purchase prices. NVIDIA Q2 FY2027 is retained separately only for NVIDIA-specific demand and product-ramp commentary; refresh that commentary after NVIDIA reports Q3 FY2027.',
   } satisfies Benchmark,
 
   // ─── Data Center Supply/Demand ─────────────────────────────────────────────
@@ -58,33 +58,37 @@ export const BENCHMARKS = {
   saas2021PeakMultiple: {
     value: '20x+',
     numeric: 20,
-    source: 'Bessemer Venture Partners Cloud Index — historical',
-    sourceUrl: 'https://cloudindex.bvp.com/',
-    lastUpdated: '2026-04-24',
-    nextReviewDue: '2026-11-01',
+    source: 'Bessemer Venture Partners State of the Cloud 2021 (historical 20x+ reference); BVP Cloud Index current context checked November 8, 2026',
+    sourceUrl: 'https://www.bvp.com/atlas/state-of-the-cloud-2021',
+    sourceLinks: [
+      { label: 'Bessemer — State of the Cloud 2021', url: 'https://www.bvp.com/atlas/state-of-the-cloud-2021' },
+      { label: 'BVP Nasdaq Emerging Cloud Index — current context', url: 'https://cloudindex.bvp.com/' },
+    ],
+    lastUpdated: '2026-11-08',
+    nextReviewDue: '2027-05-07',
     reviewCadence: 'semi-annual',
-    notes: 'Peak NTM revenue multiple reached by the SaaS cohort during the 2021 bull market. Used as a compressed-from reference point. This is a historical data point and will not change. Review cadence is semi-annual only to confirm the narrative framing is still accurate.',
+    notes: 'Historical framing: Bessemer’s State of the Cloud 2021 said public and private cloud companies were trading above 20x revenue. The current BVP Cloud Index displayed a 7.4x average revenue multiple when checked November 8, 2026. The current index snapshot is contextual only: its cohort and methodology differ from Market Tape’s approximate live Yahoo Finance SaaS basket, so it must not replace or backfill that live value. The 20x+ historical reference is stable; the semi-annual review confirms the comparison and source framing.',
   } satisfies Benchmark,
 
   // ─── Hyperscaler CapEx Trend ───────────────────────────────────────────────
 
   hyperscalerCapexTrend: {
     value: 'Expanding',
-    source: 'Meta Q3 2026 results; Amazon, Microsoft, and Alphabet Q2 2026 earnings; Oracle Q1 FY2027 results',
-    sourceUrl: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/',
+    source: 'Amazon Q3 2026 results; Microsoft FY2027 Q1 earnings; Alphabet Q3 2026 earnings; Meta Q3 2026 results; Oracle Q1 FY2027 results',
+    sourceUrl: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Third-Quarter-Results/',
     sourceLinks: [
-      { label: 'Amazon — Q2 2026 results', url: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/' },
-      { label: 'Microsoft — FY2026 Q4 earnings', url: 'https://www.microsoft.com/en-us/investor/events/fy-2026/earnings-fy-2026-q4' },
-      { label: 'Alphabet — Q2 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q2-Earnings-Call-2026-GgTAq7Is0z/default.aspx' },
+      { label: 'Amazon — Q3 2026 results', url: 'https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Third-Quarter-Results/' },
+      { label: 'Microsoft — FY2027 Q1 earnings', url: 'https://www.microsoft.com/en-us/investor/events/fy-2027/earnings-fy-2027-q1' },
+      { label: 'Alphabet — Q3 2026 earnings call', url: 'https://abc.xyz/investor/events/event-details/2026/2026-Q3-Earnings-Call-2026-Ujou16CTw9/default.aspx' },
       { label: 'Meta — Q3 2026 results', url: 'https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Third-Quarter-2026-Results/default.aspx' },
       { label: 'AWS & NVIDIA — 2 million additional GPUs', url: 'https://nvidianews.nvidia.com/news/aws-and-nvidia-to-deliver-2-million-additional-gpus-and-next-generation-infrastructure-for-agentic-and-physical-ai' },
       { label: 'Oracle — Q1 FY2027 results', url: 'https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Q1-Results-Driven-by-Triple-Digit-Growth-in-Cloud-Infrastructure-Revenues/default.aspx' },
       { label: 'Google — Finland AI infrastructure', url: 'https://www.googlecloudpresscorner.com/2026-09-09-Google-Deepens-Commitment-to-Finland-with-Two-Year-EUR13-Billion-investment-in-AI-Infrastructure' },
     ],
-    lastUpdated: '2026-10-21',
-    nextReviewDue: '2026-11-01',
+    lastUpdated: '2026-11-08',
+    nextReviewDue: '2027-02-06',
     reviewCadence: 'quarterly',
-    notes: 'Full-year 2026 guidance: Amazon approximately $220B; Microsoft approximately $175B (lease classification shifted); Alphabet $195–205B; Meta $135–145B, narrowed on October 21 from $130–145B. Oracle Q1 FY2027 cloud infrastructure revenue was $7.4B (+121% YoY); RPO $664B, with more than $30B of new AI cloud bookings, 850 MW of added data-center capacity and over 300,000 GPUs delivered since Q4. Those Oracle aggregates are not individual customer compute contract values. Google plans at least €13B of Finland digital-infrastructure investment during 2027–28, with a 22-year nuclear PPA and other energy support. AWS and NVIDIA plan 2 million additional NVIDIA GPUs in 2027–28. All are capex/capacity or earnings context, not signed customer-deal totals. Values: Expanding / Stable / Contracting. The November 1 review remains due so Amazon, Microsoft, and Alphabet can be refreshed after their next results.',
+    notes: 'Latest 2026 guidance and disclosures support an Expanding classification. Amazon continues to expect approximately $220B of 2026 cash capital expenditures; AWS Q3 sales reached $46.0B (+39% YoY). Microsoft reported $45.2B of FY2027 Q1 capex, expects Q2 above $50B, and now expects approximately $170B for calendar 2026 because some third-party capacity deliveries shifted later. Alphabet reported $51.4B of Q3 capex, kept full-year guidance at $195–205B, and said third-party compute began coming online at the end of Q3 amid supply constraints. Meta expects $135–145B, narrowed on October 21 from $130–145B. Oracle Q1 FY2027 cloud infrastructure revenue was $7.4B (+121% YoY); RPO $664B, with more than $30B of new AI cloud bookings, 850 MW of added data-center capacity and over 300,000 GPUs delivered since Q4. Those Oracle aggregates are not individual customer compute contract values. Google Finland and the AWS/NVIDIA GPU plan remain capacity context, not signed customer-deal totals. Values: Expanding / Stable / Contracting.',
   } satisfies Benchmark,
 
   // ─── NVIDIA Data Center Revenue ───────────────────────────────────────────

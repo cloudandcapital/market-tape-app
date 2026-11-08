@@ -40,7 +40,7 @@ Five entries remain that require manual monthly, quarterly, or semi-annual revie
 
 | Benchmark | Current Value | Source | Review Cadence |
 |-----------|---------------|--------|---------------|
-| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (October 2026; reviewed October 16; next review November 16) + NVIDIA earnings | Monthly |
+| `gpuSupplyStatus` | H100/H200/B200 sampled cloud price and availability ranges | Thunder Compute (November 2026; reviewed November 3; next review December 8) + NVIDIA earnings | Monthly |
 | `dataCenterConstructionYoY` | Absorption +11.7% / construction +24.8% YoY · vacancy 1.4% | CBRE H1 2026 | Semi-annual |
 | `saas2021PeakMultiple` | 20x+ | Bessemer Cloud Index (historical) | Semi-annual |
 | `hyperscalerCapexTrend` | Expanding | Meta Q3 2026 plus current Amazon, Microsoft, Alphabet, and Oracle disclosures | Quarterly |
@@ -52,9 +52,9 @@ Five entries remain that require manual monthly, quarterly, or semi-annual revie
 
 **DC supply/demand** — CBRE North America Data Center Trends (published semi-annually). Also: JLL Data Center Outlook, CBRE Data Center Trends. The key metrics: absorption (demand) and construction pipeline, both in MW. Update twice a year after CBRE publishes.
 
-**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, Meta, and Oracle earnings calls (quarterly), plus material regional infrastructure commitments. Use company investor-relations releases or transcripts. Distinguish accounting reclassification from a change in underlying investment plans. Current guidance: Amazon approximately $220B; Microsoft approximately $175B with underlying expectations unchanged after operating-lease reclassification; Alphabet $195–205B; Meta $135–145B after its October 21 Q3 update narrowed the prior $130–145B range. Oracle Q1 FY2027 reported $7.4B cloud-infrastructure revenue and $664B RPO; neither is an individual compute-deal value. The November 1 review remains due so the remaining companies can be refreshed after their next results.
+**Hyperscaler CapEx trend** — Amazon, Microsoft, Alphabet, Meta, and Oracle earnings calls (quarterly), plus material regional infrastructure commitments. Use company investor-relations releases or transcripts. Distinguish delivery timing and accounting classification from investment direction. Current disclosures: Amazon approximately $220B of 2026 cash capex; Microsoft approximately $170B for calendar 2026 after third-party capacity deliveries shifted later, with FY2027 Q2 expected above $50B; Alphabet $195–205B; Meta $135–145B after its October 21 Q3 update narrowed the prior $130–145B range. Oracle Q1 FY2027 reported $7.4B cloud-infrastructure revenue and $664B RPO; neither is an individual compute-deal value. Next quarterly review: February 6, 2027.
 
-**SaaS 2021 peak multiple** — Historical reference. Only review to confirm the narrative framing ("compressed from 2021 peaks") is still accurate context. Rarely needs updating.
+**SaaS 2021 peak multiple** — Historical reference. Bessemer’s State of the Cloud 2021 supports the 20x+ framing. The BVP Cloud Index displayed a 7.4x average revenue multiple when checked November 8, 2026, but its cohort and methodology differ from Market Tape’s live Yahoo Finance SaaS basket; never use it to backfill an unavailable live basket. Review semi-annually to confirm the framing and source presentation.
 
 ---
 

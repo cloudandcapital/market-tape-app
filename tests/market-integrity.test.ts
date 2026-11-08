@@ -138,12 +138,28 @@ test('retired morning brief stays unavailable and does not return a generated br
   })
 })
 
-test('hyperscaler benchmark carries Meta Q3 guidance without closing the remaining earnings review', () => {
+test('hyperscaler benchmark carries the completed Q3 earnings refresh', () => {
   const benchmark = BENCHMARKS.hyperscalerCapexTrend
-  assert.equal(benchmark.lastUpdated, '2026-10-21')
-  assert.equal(benchmark.nextReviewDue, '2026-11-01')
-  assert.match(benchmark.notes, /Meta \$135–145B/)
+  assert.equal(benchmark.lastUpdated, '2026-11-08')
+  assert.equal(benchmark.nextReviewDue, '2027-02-06')
+  assert.match(benchmark.notes, /Meta expects \$135–145B/)
+  assert.match(benchmark.notes, /Microsoft reported \$45\.2B/)
+  assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Amazon — Q3 2026 results'))
+  assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Microsoft — FY2027 Q1 earnings'))
+  assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Alphabet — Q3 2026 earnings call'))
   assert.ok(benchmark.sourceLinks?.some(link => link.label === 'Meta — Q3 2026 results'))
+})
+
+test('November benchmark refresh preserves historical and GPU source boundaries', () => {
+  assert.equal(BENCHMARKS.gpuSupplyStatus.lastUpdated, '2026-11-08')
+  assert.equal(BENCHMARKS.gpuSupplyStatus.nextReviewDue, '2026-12-08')
+  assert.match(BENCHMARKS.gpuSupplyStatus.value, /H100 \$2\.40–\$10\.98\/hr/)
+  assert.match(BENCHMARKS.gpuSupplyStatus.value, /H200 \$3\.85–\$10\.85\/hr/)
+  assert.match(BENCHMARKS.gpuSupplyStatus.notes, /not market-wide lows\/highs or executable quotes/)
+  assert.equal(BENCHMARKS.saas2021PeakMultiple.lastUpdated, '2026-11-08')
+  assert.equal(BENCHMARKS.saas2021PeakMultiple.nextReviewDue, '2027-05-07')
+  assert.equal(BENCHMARKS.saas2021PeakMultiple.value, '20x+')
+  assert.match(BENCHMARKS.saas2021PeakMultiple.notes, /must not replace or backfill/)
 })
 
 test('a stress move in VIX or bonds cannot improve equity ETF breadth; repeated funds count once', () => {

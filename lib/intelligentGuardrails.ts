@@ -110,7 +110,7 @@ export function enforceInterpretationGuardrails(brief: BriefResponse, inputs: Ri
     finopsSignals: {
       cloudSpend: 'What are you using, what are you paying, and where do the two differ?',
       saasRenewals: 'When is the notice deadline, which seats are used, and what alternatives have you priced?',
-      infrastructure: `Selected GPU rental list rates from Thunder Compute’s October 16 comparison: ${BENCHMARKS.gpuSupplyStatus.value}. This vendor comparison includes reservation-only rates, not a market-wide price floor or a capacity quote.`,
+      infrastructure: `Selected published GPU rental rates from Thunder Compute’s November 3 comparison: ${BENCHMARKS.gpuSupplyStatus.value}. This vendor comparison includes marketplace and reservation-only endpoints, not a market-wide price floor or a capacity quote.`,
     },
     commitmentWindows: CLOUD_REVIEW,
     sectorInsights: enforceDecisionGuardrail(brief.sectorInsights),
