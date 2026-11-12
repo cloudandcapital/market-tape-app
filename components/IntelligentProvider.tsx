@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
 import type { MarketContextData, BriefResponse, CachedBrief } from '@/lib/intelligentTypes'
+import { enforceSnapshotLanguage } from '@/lib/briefSnapshotLanguage'
 
 const CACHE_KEY = 'intelligent-brief-v21'
 const CACHE_DURATION = 6 * 60 * 60 * 1000 // 6 hours
@@ -139,9 +140,10 @@ export function IntelligentProvider({ contextData, initialData = null, children,
   }, [fetchBrief, hash, initialData])
 
   const cachedAt = data ? formatCachedAt(data) : null
+  const displayData = data ? enforceSnapshotLanguage(data, contextData) : null
 
   return (
-    <IntelligentCtx.Provider value={{ data, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refreshMessage, refresh: () => fetchBrief(true) }}>
+    <IntelligentCtx.Provider value={{ data: displayData, loading, error, cachedAt, contextData, paused: disabled, snapshotChanged, refreshMessage, refresh: () => fetchBrief(true) }}>
       {/* Morning Brief — full-width top section */}
       <div className="tape-analysis overflow-hidden">
         <BriefSection />
